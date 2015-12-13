@@ -55,7 +55,6 @@ public class Broadcaster{
                 Log.d("Broadcast","No picture to broadcast");
                 return;
             }
-            Log.d("broadcast",iStream+"");
             System.out.println("Data: " + data.length);
 
             DatagramChannel channel = DatagramChannel.open();
