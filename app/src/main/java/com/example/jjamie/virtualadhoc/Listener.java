@@ -1,35 +1,45 @@
 package com.example.jjamie.virtualadhoc;
 
-import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketTimeoutException;
 
-public class Listener {
+public class Listener extends Thread{
 
     private static final String TAG = "Listener";
+    private static final int PORT = 3333;
 
-    private void listenForResponses(DatagramSocket socket) throws IOException {
+    public void run() {
         byte[] buf = new byte[1024];
         try {
+            DatagramSocket socket = null;
             while (true) {
-                
+                System.out.println("listenerrrrrrrrrrrrr");
+                socket = new DatagramSocket(PORT);
                 DatagramPacket packet = new DatagramPacket(buf, buf.length);
                 socket.receive(packet);
+
+                //write file
                 String filename = Environment.getExternalStorageDirectory().getPath() + "/folder/testfile.jpg";
-                Uri imageUri = Uri.fromFile(new File(filename));
+                File file = new File(filename);
+                FileOutputStream fileOutputStream = new FileOutputStream(file);
+                fileOutputStream.write(packet.getData());
 
+                socket.close();
 
-                String s = new String(packet.getData(), 0, packet.getLength());
-                Log.d(TAG, "Received response " + s);
+                System.out.println("Receive from: " + socket.getInetAddress() + " packet: " + packet);
+
             }
         } catch (SocketTimeoutException e) {
-            Log.d(TAG, "Receive timed out");
+            Log.d(TAG, "Receive timed out: "+ e);
+        } catch (IOException e){
+            Log.d(TAG, "IOException: " + e);
         }
     }
 
