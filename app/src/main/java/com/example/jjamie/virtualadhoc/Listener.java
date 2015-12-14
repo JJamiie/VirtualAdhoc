@@ -22,6 +22,7 @@ public class Listener extends Thread{
             while (true) {
                 System.out.println("listenerrrrrrrrrrrrr");
                 socket = new DatagramSocket(PORT);
+
                 DatagramPacket packet = new DatagramPacket(buf, buf.length);
                 socket.receive(packet);
 
