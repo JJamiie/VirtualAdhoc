@@ -48,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
     private AlbumStorageDirFactory mAlbumStorageDirFactory = null;
     private byte[] imageToSent;
     private Broadcaster broadcaster;
+    private Listener listener;
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -57,7 +58,8 @@ public class MainActivity extends AppCompatActivity {
 
         mWifi = (WifiManager) getSystemService(WIFI_SERVICE);
         broadcaster = new Broadcaster(mWifi);
-
+        listener = new Listener();
+        listener.start();
         mImageView = (ImageView) findViewById(R.id.imageView1);
         mImageBitmap = null;
         mVideoUri = null;
@@ -210,7 +212,6 @@ public class MainActivity extends AppCompatActivity {
 
         try{
             InputStream iStream = getContentResolver().openInputStream(contentUri);
-            setDataToSent(iStream);
         }catch (IOException ex){
 
         }
@@ -227,6 +228,8 @@ public class MainActivity extends AppCompatActivity {
         if (mCurrentPhotoPath != null) {
             setPic();
             galleryAddPic();
+            setDataToSent2(mCurrentPhotoPath);
+
             mCurrentPhotoPath = null;
         }
     }
@@ -249,7 +252,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onSaveInstanceState(Bundle outState) {
         outState.putParcelable(BITMAP_STORAGE_KEY, mImageBitmap);
         outState.putParcelable(VIDEO_STORAGE_KEY, mVideoUri);
-        outState.putBoolean(IMAGEVIEW_VISIBILITY_STORAGE_KEY, (mImageBitmap != null) );
+        outState.putBoolean(IMAGEVIEW_VISIBILITY_STORAGE_KEY, (mImageBitmap != null));
         outState.putBoolean(VIDEOVIEW_VISIBILITY_STORAGE_KEY, (mVideoUri != null) );
         super.onSaveInstanceState(outState);
     }
@@ -309,12 +312,27 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public void setDataToSent(InputStream iStream) {
-        try{
-            imageToSent = getBytes(iStream);
-        }catch (IOException ex){
 
+
+    public void setDataToSent2(String path) {
+        int DESIREDWIDTH = 240;
+        int DESIREDHEIGHT = 320;
+        Bitmap scaledBitmap = null;
+
+        Bitmap unscaledBitmap = ScalingUtilities.decodeFile(path, DESIREDWIDTH, DESIREDHEIGHT, "FIT");
+
+        if (!(unscaledBitmap.getWidth() <= DESIREDWIDTH && unscaledBitmap.getHeight() <= DESIREDHEIGHT)) {
+            // Part 2: Scale image
+            scaledBitmap = ScalingUtilities.createScaledBitmap(unscaledBitmap, DESIREDWIDTH, DESIREDHEIGHT, "FIT");
+        } else {
+            unscaledBitmap.recycle();
         }
+
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        scaledBitmap.compress(Bitmap.CompressFormat.PNG, 75, stream);
+        byte[] image = stream.toByteArray();
+        imageToSent = image;
+
     }
 
 }

@@ -17,7 +17,7 @@ public class Broadcaster{
 
     private static final String TAG = "Broadcast";
     private WifiManager mWifi;
-    private static int PORT = 3333;
+    private static int PORT = 4444;
     private byte[] data;
 
 
