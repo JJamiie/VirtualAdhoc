@@ -22,9 +22,12 @@ public class Listener extends Thread{
             DatagramSocket socket = null;
             while (true) {
                 System.out.println("listenerrrrrrrrrrrrr");
+                socket = new DatagramSocket(PORT);
+
                 socket = new DatagramSocket(PORT,InetAddress.getByName("0.0.0.0"));
                 DatagramPacket packet = new DatagramPacket(buf, buf.length);
                 socket.receive(packet);
+
                 System.out.println("listener"+socket.getInetAddress()+"");
                 //write file
                 String filename = Environment.getExternalStorageDirectory().getPath() + "/folder/testfile.jpg";

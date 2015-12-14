@@ -56,9 +56,9 @@ public class Broadcaster{
 
             DatagramChannel channel = DatagramChannel.open();
             DatagramSocket socket = channel.socket();
-//            socket.setReuseAddress(true);
-//            socket.bind(new InetSocketAddress(PORT));
 
+
+            socket.setReuseAddress(true);
             socket.setBroadcast(true);
 
             DatagramPacket packet = new DatagramPacket(data, data.length, getBroadcastAddress(), PORT);
