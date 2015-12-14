@@ -17,7 +17,7 @@ public class Broadcaster{
 
     private static final String TAG = "Broadcast";
     private WifiManager mWifi;
-    private static int PORT = 4444;
+    private static int PORT = 3333;
     private byte[] data;
 
 
@@ -58,7 +58,7 @@ public class Broadcaster{
             DatagramChannel channel = DatagramChannel.open();
             DatagramSocket socket = channel.socket();
             socket.setReuseAddress(true);
-            socket.bind(new InetSocketAddress(PORT));
+            //socket.bind(new InetSocketAddress(PORT));
             socket.setBroadcast(true);
 
             DatagramPacket packet = new DatagramPacket(data, data.length, getBroadcastAddress(), PORT);
