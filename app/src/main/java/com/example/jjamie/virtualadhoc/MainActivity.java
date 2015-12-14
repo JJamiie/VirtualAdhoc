@@ -18,6 +18,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -44,13 +46,14 @@ public class MainActivity extends AppCompatActivity {
     private static final String JPEG_FILE_SUFFIX = ".jpg";
 
     private AlbumStorageDirFactory mAlbumStorageDirFactory = null;
-
+    private byte[] imageToSent;
     private Broadcaster broadcaster;
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        imageToSent = null;
 
         mWifi = (WifiManager) getSystemService(WIFI_SERVICE);
         broadcaster = new Broadcaster(mWifi);
@@ -67,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
         broacastBtn.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
-                broadcaster.broadcast();
+                broadcaster.broadcast(imageToSent);
             }
         });
 
@@ -182,11 +185,9 @@ public class MainActivity extends AppCompatActivity {
 		
 		/* Figure out which way needs to be reduced less */
         int scaleFactor = 1;
-        Log.d("setPic","targetH: " + targetH +" targetW: "+ targetW);
         if ((targetW > 0) || (targetH > 0)) {
             scaleFactor = Math.min(photoW/targetW, photoH/targetH);
         }
-        Log.d("setPic","scaleFactor: " + scaleFactor);
 
 		/* Set bitmap options to scale the image decode target */
         bmOptions.inJustDecodeBounds = false;
@@ -209,7 +210,7 @@ public class MainActivity extends AppCompatActivity {
 
         try{
             InputStream iStream = getContentResolver().openInputStream(contentUri);
-            broadcaster.setDataToSent(iStream);
+            setDataToSent(iStream);
         }catch (IOException ex){
 
         }
@@ -293,6 +294,26 @@ public class MainActivity extends AppCompatActivity {
         } else {
             btn.setText(getText(R.string.cannot).toString() + " " + btn.getText());
             btn.setClickable(false);
+        }
+    }
+    public byte[] getBytes(InputStream inputStream) throws IOException {
+        ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
+        int bufferSize = 1024;
+        byte[] buffer = new byte[bufferSize];
+
+        int len = 0;
+        while ((len = inputStream.read(buffer)) != -1) {
+            byteBuffer.write(buffer, 0, len);
+        }
+        return byteBuffer.toByteArray();
+    }
+
+
+    public void setDataToSent(InputStream iStream) {
+        try{
+            imageToSent = getBytes(iStream);
+        }catch (IOException ex){
+
         }
     }
 
