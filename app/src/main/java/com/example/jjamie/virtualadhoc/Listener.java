@@ -15,29 +15,25 @@ public class Listener extends Thread{
 
     private static final String TAG = "Listener";
     private static final int PORT = 3333;
-
+    DatagramSocket socket = null;
     public void run() {
-        byte[] buf = new byte[1024];
+        byte[] buf = new byte[65000];
         try {
-            DatagramSocket socket = null;
-            while (true) {
-                System.out.println("listenerrrrrrrrrrrrr");
-                socket = new DatagramSocket(PORT);
+            socket = new DatagramSocket(PORT, InetAddress.getByName("0.0.0.0"));
+            socket.setBroadcast(true);
 
-                socket = new DatagramSocket(PORT,InetAddress.getByName("0.0.0.0"));
+            while (true) {
+                System.out.println("---------Listener run---------");
                 DatagramPacket packet = new DatagramPacket(buf, buf.length);
                 socket.receive(packet);
+                System.out.println("Receive from: " + socket.getInetAddress() + " packet: " + packet);
 
-                System.out.println("listener"+socket.getInetAddress()+"");
                 //write file
                 String filename = Environment.getExternalStorageDirectory().getPath() + "/folder/testfile.jpg";
                 File file = new File(filename);
                 FileOutputStream fileOutputStream = new FileOutputStream(file);
                 fileOutputStream.write(packet.getData());
 
-                socket.close();
-
-                System.out.println("Receive from: " + socket.getInetAddress() + " packet: " + packet);
 
             }
         } catch (SocketTimeoutException e) {

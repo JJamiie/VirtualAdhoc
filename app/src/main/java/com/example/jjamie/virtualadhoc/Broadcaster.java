@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.nio.channels.DatagramChannel;
 
 public class Broadcaster{
 
@@ -54,16 +53,15 @@ public class Broadcaster{
             }
             System.out.println("Data: " + data.length);
 
-            DatagramChannel channel = DatagramChannel.open();
-            DatagramSocket socket = channel.socket();
-
-
-            socket.setReuseAddress(true);
+//            DatagramChannel channel = DatagramChannel.open();
+            DatagramSocket socket = new DatagramSocket();
             socket.setBroadcast(true);
 
+//            socket.setReuseAddress(true);
+//            socket.setBroadcast(true);
             DatagramPacket packet = new DatagramPacket(data, data.length, getBroadcastAddress(), PORT);
             socket.send(packet);
-            socket.close();
+
         }catch(IOException ex){
             Log.d("Broadcast",ex.toString());
         }
