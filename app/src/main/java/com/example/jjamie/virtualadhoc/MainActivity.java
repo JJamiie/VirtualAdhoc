@@ -36,21 +36,27 @@ public class MainActivity extends AppCompatActivity {
 
     public WifiManager mWifi;
     private String mCurrentPhotoPath;
-    private byte[] imageToSent;
+    private Image imageToSent;
+    int sequenceNumber;
+    String senderName;
 
     public static AlbumStorageDirFactory mAlbumStorageDirFactory;
     public static ContentResolver contentResolver;
 
     private Broadcaster broadcaster;
     private Listener listener;
-
+    public static MainActivity th;
 
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        imageToSent = null;
+        imageToSent =null;
+        senderName = "Jay";
+        sequenceNumber = 0;
+        th=this;
+
         contentResolver = getContentResolver();
         mWifi = (WifiManager) getSystemService(WIFI_SERVICE);
 
@@ -217,7 +223,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public void setDataToSent(String path) {
+    public void setDataToSent(String path){
         int DESIREDWIDTH = 240;
         int DESIREDHEIGHT = 320;
         Bitmap scaledBitmap = null;
@@ -233,9 +239,14 @@ public class MainActivity extends AppCompatActivity {
 
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         scaledBitmap.compress(Bitmap.CompressFormat.PNG, 75, stream);
-        byte[] image = stream.toByteArray();
-        imageToSent = image;
+        byte[] img = stream.toByteArray();
 
+        try {
+            imageToSent = new Image(senderName, sequenceNumber, img);
+            sequenceNumber++;
+        }catch (SenderNameIncorrectLengthException senderName){
+
+        }
     }
 
 }

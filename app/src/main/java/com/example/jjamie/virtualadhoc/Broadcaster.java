@@ -14,7 +14,6 @@ public class Broadcaster{
     private static final String TAG = "Broadcast";
     private WifiManager mWifi;
     private static int PORT = 3333;
-    private byte[] data;
 
 
     /**
@@ -25,7 +24,6 @@ public class Broadcaster{
 
     Broadcaster(WifiManager mWifi) {
         this.mWifi = mWifi;
-        data = null;
     }
 
     private InetAddress getBroadcastAddress() throws IOException {
@@ -42,18 +40,17 @@ public class Broadcaster{
     }
 
 
-    public void broadcast(byte[] data){
+    public void broadcast(Image image){
         try {
             System.out.println("BroadcastAddress: " + getBroadcastAddress());
-            if(data == null){
+            if(image == null){
                 Log.d("Broadcast","No picture to broadcast");
                 return;
             }
-            System.out.println("Data: " + data.length);
 
             DatagramSocket socket = new DatagramSocket();
             socket.setBroadcast(true);
-            DatagramPacket packet = new DatagramPacket(data, data.length, getBroadcastAddress(), PORT);
+            DatagramPacket packet = new DatagramPacket(image.getBytes(), image.getBytes().length, getBroadcastAddress(), PORT);
             socket.send(packet);
 
         }catch(IOException ex){

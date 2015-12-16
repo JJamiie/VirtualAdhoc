@@ -102,6 +102,7 @@ public class ManageImage {
 
 
     public static Intent galleryAddPic(String mCurrentPhotoPath) {
+
         Intent mediaScanIntent = new Intent("android.intent.action.MEDIA_SCANNER_SCAN_FILE");
         File f = new File(mCurrentPhotoPath);
         Uri contentUri = Uri.fromFile(f);
@@ -109,7 +110,7 @@ public class ManageImage {
         try{
             InputStream iStream = MainActivity.contentResolver.openInputStream(contentUri);
         }catch (IOException ex){
-
+            Log.d("GalleryAddPic",ex.toString());
         }
         mediaScanIntent.setData(contentUri);
         return mediaScanIntent;
