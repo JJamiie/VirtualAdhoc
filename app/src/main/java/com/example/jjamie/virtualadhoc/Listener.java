@@ -1,8 +1,6 @@
 package com.example.jjamie.virtualadhoc;
 
-import android.os.Environment;
 import android.util.Log;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -29,13 +27,12 @@ public class Listener extends Thread{
                 System.out.println("Receive from: " + socket.getInetAddress() + " packet: " + packet);
 
                 //write file
-                String filename = Environment.getExternalStorageDirectory().getPath() + "/folder/testfile.jpg";
-                File file = new File(filename);
+                File file = ManageImage.setUpPhotoFile();
                 FileOutputStream fileOutputStream = new FileOutputStream(file);
                 fileOutputStream.write(packet.getData());
-
-
+                ManageImage.galleryAddPic(file.getAbsolutePath());
             }
+
         } catch (SocketTimeoutException e) {
             Log.d(TAG, "Receive timed out: "+ e);
         } catch (IOException e){

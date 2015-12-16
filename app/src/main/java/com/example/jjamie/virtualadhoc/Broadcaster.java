@@ -3,9 +3,7 @@ package com.example.jjamie.virtualadhoc;
 import android.net.DhcpInfo;
 import android.net.wifi.WifiManager;
 import android.util.Log;
-
 import com.google.android.gms.common.api.GoogleApiClient;
-
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -53,12 +51,8 @@ public class Broadcaster{
             }
             System.out.println("Data: " + data.length);
 
-//            DatagramChannel channel = DatagramChannel.open();
             DatagramSocket socket = new DatagramSocket();
             socket.setBroadcast(true);
-
-//            socket.setReuseAddress(true);
-//            socket.setBroadcast(true);
             DatagramPacket packet = new DatagramPacket(data, data.length, getBroadcastAddress(), PORT);
             socket.send(packet);
 
