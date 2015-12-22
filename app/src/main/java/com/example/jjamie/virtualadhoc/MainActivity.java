@@ -63,16 +63,25 @@ public class MainActivity extends AppCompatActivity {
         mImageView = (ImageView) findViewById(R.id.imageView1);
         mImageBitmap = null;
         mVideoUri = null;
-
+        /*
         Button picBtn = (Button) findViewById(R.id.btnIntend);
         setBtnListenerOrDisable(picBtn, mTakePicOnClickListener, MediaStore.ACTION_IMAGE_CAPTURE
         );
-
+        */
+        Button picBtn = (Button) findViewById(R.id.btnIntend);
+        picBtn.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // broadcaster.broadcast(imageToSent);
+                ApManager.configApState(MainActivity.this,true);
+            }
+        });
         Button broacastBtn = (Button) findViewById(R.id.broadcast);
         broacastBtn.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
-                broadcaster.broadcast(imageToSent);
+               // broadcaster.broadcast(imageToSent);
+                ApManager.configApState(MainActivity.this,false);
             }
         });
 

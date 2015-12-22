@@ -19,6 +19,7 @@ public class Listener extends Thread{
     public void run() {
         byte[] buf = new byte[65000];
         try {
+            
             socket = new DatagramSocket(PORT, InetAddress.getByName("0.0.0.0"));
             socket.setBroadcast(true);
 
