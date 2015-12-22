@@ -1,15 +1,16 @@
 package com.example.jjamie.virtualadhoc;
 
 
-import android.annotation.TargetApi;
-import android.os.Build;
+import android.util.Log;
 
-import java.nio.charset.StandardCharsets;
+import java.nio.charset.Charset;
+
 
 public class Image {
-    public static final int BUFFER_SIZE = 5000;
+    public static final int BUFFER_SIZE = 63000;
     public static final int SENDER_NAME_LENGTH = 50;
-    public static final int TOTAL_LENGTH = SENDER_NAME_LENGTH + 4 + Image.BUFFER_SIZE;
+//    public static final int TOTAL_LENGTH = SENDER_NAME_LENGTH + 4 + Image.BUFFER_SIZE;
+    public static final int TOTAL_LENGTH = 64000;
 
     public String senderName;
     public int sequenceNumber;
@@ -24,15 +25,19 @@ public class Image {
         this.imageBytes = imageBytes;
     }
 
-    @TargetApi(Build.VERSION_CODES.KITKAT)
-    public Image(byte[] audioChunkBytes) throws ImageChunkIncorrectLengthException {
-        if (audioChunkBytes.length != TOTAL_LENGTH) {
-            throw new ImageChunkIncorrectLengthException();
-        }
+    public byte[] getImageBytes() {
+        return imageBytes;
+    }
+
+    public Image(byte[] imageBytes,int lengthPacket) throws ImageChunkIncorrectLengthException {
+        Log.d("Image", "Length: " + lengthPacket);
+//        if (imageBytes.length != TOTAL_LENGTH) {
+//            throw new ImageChunkIncorrectLengthException();
+//        }
 
 //		assign the senderName
         byte[] senderNameBytes = new byte[SENDER_NAME_LENGTH];
-        System.arraycopy(audioChunkBytes, 0, senderNameBytes, 0, SENDER_NAME_LENGTH);
+        System.arraycopy(imageBytes, 0, senderNameBytes, 0, SENDER_NAME_LENGTH);
 
 //		find the actual sender name, because this.senderName should contain only the name string with actual length
 //		this cannot be determined trivially
@@ -44,17 +49,17 @@ public class Image {
             }
         }
 
-        String senderNameString = new String(senderNameBytes, 0, senderNameLength, StandardCharsets.UTF_8);
+        String senderNameString = new String(senderNameBytes, 0, senderNameLength, Charset.forName("UTF-8"));
         this.senderName = senderNameString;
 
 //		assign the sequenceNumber
         byte[] sequenceNumberBytes = new byte[4];
-        System.arraycopy(audioChunkBytes, SENDER_NAME_LENGTH, sequenceNumberBytes, 0, 4);
+        System.arraycopy(imageBytes, SENDER_NAME_LENGTH, sequenceNumberBytes, 0, 4);
         this.sequenceNumber = Image.bytesToInt(sequenceNumberBytes);
 
-//		assign the audioBytes
-        this.imageBytes = new byte[Image.BUFFER_SIZE];
-        System.arraycopy(audioChunkBytes, SENDER_NAME_LENGTH + 4, this.imageBytes, 0, Image.BUFFER_SIZE);
+//		assign the imageBytes
+        this.imageBytes = new byte[lengthPacket-SENDER_NAME_LENGTH-4];
+        System.arraycopy(imageBytes, SENDER_NAME_LENGTH + 4, this.imageBytes, 0, lengthPacket-SENDER_NAME_LENGTH-4);
     }
 
     public static byte[] intToBytes(int intValue) {
@@ -81,15 +86,15 @@ public class Image {
 //		resizing the sender name to be SENDER_NAME_LENGTH
         byte[] senderNameBytes = new byte[SENDER_NAME_LENGTH];
 //		using utf-8 as encoding for converting chars to bytes
-        byte[] senderNameBytesShorter = senderName.getBytes(StandardCharsets.UTF_8);
+        byte[] senderNameBytesShorter = senderName.getBytes(Charset.forName("UTF-8"));
         System.arraycopy(senderNameBytesShorter, 0, senderNameBytes, 0, senderNameBytesShorter.length);
 
         byte[] sequenceNumberBytes = Image.intToBytes(sequenceNumber);
-        byte[] imageChunkBytes = new byte[TOTAL_LENGTH];
+        byte[] imageChunkBytes = new byte[SENDER_NAME_LENGTH + 4+imageBytes.length];
 
         System.arraycopy(senderNameBytes, 0, imageChunkBytes, 0, SENDER_NAME_LENGTH);
         System.arraycopy(sequenceNumberBytes, 0, imageChunkBytes, SENDER_NAME_LENGTH, 4);
-        System.arraycopy(imageBytes, 0, imageChunkBytes, SENDER_NAME_LENGTH + 4,Image.BUFFER_SIZE);
+        System.arraycopy(imageBytes, 0, imageChunkBytes, SENDER_NAME_LENGTH + 4,imageBytes.length);
 
         return imageChunkBytes;
     }
