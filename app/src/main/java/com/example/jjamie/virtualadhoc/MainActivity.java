@@ -17,25 +17,33 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
-import java.io.ByteArrayOutputStream;
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final int ACTION_TAKE_PHOTO_B = 1;
-    private static final String JPEG_FILE_PREFIX = "IMG_";
-    private static final String JPEG_FILE_SUFFIX = ".jpg";
+    public static final int ACTION_TAKE_PHOTO_B = 1;
+    public static final int ACTION_RECEIVED_PHOTO = 2;
     private static final String BITMAP_STORAGE_KEY = "viewbitmap";
     private static final String IMAGEVIEW_VISIBILITY_STORAGE_KEY = "imageviewvisibility";
 
     public ImageView mImageView;
+    public ImageView mImageViewReceive;
     public Bitmap mImageBitmap;
 
     public WifiManager mWifi;
     private String mCurrentPhotoPath;
+
+    public void setmCurrentPhotoReceivePath(String mCurrentPhotoReceivePath) {
+        this.mCurrentPhotoReceivePath = mCurrentPhotoReceivePath;
+    }
+
+    private String mCurrentPhotoReceivePath;
+
     private Image imageToSent;
     int sequenceNumber;
     String senderName;
@@ -43,8 +51,8 @@ public class MainActivity extends AppCompatActivity {
     public static AlbumStorageDirFactory mAlbumStorageDirFactory;
     public static ContentResolver contentResolver;
 
-    private Broadcaster broadcaster;
-    private Listener listener;
+    public Broadcaster broadcaster;
+    public Listener listener;
     public static MainActivity th;
 
     /** Called when the activity is first created. */
@@ -61,10 +69,12 @@ public class MainActivity extends AppCompatActivity {
         mWifi = (WifiManager) getSystemService(WIFI_SERVICE);
 
         broadcaster = new Broadcaster(mWifi);
-        listener = new Listener();
+        mImageView = (ImageView) findViewById(R.id.imageView1);
+        mImageViewReceive = (ImageView) findViewById(R.id.imageViewReceive);
+        listener = new Listener(mWifi,broadcaster);
         listener.start();
 
-        mImageView = (ImageView) findViewById(R.id.imageView1);
+
         mImageBitmap = null;
 
         Button picBtn = (Button) findViewById(R.id.btnIntend);
@@ -152,7 +162,11 @@ public class MainActivity extends AppCompatActivity {
                 }
                 break;
             } // ACTION_TAKE_PHOTO_B
-
+            case ACTION_RECEIVED_PHOTO: {
+                if (resultCode == RESULT_OK){
+                    setRecievedPic();
+                }
+            }
         } // switch
     }
 
@@ -210,41 +224,54 @@ public class MainActivity extends AppCompatActivity {
         btn.setOnClickListener(onClickListener);
     }
 
-    public byte[] getBytes(InputStream inputStream) throws IOException {
-        ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
-        int bufferSize = 1024;
-        byte[] buffer = new byte[bufferSize];
+//    public byte[] getBytes(InputStream inputStream) throws IOException {
+//        ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
+//        int bufferSize = 1024;
+//        byte[] buffer = new byte[bufferSize];
+//
+//        int len = 0;
+//        while ((len = inputStream.read(buffer)) != -1) {
+//            byteBuffer.write(buffer, 0, len);
+//        }
+//        return byteBuffer.toByteArray();
+//    }
 
-        int len = 0;
-        while ((len = inputStream.read(buffer)) != -1) {
-            byteBuffer.write(buffer, 0, len);
-        }
-        return byteBuffer.toByteArray();
+    public void setRecievedPic(){
+        ManageImage.setPic(mCurrentPhotoReceivePath, mImageViewReceive);
+        Intent mediaScanIntent = ManageImage.galleryAddPic(mCurrentPhotoReceivePath);
+        this.sendBroadcast(mediaScanIntent);
     }
 
-
     public void setDataToSent(String path){
-        int DESIREDWIDTH = 240;
-        int DESIREDHEIGHT = 320;
-        Bitmap scaledBitmap = null;
-
-        Bitmap unscaledBitmap = ScalingUtilities.decodeFile(path, DESIREDWIDTH, DESIREDHEIGHT, "FIT");
-
-        if (!(unscaledBitmap.getWidth() <= DESIREDWIDTH && unscaledBitmap.getHeight() <= DESIREDHEIGHT)) {
-            // Part 2: Scale image
-            scaledBitmap = ScalingUtilities.createScaledBitmap(unscaledBitmap, DESIREDWIDTH, DESIREDHEIGHT, "FIT");
-        } else {
-            unscaledBitmap.recycle();
-        }
-
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        scaledBitmap.compress(Bitmap.CompressFormat.PNG, 75, stream);
-        byte[] img = stream.toByteArray();
-
+//        int DESIREDWIDTH = 240;
+//        int DESIREDHEIGHT = 320;
+//        Bitmap scaledBitmap = null;
+//
+//        Bitmap unscaledBitmap = ScalingUtilities.decodeFile(path, DESIREDWIDTH, DESIREDHEIGHT, "FIT");
+//
+//        if (!(unscaledBitmap.getWidth() <= DESIREDWIDTH && unscaledBitmap.getHeight() <= DESIREDHEIGHT)) {
+//            // Part 2: Scale image
+//            scaledBitmap = ScalingUtilities.createScaledBitmap(unscaledBitmap, DESIREDWIDTH, DESIREDHEIGHT, "FIT");
+//        } else {
+//            unscaledBitmap.recycle();
+//        }
+//
+//        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+//        scaledBitmap.compress(Bitmap.CompressFormat.PNG, 75, stream);
+        File file = new File(path);
+        int size = (int) file.length();
+        byte[] img = new byte[size];
         try {
+            BufferedInputStream buf = new BufferedInputStream(new FileInputStream(file));
+            buf.read(img, 0, img.length);
+            buf.close();
             imageToSent = new Image(senderName, sequenceNumber, img);
             sequenceNumber++;
-        }catch (SenderNameIncorrectLengthException senderName){
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (SenderNameIncorrectLengthException senderName){
 
         }
     }
