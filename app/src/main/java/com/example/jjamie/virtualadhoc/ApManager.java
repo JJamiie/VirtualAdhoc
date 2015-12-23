@@ -30,6 +30,7 @@ public class ApManager {
             }*/
             Method method = wifimanager.getClass().getMethod("setWifiApEnabled", WifiConfiguration.class, boolean.class);
             if(tog){
+                setHotspotName(context);
                 wifimanager.setWifiEnabled(!tog);
                 method.invoke(wifimanager, wificonfiguration, true);
             }
@@ -44,6 +45,30 @@ public class ApManager {
             e.printStackTrace();
         }
         return false;
+    }
+    public static boolean setHotspotName(Context context) {
+        try {
+            WifiManager wifiManager = (WifiManager) context.getSystemService(context.WIFI_SERVICE);
+
+            WifiInfo wInfo = wifiManager.getConnectionInfo();
+            String macAddress = wInfo.getMacAddress();
+
+            Method getConfigMethod = wifiManager.getClass().getMethod("getWifiApConfiguration");
+            WifiConfiguration wifiConfig = (WifiConfiguration) getConfigMethod.invoke(wifiManager);
+
+            String SSID = "ViR:"+macAddress;
+
+            wifiConfig.SSID = SSID;
+
+            Method setConfigMethod = wifiManager.getClass().getMethod("setWifiApConfiguration", WifiConfiguration.class);
+            setConfigMethod.invoke(wifiManager, wifiConfig);
+
+            return true;
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }
 
