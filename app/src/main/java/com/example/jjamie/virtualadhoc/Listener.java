@@ -34,7 +34,10 @@ public class Listener extends Thread {
     public void run() {
         Socket socket = null;
         try {
+
+
             serverSocket = new ServerSocket(PORT);
+
             while (true) {
                 Log.d(TAG, "Waiting...");
                 socket = serverSocket.accept();
