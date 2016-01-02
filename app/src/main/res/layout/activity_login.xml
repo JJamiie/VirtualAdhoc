@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FF213463"
+    tools:context="com.example.jjamie.virtualadhoc.LoginActivity">
+
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:background="#FF213463"
+        android:paddingLeft="40dp"
+        android:paddingRight="40dp">
+
+        <ImageView
+            android:id="@+id/logo"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="25dp"
+            android:src="@drawable/logowhite" />
+
+        <EditText
+            android:id="@+id/usernamEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/logo"
+            android:layout_marginBottom="25dp"
+            android:textColor="#FFFFFF"
+            android:hint="Username"
+            android:textColorHint="#FFFFFF"
+            android:backgroundTint="#FFFFFF"
+            android:textCursorDrawable="@drawable/cursor_color"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"/>
+
+
+        <Button
+            android:id="@+id/login"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/usernamEditText"
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/rounded_edittext"
+            android:text="Log in" />
+
+        <CheckBox
+            android:id="@+id/rememberUsername"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/login"
+            android:text="Remember Username"
+            android:buttonTint="#FFFFFF"
+            android:textColor="#FFFFFF"
+            android:layout_centerHorizontal="true"/>
+    </RelativeLayout>
+</RelativeLayout>

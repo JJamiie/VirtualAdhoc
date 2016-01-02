@@ -1,11 +1,8 @@
 package com.example.jjamie.virtualadhoc;
 
-import android.net.DhcpInfo;
-import android.net.wifi.WifiManager;
-import android.text.format.Formatter;
+import android.app.Activity;
 import android.util.Log;
 import android.widget.Toast;
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.net.InetAddress;
@@ -17,23 +14,16 @@ import java.util.Enumeration;
 public class Broadcaster{
 
     private static final String TAG = "Broadcast";
-    private WifiManager mWifi;
     public static int PORT = 3333;
-    Unicaster unicaster = null;
 
-    Broadcaster(WifiManager mWifi) {
-        this.mWifi = mWifi;
-        unicaster = new Unicaster();
-    }
-
-    public void broadcast(Image image){
+    public static void broadcast(Image image, final Activity activity){
         if(image == null){
             Log.d("Broadcast","No picture to broadcast");
             final String sentMsg = "Please take a picture before broadcast.";
-            MainActivity.th.runOnUiThread(new Runnable() {
+            activity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    Toast.makeText(MainActivity.th, sentMsg, Toast.LENGTH_LONG).show();
+                    Toast.makeText(activity, sentMsg, Toast.LENGTH_LONG).show();
                 }
             });
             return;
@@ -41,23 +31,24 @@ public class Broadcaster{
 
         broadcastToNeighbor(image);
 
-        MainActivity.th.runOnUiThread(new Runnable() {
+        activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(MainActivity.th, "sent", Toast.LENGTH_LONG).show();
+                Toast.makeText(activity, "sent", Toast.LENGTH_LONG).show();
             }
         });
     }
 
 
 
-    public void broadcastToNeighbor(Image image){
+    public static void broadcastToNeighbor(Image image){
+        Unicaster unicaster = new Unicaster();
         for(int i=0; i<getNeighborList().size();i++){
             unicaster.unicast(image, getNeighborList().get(i));
         }
     }
 
-    public ArrayList<String> getNeighborList() {
+    public static ArrayList<String> getNeighborList() {
         ArrayList<String> clientList = new ArrayList<String>();
         int macCount =0;
         BufferedReader br = null;
@@ -84,11 +75,11 @@ public class Broadcaster{
         return clientList;
     }
 
-    public String getIPAddressClient(){
-        DhcpInfo dhcp = mWifi.getDhcpInfo();
-        String address = Formatter.formatIpAddress(dhcp.gateway);
-        return address;
-    }
+//    public String getIPAddressClient(){
+//        DhcpInfo dhcp = mWifi.getDhcpInfo();
+//        String address = Formatter.formatIpAddress(dhcp.gateway);
+//        return address;
+//    }
 
 
     public String getWifiApIpAddress() {
@@ -114,9 +105,9 @@ public class Broadcaster{
         return null;
     }
 
-    public String getIPAddressItSelf(){ //if it is hotspot, it will return 0.0.0.0
-        return Formatter.formatIpAddress(mWifi.getConnectionInfo().getIpAddress());
-    }
+//    public String getIPAddressItSelf(){ //if it is hotspot, it will return 0.0.0.0
+//        return Formatter.formatIpAddress(mWifi.getConnectionInfo().getIpAddress());
+//    }
 
 //    public void broadcast(Image image){
 //        try {
