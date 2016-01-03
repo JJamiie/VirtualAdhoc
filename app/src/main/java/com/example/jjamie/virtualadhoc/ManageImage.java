@@ -1,9 +1,13 @@
 package com.example.jjamie.virtualadhoc;
 
+import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.ExifInterface;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.util.Log;
 import android.view.View;
@@ -11,8 +15,9 @@ import android.widget.ImageView;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Date;
 
 
@@ -20,28 +25,28 @@ public class ManageImage {
 
     private static final String JPEG_FILE_PREFIX = "IMG_";
     private static final String JPEG_FILE_SUFFIX = ".jpg";
-
-    public static File setUpPhotoFile() throws IOException {
-        File f = createImageFile();
-//        mCurrentPhotoPath = f.getAbsolutePath();
+    public static File setUpPhotoFile(Activity activity,AlbumStorageDirFactory mAlbumStorageDirFactory) throws IOException {
+        File f = createImageFile(activity,mAlbumStorageDirFactory);
+        String mString = "Help me plzzzz !!!!!";
+        ExifInterface exif = new ExifInterface(f.getAbsolutePath());
+        exif.setAttribute("UserComment", mString);
+        exif.saveAttributes();
         return f;
     }
 
-    public static File createImageFile() throws IOException {
+    public static File createImageFile(Activity activity,AlbumStorageDirFactory mAlbumStorageDirFactory) throws IOException {
         // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = JPEG_FILE_PREFIX + timeStamp + "_";
-        File albumF = getAlbumDir();
+        File albumF = getAlbumDir(mAlbumStorageDirFactory);
         File imageF = File.createTempFile(imageFileName, JPEG_FILE_SUFFIX, albumF);
         return imageF;
     }
 
-    public static File getAlbumDir() {
+    public static File getAlbumDir(AlbumStorageDirFactory mAlbumStorageDirFactory) {
         File storageDir = null;
-
         if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
-
-            storageDir = MainActivity.mAlbumStorageDirFactory.getAlbumStorageDir(getAlbumName());
+            storageDir = mAlbumStorageDirFactory.getAlbumStorageDir(getAlbumName());
 
             if (storageDir != null) {
                 if (! storageDir.mkdirs()) {
@@ -55,14 +60,12 @@ public class ManageImage {
         } else {
             Log.v("Virtual Adhoc", "External storage is not mounted READ/WRITE.");
         }
-
         return storageDir;
     }
 
     /* Photo album for this application */
     public static String getAlbumName() {
-        return "Virtual Adhoc";
-//        return getString(R.string.album_name);
+        return "Pegion";
     }
 
     public static void setPic(String mCurrentPhotoPath,ImageView mImageView) {
@@ -101,18 +104,30 @@ public class ManageImage {
     }
 
 
-    public static Intent galleryAddPic(String mCurrentPhotoPath) {
+    public static void galleryAddPic(String mCurrentPhotoPath,Activity activity) {
 
         Intent mediaScanIntent = new Intent("android.intent.action.MEDIA_SCANNER_SCAN_FILE");
         File f = new File(mCurrentPhotoPath);
         Uri contentUri = Uri.fromFile(f);
-
         try{
-            InputStream iStream = MainActivity.contentResolver.openInputStream(contentUri);
+            activity.getContentResolver().openInputStream(contentUri);
         }catch (IOException ex){
             Log.d("GalleryAddPic",ex.toString());
         }
-        mediaScanIntent.setData(contentUri);
-        return mediaScanIntent;
+        activity.sendBroadcast(mediaScanIntent);
+    }
+
+    public static File[] getFile(){
+        String path = "/storage/emulated/0/Pictures/Pegion";
+        File dir = new File(path);
+        File[] files = dir.listFiles();
+        if(files == null) return null;
+        Arrays.sort(files, new Comparator<File>() {
+            @TargetApi(Build.VERSION_CODES.KITKAT)
+            public int compare(File f1, File f2) {
+                return Long.compare(f2.lastModified(), f1.lastModified());
+            }
+        });
+        return files;
     }
 }

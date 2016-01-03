@@ -9,9 +9,6 @@ import java.net.Socket;
 
 public class Unicaster{
     Socket socket =null;
-    Unicaster(){
-
-    }
 
     public void unicast(Image image,String dstAddress){
         try{

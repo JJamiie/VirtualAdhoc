@@ -1,10 +1,12 @@
 package com.example.jjamie.virtualadhoc;
 
-import android.content.Intent;
+import android.app.Activity;
+import android.content.Context;
 import android.net.wifi.WifiManager;
 import android.text.format.Formatter;
 import android.util.Log;
 import android.widget.Toast;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -12,18 +14,24 @@ import java.io.ObjectInputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-public class Listener extends Thread{
+public class Listener extends Thread {
 
     private static final String TAG = "Listener";
     private WifiManager mWifi;
     private static final int PORT = 3333;
-    ServerSocket serverSocket;
-    Broadcaster broadcaster;
-    Listener(WifiManager mWifi,Broadcaster broadcaster) {
-        this.mWifi = mWifi;
-        this.broadcaster = broadcaster;
+    private ServerSocket serverSocket;
+    private Activity activity;
+    private AlbumStorageDirFactory mAlbumStorageDirFactory;
+    private EfficientAdapter adapter;
+
+    public Listener(Activity activity, AlbumStorageDirFactory mAlbumStorageDirFactory,EfficientAdapter adapter) {
+        this.activity = activity;
+        this.mAlbumStorageDirFactory = mAlbumStorageDirFactory;
+        this.mWifi = (WifiManager) activity.getSystemService(Context.WIFI_SERVICE);
+        this.adapter = adapter;
     }
-    public void run(){
+
+    public void run() {
         Socket socket = null;
         try {
 
@@ -31,40 +39,41 @@ public class Listener extends Thread{
             serverSocket = new ServerSocket(PORT);
 
             while (true) {
-                Log.d("Listener", "Waiting...");
+                Log.d(TAG, "Waiting...");
                 socket = serverSocket.accept();
 
                 //Receive file
-                Log.d("Listener","Receiving...");
+                Log.d(TAG, "Receiving...");
 
-                File file = ManageImage.setUpPhotoFile();
+                File file = ManageImage.setUpPhotoFile(activity, mAlbumStorageDirFactory);
                 ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
-                byte[] img = (byte[])objectInputStream.readObject();
-                Image image = new Image(img,img.length);
+                byte[] img = (byte[]) objectInputStream.readObject();
+                Image image = new Image(img, img.length);
                 System.out.println("SenderName: " + image.senderName + " Senquence number: " + image.sequenceNumber + " Size packet:" + image.getImageBytes().length);
 
                 FileOutputStream fileOutputStream = new FileOutputStream(file);
                 fileOutputStream.write(image.getImageBytes());
-                Intent mediaScanintent = ManageImage.galleryAddPic(file.getAbsolutePath());
-                MainActivity.th.sendBroadcast(mediaScanintent);
+                ManageImage.galleryAddPic(file.getAbsolutePath(), activity);
                 socket.close();
 
-                Log.d("Listener", "Finished...");
 
-                if(getIPAddressItSelf().equals("0.0.0.0")){
-                    broadcaster.broadcast(image);
+                Log.d("Listener", "Finished...");
+                if (getIPAddressItSelf().equals("0.0.0.0")) {
+                    Broadcaster.broadcast(image, activity);
                 }
 
                 final String sentMsg = "Received";
-                MainActivity.th.runOnUiThread(new Runnable() {
+                activity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(MainActivity.th, sentMsg, Toast.LENGTH_LONG).show();
+                        adapter.notifyDataSetChanged();
+                        Toast.makeText(activity, sentMsg, Toast.LENGTH_LONG).show();
                     }
                 });
 
+
             }
-        }catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
@@ -80,7 +89,10 @@ public class Listener extends Thread{
             }
         }
     }
-    public String getIPAddressItSelf(){ //if it is hotspot, it will return 0.0.0.0
+
+
+
+    public String getIPAddressItSelf() { //if it is hotspot, it will return 0.0.0.0
         return Formatter.formatIpAddress(mWifi.getConnectionInfo().getIpAddress());
     }
 
