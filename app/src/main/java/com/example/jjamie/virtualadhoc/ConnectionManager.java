@@ -22,6 +22,7 @@ public class ConnectionManager {
                 ApManager.configApState(context,true);
             }
             else {
+                //connect AP
                 connectAP(context);
             }
 
