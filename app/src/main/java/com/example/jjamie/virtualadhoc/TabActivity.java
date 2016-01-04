@@ -1,5 +1,6 @@
 package com.example.jjamie.virtualadhoc;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
@@ -31,6 +32,7 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
     private String mCurrentPhotoPath;
     private Image imageToSent;
     int sequenceNumber;
+    private static Context context;
     public static String senderName;
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -50,6 +52,7 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        TabActivity.context = getApplicationContext();
         setContentView(R.layout.activity_tab);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -243,6 +246,9 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
             }
             return null;
         }
+    }
+    public static Context getAppContext() {
+        return TabActivity.context;
     }
 
 //    public void setDataToSent(String path){
