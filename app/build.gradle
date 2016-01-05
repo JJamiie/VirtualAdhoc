@@ -36,7 +36,8 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.1.0+'
     compile files('libs/metadata-extractor-2.8.1.jar')
     compile files('libs/xmpcore-5.1.2.jar')
-
+    compile files('libs/pixymeta-android.jar')
+    compile files('libs/slf4j-api-1.7.12.jar')
 }
 
 

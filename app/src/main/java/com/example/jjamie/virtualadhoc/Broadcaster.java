@@ -43,6 +43,7 @@ public class Broadcaster{
 
     public static void broadcastToNeighbor(Image image){
         Unicaster unicaster = new Unicaster();
+        if(getNeighborList().size()==0) return;
         for(int i=0; i<getNeighborList().size();i++){
             unicaster.unicast(image, getNeighborList().get(i));
         }

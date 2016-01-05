@@ -12,6 +12,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.drew.imaging.ImageMetadataReader;
+import com.drew.imaging.ImageProcessingException;
+import com.drew.metadata.Directory;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -72,14 +75,36 @@ public class EfficientAdapter extends BaseAdapter {
         }
 
         //Set value each item in list
-        //Set sender name
-        final String senderName = TabActivity.senderName;
+        //load contact and description
+        String contact="";
+        String caption="";
+        try {
+            com.drew.metadata.Metadata metadata = ImageMetadataReader.readMetadata(ManageImage.getFile()[position]);
+            for (Directory directory : metadata.getDirectories()) {
+                for (com.drew.metadata.Tag tag : directory.getTags()) {
+                    if(tag.getTagName().equals("Contact")){
+                        contact = tag.getDescription();
+                    }else if(tag.getTagName().equals("Keywords")){
+                        caption = tag.getDescription();
+                    }
+                }
+            }
+        } catch (ImageProcessingException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //Set sender's name
+        final String senderName = contact;
         holder.title.setText(senderName);
+        //Set description
+        final String description = contact;
+        holder.description.setText(caption);
         //Set picture profile
         Glide.with(mContext).load(R.drawable.profile).bitmapTransform(new CropCircleTransformation(mContext)).into(holder.picture_profile);
         //Set image in list
         final File fileImage = new File(ManageImage.getFile()[position].getPath());
-        Glide.with(mContext).load(fileImage).placeholder(new ColorDrawable(0xFFc5c4c4)).into(holder.picture_show);
+        Glide.with(mContext).load(fileImage).fitCenter().placeholder(new ColorDrawable(0xFFc5c4c4)).into(holder.picture_show);
         //Set description
 
 

@@ -24,7 +24,7 @@ public class Listener extends Thread {
     private AlbumStorageDirFactory mAlbumStorageDirFactory;
     private EfficientAdapter adapter;
 
-    public Listener(Activity activity, AlbumStorageDirFactory mAlbumStorageDirFactory,EfficientAdapter adapter) {
+    public Listener(Activity activity, AlbumStorageDirFactory mAlbumStorageDirFactory, EfficientAdapter adapter) {
         this.activity = activity;
         this.mAlbumStorageDirFactory = mAlbumStorageDirFactory;
         this.mWifi = (WifiManager) activity.getSystemService(Context.WIFI_SERVICE);
@@ -34,10 +34,7 @@ public class Listener extends Thread {
     public void run() {
         Socket socket = null;
         try {
-
-
             serverSocket = new ServerSocket(PORT);
-
             while (true) {
                 Log.d(TAG, "Waiting...");
                 socket = serverSocket.accept();
@@ -45,33 +42,36 @@ public class Listener extends Thread {
                 //Receive file
                 Log.d(TAG, "Receiving...");
 
-                File file = ManageImage.setUpPhotoFile(activity, mAlbumStorageDirFactory);
                 ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
                 byte[] img = (byte[]) objectInputStream.readObject();
                 Image image = new Image(img, img.length);
                 System.out.println("SenderName: " + image.senderName + " Senquence number: " + image.sequenceNumber + " Size packet:" + image.getImageBytes().length);
+                if (!image.senderName.equals(TabActivity.senderName)) {
+                    File file = ManageImage.setUpPhotoFile(activity, mAlbumStorageDirFactory);
+                    FileOutputStream fileOutputStream = new FileOutputStream(file);
+                    fileOutputStream.write(image.getImageBytes());
+                    ManageImage.galleryAddPic(file.getAbsolutePath(), activity);
+                    socket.close();
 
-                FileOutputStream fileOutputStream = new FileOutputStream(file);
-                fileOutputStream.write(image.getImageBytes());
-                ManageImage.galleryAddPic(file.getAbsolutePath(), activity);
-                socket.close();
+
+                    Log.d("Listener", "Finished...");
 
 
-                Log.d("Listener", "Finished...");
-                if (getIPAddressItSelf().equals("0.0.0.0")) {
-                    Broadcaster.broadcast(image, activity);
-                }
+                    final String sentMsg = "Received";
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            adapter.notifyDataSetChanged();
+                            Toast.makeText(activity, sentMsg, Toast.LENGTH_LONG).show();
+                        }
+                    });
 
-                final String sentMsg = "Received";
-                activity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        adapter.notifyDataSetChanged();
-                        Toast.makeText(activity, sentMsg, Toast.LENGTH_LONG).show();
+                    //Sent to other node
+                    if (getIPAddressItSelf().equals("0.0.0.0")) {
+                        Broadcaster.broadcast(image, activity);
                     }
-                });
 
-
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -89,7 +89,6 @@ public class Listener extends Thread {
             }
         }
     }
-
 
 
     public String getIPAddressItSelf() { //if it is hotspot, it will return 0.0.0.0

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.jjamie.virtualadhoc" >
+    package="com.example.jjamie.virtualadhoc">
 
     <uses-feature
         android:name="android.hardware.camera"
@@ -34,7 +34,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <!--<activity android:name=".MainActivity"></activity>-->
+        <!-- <activity android:name=".MainActivity"></activity> -->
         <!--
              ATTENTION: This was auto-generated to add Google Play services to your project for
              App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -46,17 +46,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".TabActivity"
-            android:theme="@style/AppTheme"
-            android:label="">
-        </activity>
+            android:label=""
+            android:theme="@style/AppTheme"></activity>
 
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
-    </application>
 
+        <activity android:name=".CaptionActivity">
+
+        </activity>
+    </application>
 
 </manifest>

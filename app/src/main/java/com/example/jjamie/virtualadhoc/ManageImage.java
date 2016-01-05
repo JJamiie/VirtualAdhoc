@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -16,9 +15,14 @@ import android.widget.ImageView;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.List;
+
+import pixy.meta.iptc.IPTCApplicationTag;
+import pixy.meta.iptc.IPTCDataSet;
 
 
 public class ManageImage {
@@ -26,11 +30,8 @@ public class ManageImage {
     private static final String JPEG_FILE_PREFIX = "IMG_";
     private static final String JPEG_FILE_SUFFIX = ".jpg";
     public static File setUpPhotoFile(Activity activity,AlbumStorageDirFactory mAlbumStorageDirFactory) throws IOException {
-        File f = createImageFile(activity,mAlbumStorageDirFactory);
-        String mString = "Help me plzzzz !!!!!";
-        ExifInterface exif = new ExifInterface(f.getAbsolutePath());
-        exif.setAttribute("UserComment", mString);
-        exif.saveAttributes();
+        File f = createImageFile(activity, mAlbumStorageDirFactory);
+
         return f;
     }
 
@@ -130,4 +131,14 @@ public class ManageImage {
         });
         return files;
     }
+
+    public static List<IPTCDataSet> createIPTCDataSet(String senderName,String description) {
+        List<IPTCDataSet> iptcs = new ArrayList<IPTCDataSet>();
+        System.out.println("sendername===="+ senderName);
+        iptcs.add(new IPTCDataSet(IPTCApplicationTag.CONTACT, senderName));
+        iptcs.add(new IPTCDataSet(IPTCApplicationTag.KEY_WORDS, description));
+        return iptcs;
+    }
+
+
 }

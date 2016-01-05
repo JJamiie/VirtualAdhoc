@@ -17,7 +17,7 @@ import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
 
-public class LoginActivity extends AppCompatActivity implements BlankFragment.OnFragmentInteractionListener {
+public class LoginActivity extends AppCompatActivity  {
     private SharedPreferences sharedPreferences;
     private EditText usernameEditText;
     private CheckBox rememberCheckBox;
@@ -71,10 +71,6 @@ public class LoginActivity extends AppCompatActivity implements BlankFragment.On
         editor.commit();
     }
 
-    @Override
-    public void onFragmentInteraction(Uri uri) {
-
-    }
 
     @Override
     public void onStart() {

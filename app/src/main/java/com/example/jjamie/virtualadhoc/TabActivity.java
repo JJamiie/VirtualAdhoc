@@ -25,12 +25,10 @@ import android.widget.TextView;
 import java.io.File;
 import java.io.IOException;
 
-public class TabActivity extends AppCompatActivity implements NewFeedFragment.OnFragmentInteractionListener,ProfileFragment.OnFragmentInteractionListener{
+public class TabActivity extends AppCompatActivity implements NewFeedFragment.OnFragmentInteractionListener, ProfileFragment.OnFragmentInteractionListener {
     public static final int ACTION_TAKE_PHOTO_B = 1;
     public AlbumStorageDirFactory mAlbumStorageDirFactory;
-    private String mCurrentPhotoPath;
-    private Image imageToSent;
-    int sequenceNumber;
+    public File currentPhoto;
     public static String senderName;
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -85,24 +83,24 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
 
         //set senderName
         Intent intent = getIntent();
-        senderName = intent.getStringExtra("username");
+        String username = intent.getStringExtra("username");
+        if(username != null) {
+            senderName = username;
+        }
 
     }
-
     private void dispatchTakePictureIntent(int actionCode) {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        switch(actionCode) {
+        switch (actionCode) {
             case ACTION_TAKE_PHOTO_B:
-                File f = null;
+                currentPhoto = null;
                 try {
-                    f = ManageImage.setUpPhotoFile(this,mAlbumStorageDirFactory);
-                    mCurrentPhotoPath = f.getAbsolutePath();
-                    Log.d("TabActivity","path: "+mCurrentPhotoPath);
-                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
+                    currentPhoto = ManageImage.setUpPhotoFile(this, mAlbumStorageDirFactory);
+                    Log.d("TabActivity", "path: " + currentPhoto.getAbsolutePath());
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(currentPhoto));
                 } catch (IOException e) {
                     e.printStackTrace();
-                    f = null;
-                    mCurrentPhotoPath = null;
+                    currentPhoto = null;
                 }
                 break;
             default:
@@ -110,14 +108,16 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
         } // switch
         startActivityForResult(takePictureIntent, actionCode);
     }
-    private void handleCameraPhoto() {
-        if (mCurrentPhotoPath != null) {
 
-//            ManageImage.setPic(mCurrentPhotoPath, mImageView);
-            Log.d("Tabactivity","Add picture");
-            ManageImage.galleryAddPic(mCurrentPhotoPath,this);
-//            setDataToSent(mCurrentPhotoPath);
-            mCurrentPhotoPath = null;
+    private void handleCameraPhoto() {
+        if (currentPhoto != null) {
+            Log.d("Tabactivity", "Add picture");
+            ManageImage.galleryAddPic(currentPhoto.getAbsolutePath(), this);
+            Intent intent = new Intent(getApplicationContext(), CaptionActivity.class);
+            intent.putExtra("currentPhotoPath", currentPhoto.getAbsolutePath());
+            intent.putExtra("senderName", senderName);
+            startActivity(intent);
+            currentPhoto = null;
         }
     }
 
@@ -197,6 +197,7 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
             return rootView;
         }
     }
+
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
@@ -212,11 +213,11 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            switch (position){
+            switch (position) {
                 case 0:
-                    return NewFeedFragment.newInstance("","");
+                    return NewFeedFragment.newInstance("", "");
                 case 1:
-                    return ProfileFragment.newInstance("","");
+                    return ProfileFragment.newInstance("", "");
             }
             return PlaceholderFragment.newInstance(position + 1);
         }
@@ -245,25 +246,7 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
         }
     }
 
-//    public void setDataToSent(String path){
-//
-//        File file = new File(path);
-//        int size = (int) file.length();
-//        byte[] img = new byte[size];
-//        try {
-//            BufferedInputStream buf = new BufferedInputStream(new FileInputStream(file));
-//            buf.read(img, 0, img.length);
-//            buf.close();
-//            imageToSent = new Image(senderName, sequenceNumber, img);
-//            sequenceNumber++;
-//        } catch (FileNotFoundException e) {
-//            e.printStackTrace();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        } catch (SenderNameIncorrectLengthException senderName){
-//
-//        }
-//    }
+
 
 
 }
