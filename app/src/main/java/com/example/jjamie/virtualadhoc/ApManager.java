@@ -7,6 +7,7 @@ import java.lang.reflect.*;
  */
 // this class is used to toggle hotspot
 public class ApManager {
+    private static String macAddress;
     //check whether wifi hotspot on or off
     public static boolean isApOn(Context context) {
         WifiManager wifimanager = (WifiManager) context.getSystemService(context.WIFI_SERVICE);
@@ -21,6 +22,7 @@ public class ApManager {
 
     // toggle wifi hotspot on or off
     public static boolean configApState(Context context,boolean tog) {
+        setMacAddress(context);
         WifiManager wifimanager = (WifiManager) context.getSystemService(context.WIFI_SERVICE);
         WifiConfiguration wificonfiguration = null;
         try {
@@ -30,8 +32,10 @@ public class ApManager {
             }*/
             Method method = wifimanager.getClass().getMethod("setWifiApEnabled", WifiConfiguration.class, boolean.class);
             if(tog){
+                System.out.println("check");
                 setHotspotName(context);
                 wifimanager.setWifiEnabled(!tog);
+
                 method.invoke(wifimanager, wificonfiguration, true);
             }
             else {
@@ -46,12 +50,15 @@ public class ApManager {
         }
         return false;
     }
+    public static void setMacAddress(Context context){
+        WifiManager wifiManager = (WifiManager) context.getSystemService(context.WIFI_SERVICE);
+        wifiManager.setWifiEnabled(true);
+        WifiInfo wInfo = wifiManager.getConnectionInfo();
+        macAddress = wInfo.getMacAddress();
+    }
     public static boolean setHotspotName(Context context) {
         try {
             WifiManager wifiManager = (WifiManager) context.getSystemService(context.WIFI_SERVICE);
-
-            WifiInfo wInfo = wifiManager.getConnectionInfo();
-            String macAddress = wInfo.getMacAddress();
 
             Method getConfigMethod = wifiManager.getClass().getMethod("getWifiApConfiguration");
             WifiConfiguration wifiConfig = (WifiConfiguration) getConfigMethod.invoke(wifiManager);
