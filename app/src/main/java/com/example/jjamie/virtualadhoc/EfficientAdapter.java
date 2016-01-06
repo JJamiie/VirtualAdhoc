@@ -10,6 +10,7 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.drew.imaging.ImageMetadataReader;
@@ -67,6 +68,7 @@ public class EfficientAdapter extends BaseAdapter {
             holder.picture_show = (ImageView) convertView.findViewById(R.id.item_picture);
             holder.description = (TextView) convertView.findViewById(R.id.item_listview_description);
             holder.sent = (Button) convertView.findViewById(R.id.sent);
+            holder.show_gps_map = (ImageView) convertView.findViewById(R.id.show_gps_map);
             convertView.setTag(holder); //deposit to tag
         } else {
             //rebind widget
@@ -82,10 +84,15 @@ public class EfficientAdapter extends BaseAdapter {
             com.drew.metadata.Metadata metadata = ImageMetadataReader.readMetadata(ManageImage.getFile()[position]);
             for (Directory directory : metadata.getDirectories()) {
                 for (com.drew.metadata.Tag tag : directory.getTags()) {
+                    System.out.println(tag.toString());
                     if(tag.getTagName().equals("Contact")){
                         contact = tag.getDescription();
                     }else if(tag.getTagName().equals("Keywords")){
                         caption = tag.getDescription();
+                    }else if(tag.getTagName().equals("Sub-location")){
+                        if(!tag.getDescription().equals("")){
+                            holder.show_gps_map.setVisibility(View.VISIBLE);
+                        }
                     }
                 }
             }
@@ -105,7 +112,6 @@ public class EfficientAdapter extends BaseAdapter {
         //Set image in list
         final File fileImage = new File(ManageImage.getFile()[position].getPath());
         Glide.with(mContext).load(fileImage).centerCrop().placeholder(new ColorDrawable(0xFFc5c4c4)).into(holder.picture_show);
-        //Set description
 
 
 
@@ -120,12 +126,27 @@ public class EfficientAdapter extends BaseAdapter {
                     buf.close();
                     Image image = new Image(senderName, sequenceNumber, img);
                     sequenceNumber++;
-                    Broadcaster.broadcast(image, activity);
+                    Broadcaster.broadcast(image);
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(activity, "sent", Toast.LENGTH_LONG).show();
+                        }
+                    });
                 } catch (IOException ex) {
 
                 } catch (SenderNameIncorrectLengthException ex) {
 
                 }
+            }
+        });
+
+        //Set gps button
+        holder.sent.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
+
             }
         });
         return convertView;
@@ -137,6 +158,7 @@ public class EfficientAdapter extends BaseAdapter {
         ImageView picture_show;
         TextView description;
         Button sent;
+        ImageView show_gps_map;
     }
 
 }

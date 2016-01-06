@@ -41,6 +41,16 @@
                     android:scaleType="fitStart"
                     android:src="@drawable/profile" />
 
+                <ImageView
+                    android:id="@+id/show_gps_map"
+                    android:layout_alignParentRight="true"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/gps_button_click"
+                    android:visibility="invisible"
+                    android:clickable="true"
+                    />
+
                 <TextView
                     android:id="@+id/item_listview_name"
                     android:layout_width="fill_parent"

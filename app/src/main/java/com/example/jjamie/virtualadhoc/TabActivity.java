@@ -97,7 +97,6 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
         connectionManager = new ConnectionManager(getApplicationContext(),getActivity());
         connectionManager.start();
 
-
     }
     private void dispatchTakePictureIntent(int actionCode) {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
