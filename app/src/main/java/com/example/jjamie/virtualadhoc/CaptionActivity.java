@@ -1,7 +1,11 @@
 package com.example.jjamie.virtualadhoc;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -37,6 +41,7 @@ public class CaptionActivity extends AppCompatActivity {
      */
     private GoogleApiClient client;
     private Boolean clicked;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,14 +64,20 @@ public class CaptionActivity extends AppCompatActivity {
         gps_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(clicked){
-                    gps_button.setImageResource(R.drawable.gps_button_click);
-                    clicked = false;
-                }else{
-                    gps_button.setImageResource(R.drawable.gps_button);
-                    clicked = true;
+                LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+                if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                    showGPSDisabledAlertToUser();
+                } else {
+                    if (clicked) {
+                        gps_button.setImageResource(R.drawable.gps_button_click);
+                        clicked = false;
+                    } else {
+                        gps_button.setImageResource(R.drawable.gps_button);
+                        clicked = true;
+                    }
                 }
             }
+
         });
 
         Intent intent = getIntent();
@@ -78,6 +89,28 @@ public class CaptionActivity extends AppCompatActivity {
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
+    }
+
+    private void showGPSDisabledAlertToUser() {
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder.setMessage("GPS is disabled in your device. Would you like to enable it?")
+                .setCancelable(false)
+                .setPositiveButton("Yes",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                Intent callGPSSettingIntent = new Intent(
+                                        android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                                startActivity(callGPSSettingIntent);
+                            }
+                        });
+        alertDialogBuilder.setNegativeButton("Cancel",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+        AlertDialog alert = alertDialogBuilder.create();
+        alert.show();
     }
 
     private void addMessageToPicture() {
