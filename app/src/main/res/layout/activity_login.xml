@@ -35,6 +35,7 @@
             android:backgroundTint="#FFFFFF"
             android:textCursorDrawable="@drawable/cursor_color"
             android:paddingLeft="12dp"
+            android:singleLine="true"
             android:paddingRight="12dp"/>
 
         <Button

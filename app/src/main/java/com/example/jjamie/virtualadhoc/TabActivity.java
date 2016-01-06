@@ -28,6 +28,7 @@ import java.io.IOException;
 
 public class TabActivity extends AppCompatActivity implements NewFeedFragment.OnFragmentInteractionListener, ProfileFragment.OnFragmentInteractionListener {
     public static final int ACTION_TAKE_PHOTO_B = 1;
+    private static Context context;
     public AlbumStorageDirFactory mAlbumStorageDirFactory;
     public File currentPhoto;
 
@@ -91,6 +92,7 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
             senderName = username;
         }
 
+
     }
     private void dispatchTakePictureIntent(int actionCode) {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -114,12 +116,15 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
 
     private void handleCameraPhoto() {
         if (currentPhoto != null) {
-            Log.d("Tabactivity", "Add picture");
-            ManageImage.galleryAddPic(currentPhoto.getAbsolutePath(), this);
+            finish(); // finish this activity
+            //Start Caption Activity
             Intent intent = new Intent(getApplicationContext(), CaptionActivity.class);
             intent.putExtra("currentPhotoPath", currentPhoto.getAbsolutePath());
             intent.putExtra("senderName", senderName);
             startActivity(intent);
+
+            Log.d("Tabactivity", "Add picture");
+            ManageImage.galleryAddPic(currentPhoto.getAbsolutePath(), this);
             currentPhoto = null;
         }
     }
@@ -250,6 +255,11 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
     }
     public static Context getAppContext() {
         return TabActivity.context;
+    }
+
+    @Override
+    public void onBackPressed() {
+        // your code.
     }
 
 

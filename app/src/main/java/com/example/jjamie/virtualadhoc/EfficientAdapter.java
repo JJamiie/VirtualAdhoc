@@ -104,7 +104,7 @@ public class EfficientAdapter extends BaseAdapter {
         Glide.with(mContext).load(R.drawable.profile).bitmapTransform(new CropCircleTransformation(mContext)).into(holder.picture_profile);
         //Set image in list
         final File fileImage = new File(ManageImage.getFile()[position].getPath());
-        Glide.with(mContext).load(fileImage).fitCenter().placeholder(new ColorDrawable(0xFFc5c4c4)).into(holder.picture_show);
+        Glide.with(mContext).load(fileImage).centerCrop().placeholder(new ColorDrawable(0xFFc5c4c4)).into(holder.picture_show);
         //Set description
 
 

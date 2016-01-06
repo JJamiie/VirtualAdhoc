@@ -31,7 +31,6 @@ public class CaptionActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_caption);
-
         currentPhotoImageView = (ImageView) findViewById(R.id.imageForCaption);
         messageEditText = (EditText) findViewById(R.id.captionEditText);
         editMessageButton = (Button) findViewById(R.id.edit_message);
@@ -39,6 +38,7 @@ public class CaptionActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 addMessageToPicture();
+                finish();
                 Intent intent = new Intent(getApplicationContext(),TabActivity.class);
                 startActivity(intent);
             }
@@ -54,6 +54,7 @@ public class CaptionActivity extends AppCompatActivity {
 
     private void addMessageToPicture() {
         try {
+            Glide.get(getApplicationContext()).clearMemory();
             FileInputStream fin = new FileInputStream(currentPhoto.getAbsolutePath());
             FileOutputStream fout = new FileOutputStream("/storage/emulated/0/Pictures/Pegion/" + currentPhoto.getName() + "_0.jpg");
             String message = messageEditText.getText().toString();

@@ -67,10 +67,11 @@
         <ImageView
             android:id="@+id/imageForCaption"
             android:layout_width="match_parent"
-            android:layout_height="350dp"
+            android:layout_height="380dp"
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="15dp"
-            android:background="#e1e0e0" />
+            android:background="#e1e0e0"
+            android:scaleType="centerCrop"/>
 
         <EditText
             android:id="@+id/captionEditText"

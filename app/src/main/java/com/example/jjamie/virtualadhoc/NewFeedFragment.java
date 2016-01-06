@@ -87,8 +87,10 @@ public class NewFeedFragment extends Fragment {
         adapter = new EfficientAdapter(getActivity());
         listview.setAdapter(adapter);
         //Listener start
-        listener = new Listener(getActivity(),mAlbumStorageDirFactory,adapter);
-        listener.start();
+        if(listener == null) {
+            listener = new Listener(getActivity(), mAlbumStorageDirFactory, adapter);
+            listener.start();
+        }
         return v;
     }
 

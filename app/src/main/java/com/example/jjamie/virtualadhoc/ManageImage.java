@@ -134,7 +134,6 @@ public class ManageImage {
 
     public static List<IPTCDataSet> createIPTCDataSet(String senderName,String description) {
         List<IPTCDataSet> iptcs = new ArrayList<IPTCDataSet>();
-        System.out.println("sendername===="+ senderName);
         iptcs.add(new IPTCDataSet(IPTCApplicationTag.CONTACT, senderName));
         iptcs.add(new IPTCDataSet(IPTCApplicationTag.KEY_WORDS, description));
         return iptcs;
