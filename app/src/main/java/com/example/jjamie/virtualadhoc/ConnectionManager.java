@@ -1,17 +1,18 @@
 package com.example.jjamie.virtualadhoc;
 
+import android.app.Activity;
 import android.content.Context;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.support.annotation.NonNull;
 import android.util.Log;
-
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -29,28 +30,30 @@ public class ConnectionManager extends Thread {
     static boolean scannerStatus =true;
     static File[] imgFile;
     static Context contexts ;
+    Activity activity;
     public ConnectionManager(Context context){
         contexts = context;
     }
     public void run(){
-        availableAP = new List<String>() {
+        enableWifi(contexts);
+        results = new List<ScanResult>() {
             @Override
-            public void add(int location, String object) {
+            public void add(int location, ScanResult object) {
 
             }
 
             @Override
-            public boolean add(String object) {
+            public boolean add(ScanResult object) {
                 return false;
             }
 
             @Override
-            public boolean addAll(int location, Collection<? extends String> collection) {
+            public boolean addAll(int location, Collection<? extends ScanResult> collection) {
                 return false;
             }
 
             @Override
-            public boolean addAll(Collection<? extends String> collection) {
+            public boolean addAll(Collection<? extends ScanResult> collection) {
                 return false;
             }
 
@@ -70,7 +73,7 @@ public class ConnectionManager extends Thread {
             }
 
             @Override
-            public String get(int location) {
+            public ScanResult get(int location) {
                 return null;
             }
 
@@ -86,7 +89,7 @@ public class ConnectionManager extends Thread {
 
             @NonNull
             @Override
-            public Iterator<String> iterator() {
+            public Iterator<ScanResult> iterator() {
                 return null;
             }
 
@@ -96,18 +99,18 @@ public class ConnectionManager extends Thread {
             }
 
             @Override
-            public ListIterator<String> listIterator() {
+            public ListIterator<ScanResult> listIterator() {
                 return null;
             }
 
             @NonNull
             @Override
-            public ListIterator<String> listIterator(int location) {
+            public ListIterator<ScanResult> listIterator(int location) {
                 return null;
             }
 
             @Override
-            public String remove(int location) {
+            public ScanResult remove(int location) {
                 return null;
             }
 
@@ -127,7 +130,7 @@ public class ConnectionManager extends Thread {
             }
 
             @Override
-            public String set(int location, String object) {
+            public ScanResult set(int location, ScanResult object) {
                 return null;
             }
 
@@ -138,7 +141,7 @@ public class ConnectionManager extends Thread {
 
             @NonNull
             @Override
-            public List<String> subList(int start, int end) {
+            public List<ScanResult> subList(int start, int end) {
                 return null;
             }
 
@@ -154,11 +157,15 @@ public class ConnectionManager extends Thread {
                 return null;
             }
         };
+        availableAP = new ArrayList<>();
         while(true) {
-          listAP(contexts);
+            enableWifi(contexts);
+            listAP(contexts);
             String r = availableAP.size()+"";
-           // Log.d("ConnectionManager",r);
+             //Log.d("ConnectionManager",r);
             if (availableAP.size() <= 0) {
+                System.out.println("sleep-1 ");
+                /*
                 System.out.println("eieieiei");
                 //Noone around here use this App so turn on AP.
                 ApManager.configApState(contexts, true);
@@ -168,13 +175,17 @@ public class ConnectionManager extends Thread {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+                */
             } else {
+                System.out.println("sleep0 ");
                 //connect AP
                 //apHistory.put(availableAP.get(0),3);////////////////////////////////////////////////////////////////////////////
-                while(availableAP.size()<=0){
-                    connectAP(TabActivity.getAppContext());
-                    imgFile=ManageImage.getFile();
+                while(availableAP.size()>=0){
+                    System.out.println("sleep1 ");
+                    connectAP(contexts);
 
+                    imgFile=ManageImage.getFile();
+                    System.out.println("Fiel lenght"+imgFile.length);
                     for (int i=0;i<imgFile.length;i++){
                         try {
                             byte[] img = new byte[(int) imgFile[i].length()];
@@ -182,7 +193,7 @@ public class ConnectionManager extends Thread {
                             buf.read(img, 0, img.length);
                             buf.close();
                             Image image = new Image(TabActivity.senderName,1,img);
-                            Broadcaster.broadcast(image,TabActivity.getActivity());
+                            Broadcaster.broadcast(image);
                         } catch (SenderNameIncorrectLengthException e) {
                             e.printStackTrace();
                         } catch (FileNotFoundException e) {
@@ -193,6 +204,7 @@ public class ConnectionManager extends Thread {
 
                     }
                     try {
+                        System.out.println("get it ");
                         Thread.sleep(15000);// change ? Dynamic?
                     } catch (InterruptedException e) {
                         e.printStackTrace();
@@ -210,7 +222,13 @@ public class ConnectionManager extends Thread {
         conf.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP40);
         return true;
     }
+    public static boolean enableWifi(Context context){
+        ApManager.configApState(contexts, false);
+        WifiManager wifiManager = (WifiManager) context.getSystemService(context.WIFI_SERVICE);
+        wifiManager.setWifiEnabled(true);
+        return true;
 
+    }
     public static boolean listAP(Context context){
 
         String SSID= null;
@@ -221,11 +239,16 @@ public class ConnectionManager extends Thread {
         results = wifiManager.getScanResults();
         size =results.size();
         int tsize = size-1;
+        //System.out.println("tsize"+tsize);
         availableAP.clear();
         for (int i=0; i<=tsize;i++){
+            Log.d("ConnectionManager",results.get(i).SSID);
             tokens = results.get(i).SSID.split(":");
             if(tokens[0].equals("ViR")){
+
                 availableAP.add(results.get(i).SSID);
+
+                System.out.println("AvailableAP"+availableAP.size());
             }
         }
         //////////////////////////////////////////////////delete ap from history
@@ -253,4 +276,3 @@ public class ConnectionManager extends Thread {
     }
 
 }
-
