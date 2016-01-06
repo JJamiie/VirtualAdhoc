@@ -10,28 +10,27 @@ import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 
-public class Broadcaster{
+public class Broadcaster {
 
     private static final String TAG = "Broadcast";
     public static int PORT = 3333;
 
-    public static void broadcast(Image image){
+    public static void broadcast(Image image) {
         broadcastToNeighbor(image);
     }
 
 
-
-    public static void broadcastToNeighbor(Image image){
+    public static void broadcastToNeighbor(Image image) {
         Unicaster unicaster = new Unicaster();
-        if(getNeighborList().size()==0) return;
-        for(int i=0; i<getNeighborList().size();i++){
+        if (getNeighborList().size() == 0) return;
+        for (int i = 0; i < getNeighborList().size(); i++) {
             unicaster.unicast(image, getNeighborList().get(i));
         }
     }
 
     public static ArrayList<String> getNeighborList() {
         ArrayList<String> clientList = new ArrayList<String>();
-        int macCount =0;
+        int macCount = 0;
         BufferedReader br = null;
         try {
             br = new BufferedReader(new FileReader("/proc/net/arp"));
@@ -39,7 +38,7 @@ public class Broadcaster{
             System.out.println("-----------Neighbor list----------");
             while ((line = br.readLine()) != null) {
                 String[] splitted = line.split(" +");
-                if (splitted != null ) {
+                if (splitted != null) {
                     // Basic sanity check
                     String mac = splitted[3];
                     if (mac.matches("..:..:..:..:..:..")) {
@@ -50,7 +49,7 @@ public class Broadcaster{
 
                 }
             }
-        } catch(Exception e) {
+        } catch (Exception e) {
 
         }
         return clientList;
@@ -66,15 +65,15 @@ public class Broadcaster{
     public String getWifiApIpAddress() {
         try {
             for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en
-                    .hasMoreElements();) {
+                    .hasMoreElements(); ) {
                 NetworkInterface intf = en.nextElement();
                 if (intf.getName().contains("wlan")) {
                     for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr
-                            .hasMoreElements();) {
+                            .hasMoreElements(); ) {
                         InetAddress inetAddress = enumIpAddr.nextElement();
                         if (!inetAddress.isLoopbackAddress()
                                 && (inetAddress.getAddress().length == 4)) {
-                            System.out.println("WifiApIpAddress: "+inetAddress.getHostAddress());
+                            System.out.println("WifiApIpAddress: " + inetAddress.getHostAddress());
                             return inetAddress.getHostAddress();
                         }
                     }
