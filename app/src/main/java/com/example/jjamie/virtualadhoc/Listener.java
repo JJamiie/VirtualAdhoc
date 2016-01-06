@@ -68,7 +68,7 @@ public class Listener extends Thread {
 
                     //Sent to other node
                     if (getIPAddressItSelf().equals("0.0.0.0")) {
-                        Broadcaster.broadcast(image, activity);
+                        Broadcaster.broadcast(image);
                     }
 
                 }

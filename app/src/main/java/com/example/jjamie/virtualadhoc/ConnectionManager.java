@@ -186,23 +186,23 @@ public class ConnectionManager extends Thread {
 
                     imgFile=ManageImage.getFile();
                     System.out.println("Fiel lenght"+imgFile.length);
-//                    for (int i=0;i<imgFile.length;i++){
-//                        try {
-//                            byte[] img = new byte[(int) imgFile[i].length()];
-//                            BufferedInputStream buf = new BufferedInputStream(new FileInputStream(imgFile[i]));
-//                            buf.read(img, 0, img.length);
-//                            buf.close();
-//                            Image image = new Image(TabActivity.senderName,1,img);
-//                            Broadcaster.broadcast(image,activity);
-//                        } catch (SenderNameIncorrectLengthException e) {
-//                            e.printStackTrace();
-//                        } catch (FileNotFoundException e) {
-//                            e.printStackTrace();
-//                        } catch (IOException e) {
-//                            e.printStackTrace();
-//                        }
-//
-//                    }
+                    for (int i=0;i<imgFile.length;i++){
+                        try {
+                            byte[] img = new byte[(int) imgFile[i].length()];
+                            BufferedInputStream buf = new BufferedInputStream(new FileInputStream(imgFile[i]));
+                            buf.read(img, 0, img.length);
+                            buf.close();
+                            Image image = new Image(TabActivity.senderName,1,img);
+                            Broadcaster.broadcast(image);
+                        } catch (SenderNameIncorrectLengthException e) {
+                            e.printStackTrace();
+                        } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
                     try {
                         System.out.println("get it ");
                         Thread.sleep(15000);// change ? Dynamic?
