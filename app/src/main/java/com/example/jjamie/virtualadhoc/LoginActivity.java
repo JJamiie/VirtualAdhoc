@@ -47,6 +47,7 @@ public class LoginActivity extends AppCompatActivity  {
                         }
                     });
                 }else {
+                    finish();
                     Intent intent = new Intent(getApplicationContext(), TabActivity.class);
                     intent.putExtra("username", usernameEditText.getText().toString());
                     startActivity(intent);
