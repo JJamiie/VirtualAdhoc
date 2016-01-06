@@ -1,13 +1,18 @@
 package com.example.jjamie.virtualadhoc;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.ColorDrawable;
+import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -23,6 +28,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.List;
 
 import pixy.meta.Metadata;
 
@@ -41,6 +47,7 @@ public class CaptionActivity extends AppCompatActivity {
      */
     private GoogleApiClient client;
     private Boolean clicked;
+    private String gpsLatLon;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,9 +76,11 @@ public class CaptionActivity extends AppCompatActivity {
                     showGPSDisabledAlertToUser();
                 } else {
                     if (clicked) {
+                        setLatAndLon(locationManager);
                         gps_button.setImageResource(R.drawable.gps_button_click);
                         clicked = false;
                     } else {
+                        gpsLatLon = "";
                         gps_button.setImageResource(R.drawable.gps_button);
                         clicked = true;
                     }
@@ -89,6 +98,45 @@ public class CaptionActivity extends AppCompatActivity {
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
+    }
+
+    private void setLatAndLon(LocationManager locationManager) {
+        String location_context = Context.LOCATION_SERVICE;
+        locationManager = (LocationManager) getApplicationContext().getSystemService(location_context);
+        List<String> providers = locationManager.getProviders(true);
+        for (String provider : providers) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return;
+            }
+            locationManager.requestLocationUpdates(provider, 1000, 0,
+                    new LocationListener() {
+
+                        public void onLocationChanged(Location location) {
+                        }
+
+                        public void onProviderDisabled(String provider) {
+                        }
+
+                        public void onProviderEnabled(String provider) {
+                        }
+
+                        public void onStatusChanged(String provider, int status,
+                                                    Bundle extras) {
+                        }
+                    });
+            Location location = locationManager.getLastKnownLocation(provider);
+            if (location != null) {
+                gpsLatLon = "Latitude: "+location.getLatitude()+" Longtitude: "+location.getLongitude();
+            }else{
+            }
+        }
     }
 
     private void showGPSDisabledAlertToUser() {
@@ -119,7 +167,8 @@ public class CaptionActivity extends AppCompatActivity {
             FileInputStream fin = new FileInputStream(currentPhoto.getAbsolutePath());
             FileOutputStream fout = new FileOutputStream("/storage/emulated/0/Pictures/Pegion/" + currentPhoto.getName() + "_0.jpg");
             String message = messageEditText.getText().toString();
-            Metadata.insertIPTC(fin, fout, ManageImage.createIPTCDataSet(senderName, message), true);
+
+            Metadata.insertIPTC(fin, fout, ManageImage.createIPTCDataSet(senderName, message,gpsLatLon), true);
             fin.close();
             fout.close();
             currentPhoto.delete();
@@ -168,4 +217,5 @@ public class CaptionActivity extends AppCompatActivity {
         AppIndex.AppIndexApi.end(client, viewAction);
         client.disconnect();
     }
+
 }

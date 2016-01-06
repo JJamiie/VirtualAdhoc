@@ -132,10 +132,11 @@ public class ManageImage {
         return files;
     }
 
-    public static List<IPTCDataSet> createIPTCDataSet(String senderName,String description) {
+    public static List<IPTCDataSet> createIPTCDataSet(String senderName,String description,String gps) {
         List<IPTCDataSet> iptcs = new ArrayList<IPTCDataSet>();
         iptcs.add(new IPTCDataSet(IPTCApplicationTag.CONTACT, senderName));
         iptcs.add(new IPTCDataSet(IPTCApplicationTag.KEY_WORDS, description));
+        iptcs.add(new IPTCDataSet(IPTCApplicationTag.SUB_LOCATION, gps));
         return iptcs;
     }
 
