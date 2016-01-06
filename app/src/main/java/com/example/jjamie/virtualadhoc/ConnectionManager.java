@@ -156,9 +156,9 @@ public class ConnectionManager extends Thread {
         };
         while(true) {
           listAP(contexts);
-            String r = results.size()+"";
-            Log.d("ConnectionManager",r);
-            if (results.size() <= 0) {
+            String r = availableAP.size()+"";
+           // Log.d("ConnectionManager",r);
+            if (availableAP.size() <= 0) {
                 System.out.println("eieieiei");
                 //Noone around here use this App so turn on AP.
                 ApManager.configApState(contexts, true);
@@ -171,7 +171,7 @@ public class ConnectionManager extends Thread {
             } else {
                 //connect AP
                 //apHistory.put(availableAP.get(0),3);////////////////////////////////////////////////////////////////////////////
-                while(results.size()<=0){
+                while(availableAP.size()<=0){
                     connectAP(TabActivity.getAppContext());
                     imgFile=ManageImage.getFile();
 
