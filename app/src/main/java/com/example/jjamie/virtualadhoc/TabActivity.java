@@ -54,8 +54,8 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
         super.onCreate(savedInstanceState);
         TabActivity.context = getApplicationContext();
 
-        connectionManager = new ConnectionManager();
-//        connectionManager.start();
+        connectionManager = new ConnectionManager(TabActivity.this);
+        connectionManager.start();
         setContentView(R.layout.activity_tab);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);

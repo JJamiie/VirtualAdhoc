@@ -4,35 +4,167 @@ import android.content.Context;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
+import android.support.annotation.NonNull;
+import android.util.Log;
 
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 
 /**
  * Created by Administrator on 16/12/2558.
  */
 public class ConnectionManager extends Thread {
-    static List<ScanResult> results;
+    private static List<ScanResult> results;
     static int size = 0;
     static List<String> availableAP;
     static Map<String,Integer> apHistory;
     static boolean scannerStatus =true;
     static File[] imgFile;
+    static Context contexts ;
+    public ConnectionManager(Context context){
+        contexts = context;
+    }
     public void run(){
+        availableAP = new List<String>() {
+            @Override
+            public void add(int location, String object) {
 
+            }
+
+            @Override
+            public boolean add(String object) {
+                return false;
+            }
+
+            @Override
+            public boolean addAll(int location, Collection<? extends String> collection) {
+                return false;
+            }
+
+            @Override
+            public boolean addAll(Collection<? extends String> collection) {
+                return false;
+            }
+
+            @Override
+            public void clear() {
+
+            }
+
+            @Override
+            public boolean contains(Object object) {
+                return false;
+            }
+
+            @Override
+            public boolean containsAll(Collection<?> collection) {
+                return false;
+            }
+
+            @Override
+            public String get(int location) {
+                return null;
+            }
+
+            @Override
+            public int indexOf(Object object) {
+                return 0;
+            }
+
+            @Override
+            public boolean isEmpty() {
+                return false;
+            }
+
+            @NonNull
+            @Override
+            public Iterator<String> iterator() {
+                return null;
+            }
+
+            @Override
+            public int lastIndexOf(Object object) {
+                return 0;
+            }
+
+            @Override
+            public ListIterator<String> listIterator() {
+                return null;
+            }
+
+            @NonNull
+            @Override
+            public ListIterator<String> listIterator(int location) {
+                return null;
+            }
+
+            @Override
+            public String remove(int location) {
+                return null;
+            }
+
+            @Override
+            public boolean remove(Object object) {
+                return false;
+            }
+
+            @Override
+            public boolean removeAll(Collection<?> collection) {
+                return false;
+            }
+
+            @Override
+            public boolean retainAll(Collection<?> collection) {
+                return false;
+            }
+
+            @Override
+            public String set(int location, String object) {
+                return null;
+            }
+
+            @Override
+            public int size() {
+                return 0;
+            }
+
+            @NonNull
+            @Override
+            public List<String> subList(int start, int end) {
+                return null;
+            }
+
+            @NonNull
+            @Override
+            public Object[] toArray() {
+                return new Object[0];
+            }
+
+            @NonNull
+            @Override
+            public <T> T[] toArray(T[] array) {
+                return null;
+            }
+        };
         while(true) {
-            listAP(TabActivity.getAppContext());
+          listAP(contexts);
+            String r = results.size()+"";
+            Log.d("ConnectionManager",r);
             if (results.size() <= 0) {
+                System.out.println("eieieiei");
                 //Noone around here use this App so turn on AP.
-                ApManager.configApState(TabActivity.getAppContext(), true);
+                ApManager.configApState(contexts, true);
                 try {
                     Thread.sleep(180000);
-                    ApManager.configApState(TabActivity.getAppContext(), false);
+                    ApManager.configApState(contexts, false);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -80,9 +212,11 @@ public class ConnectionManager extends Thread {
     }
 
     public static boolean listAP(Context context){
+
         String SSID= null;
         String[] tokens = null;
         WifiManager wifiManager = (WifiManager) context.getSystemService(context.WIFI_SERVICE);
+        wifiManager.setWifiEnabled(true);
         wifiManager.startScan();
         results = wifiManager.getScanResults();
         size =results.size();
