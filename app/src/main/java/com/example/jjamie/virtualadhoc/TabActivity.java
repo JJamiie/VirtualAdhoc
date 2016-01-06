@@ -96,7 +96,6 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
             senderName = username;
         }
 
-
     }
     private void dispatchTakePictureIntent(int actionCode) {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);

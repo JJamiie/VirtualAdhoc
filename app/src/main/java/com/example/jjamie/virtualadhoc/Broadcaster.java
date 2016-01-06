@@ -1,8 +1,7 @@
 package com.example.jjamie.virtualadhoc;
 
-import android.app.Activity;
 import android.util.Log;
-import android.widget.Toast;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.net.InetAddress;
@@ -16,27 +15,8 @@ public class Broadcaster{
     private static final String TAG = "Broadcast";
     public static int PORT = 3333;
 
-    public static void broadcast(Image image, final Activity activity){
-        if(image == null){
-            Log.d("Broadcast","No picture to broadcast");
-            final String sentMsg = "Please take a picture before broadcast.";
-            activity.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Toast.makeText(activity, sentMsg, Toast.LENGTH_LONG).show();
-                }
-            });
-            return;
-        }
-
+    public static void broadcast(Image image){
         broadcastToNeighbor(image);
-
-        activity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(activity, "sent", Toast.LENGTH_LONG).show();
-            }
-        });
     }
 
 

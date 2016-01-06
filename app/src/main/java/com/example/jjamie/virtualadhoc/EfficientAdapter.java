@@ -10,6 +10,7 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.drew.imaging.ImageMetadataReader;
@@ -125,7 +126,13 @@ public class EfficientAdapter extends BaseAdapter {
                     buf.close();
                     Image image = new Image(senderName, sequenceNumber, img);
                     sequenceNumber++;
-                    Broadcaster.broadcast(image, activity);
+                    Broadcaster.broadcast(image);
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(activity, "sent", Toast.LENGTH_LONG).show();
+                        }
+                    });
                 } catch (IOException ex) {
 
                 } catch (SenderNameIncorrectLengthException ex) {
