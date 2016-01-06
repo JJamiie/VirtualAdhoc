@@ -130,6 +130,7 @@ public class EfficientAdapter extends BaseAdapter {
         });
         return convertView;
     }
+
     public class ViewHolder {
         TextView title;
         ImageView picture_profile;
@@ -137,5 +138,6 @@ public class EfficientAdapter extends BaseAdapter {
         TextView description;
         Button sent;
     }
+
 }
 
