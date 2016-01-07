@@ -53,6 +53,7 @@ public class CaptionActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_caption);
+        gpsLatLon="";
         currentPhotoImageView = (ImageView) findViewById(R.id.imageForCaption);
         messageEditText = (EditText) findViewById(R.id.captionEditText);
         editMessageButton = (Button) findViewById(R.id.edit_message);
@@ -62,8 +63,8 @@ public class CaptionActivity extends AppCompatActivity {
             public void onClick(View v) {
                 addMessageToPicture();
                 finish();
-                Intent intent = new Intent(getApplicationContext(), TabActivity.class);
-                startActivity(intent);
+//                Intent intent = new Intent(getApplicationContext(), TabActivity.class);
+//                startActivity(intent);
             }
         });
 
@@ -135,6 +136,7 @@ public class CaptionActivity extends AppCompatActivity {
             if (location != null) {
                 gpsLatLon = "Latitude: "+location.getLatitude()+" Longtitude: "+location.getLongitude();
             }else{
+                gpsLatLon="";
             }
         }
     }
@@ -167,7 +169,6 @@ public class CaptionActivity extends AppCompatActivity {
             FileInputStream fin = new FileInputStream(currentPhoto.getAbsolutePath());
             FileOutputStream fout = new FileOutputStream("/storage/emulated/0/Pictures/Pegion/" + currentPhoto.getName() + "_0.jpg");
             String message = messageEditText.getText().toString();
-
             Metadata.insertIPTC(fin, fout, ManageImage.createIPTCDataSet(senderName, message,gpsLatLon), true);
             fin.close();
             fout.close();

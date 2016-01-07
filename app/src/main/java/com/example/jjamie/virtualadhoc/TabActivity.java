@@ -94,8 +94,8 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
         if(username != null) {
             senderName = username;
         }
-        connectionManager = new ConnectionManager(getApplicationContext());
-        connectionManager.start();
+       //connectionManager = new ConnectionManager(getApplicationContext());
+       // connectionManager.start();
 
     }
     private void dispatchTakePictureIntent(int actionCode) {
@@ -120,7 +120,7 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
 
     private void handleCameraPhoto() {
         if (currentPhoto != null) {
-            finish(); // finish this activity
+//            finish(); // finish this activity
             //Start Caption Activity
             Intent intent = new Intent(getApplicationContext(), CaptionActivity.class);
             intent.putExtra("currentPhotoPath", currentPhoto.getAbsolutePath());
