@@ -53,8 +53,6 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         TabActivity.context = getApplicationContext();
-
-
         setContentView(R.layout.activity_tab);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -94,8 +92,8 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
         if(username != null) {
             senderName = username;
         }
-        connectionManager = new ConnectionManager(getApplicationContext());
-        connectionManager.start();
+//        connectionManager = new ConnectionManager(getApplicationContext());
+//        connectionManager.start();
 
     }
     private void dispatchTakePictureIntent(int actionCode) {
@@ -120,7 +118,7 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
 
     private void handleCameraPhoto() {
         if (currentPhoto != null) {
-            finish(); // finish this activity
+//            finish(); // finish this activity
             //Start Caption Activity
             Intent intent = new Intent(getApplicationContext(), CaptionActivity.class);
             intent.putExtra("currentPhotoPath", currentPhoto.getAbsolutePath());
@@ -264,7 +262,7 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
     @Override
     public void onBackPressed() {
         // your code.
-        finish();
+//        finish();
     }
 
     public static Activity getActivity(){return  TabActivity.getActivity();}

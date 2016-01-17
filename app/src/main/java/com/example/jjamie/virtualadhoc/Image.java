@@ -7,10 +7,8 @@ import java.nio.charset.Charset;
 
 
 public class Image {
-    public static final int BUFFER_SIZE = 63000;
     public static final int SENDER_NAME_LENGTH = 50;
 //    public static final int TOTAL_LENGTH = SENDER_NAME_LENGTH + 4 + Image.BUFFER_SIZE;
-    public static final int TOTAL_LENGTH = 64000;
 
     public String senderName;
     public int sequenceNumber;

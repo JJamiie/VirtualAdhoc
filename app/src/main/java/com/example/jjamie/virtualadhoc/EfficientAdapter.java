@@ -84,7 +84,7 @@ public class EfficientAdapter extends BaseAdapter {
             com.drew.metadata.Metadata metadata = ImageMetadataReader.readMetadata(ManageImage.getFile()[position]);
             for (Directory directory : metadata.getDirectories()) {
                 for (com.drew.metadata.Tag tag : directory.getTags()) {
-                    System.out.println(tag.toString());
+                    //System.out.println(tag.toString());
                     if(tag.getTagName().equals("Contact")){
                         contact = tag.getDescription();
                     }else if(tag.getTagName().equals("Keywords")){
@@ -127,6 +127,7 @@ public class EfficientAdapter extends BaseAdapter {
                     Image image = new Image(senderName, sequenceNumber, img);
                     sequenceNumber++;
                     Broadcaster.broadcast(image);
+
                     activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -142,7 +143,7 @@ public class EfficientAdapter extends BaseAdapter {
         });
 
         //Set gps button
-        holder.sent.setOnClickListener(new View.OnClickListener(){
+        holder.show_gps_map.setOnClickListener(new View.OnClickListener(){
 
             @Override
             public void onClick(View v) {

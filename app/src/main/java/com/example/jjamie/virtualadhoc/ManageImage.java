@@ -12,7 +12,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -31,7 +33,6 @@ public class ManageImage {
     private static final String JPEG_FILE_SUFFIX = ".jpg";
     public static File setUpPhotoFile(Activity activity,AlbumStorageDirFactory mAlbumStorageDirFactory) throws IOException {
         File f = createImageFile(activity, mAlbumStorageDirFactory);
-
         return f;
     }
 
@@ -138,6 +139,22 @@ public class ManageImage {
         iptcs.add(new IPTCDataSet(IPTCApplicationTag.KEY_WORDS, description));
         iptcs.add(new IPTCDataSet(IPTCApplicationTag.SUB_LOCATION, gps));
         return iptcs;
+    }
+
+    public static Image changeFileToImage(File file) {
+        byte[] img = new byte[(int) file.length()];
+        try {
+            BufferedInputStream buf = new BufferedInputStream(new FileInputStream(file));
+            buf.read(img, 0, img.length);
+            buf.close();
+            Image image = new Image(TabActivity.senderName, 1, img);
+            return image;
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (SenderNameIncorrectLengthException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 

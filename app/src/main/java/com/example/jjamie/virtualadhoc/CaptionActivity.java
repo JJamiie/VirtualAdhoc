@@ -61,9 +61,9 @@ public class CaptionActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 addMessageToPicture();
-                finish();
-                Intent intent = new Intent(getApplicationContext(), TabActivity.class);
-                startActivity(intent);
+//                finish();
+//                Intent intent = new Intent(getApplicationContext(), TabActivity.class);
+//                startActivity(intent);
             }
         });
 
