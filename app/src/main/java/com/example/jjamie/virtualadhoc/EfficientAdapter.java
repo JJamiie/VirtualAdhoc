@@ -31,11 +31,13 @@ public class EfficientAdapter extends BaseAdapter {
     public Context mContext;
     public LayoutInflater mInflater;
     public Activity activity;
+    public static EfficientAdapter adapter;
 
     public EfficientAdapter(Activity activity) {
         this.mContext = activity.getApplicationContext();
         this.activity = activity;
         mInflater = LayoutInflater.from(mContext);
+        adapter = this;
     }
 
     @Override
@@ -58,6 +60,7 @@ public class EfficientAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+
         ViewHolder holder = null;
         if (convertView == null) {
             //load layout
@@ -84,7 +87,6 @@ public class EfficientAdapter extends BaseAdapter {
             com.drew.metadata.Metadata metadata = ImageMetadataReader.readMetadata(ManageImage.getFile()[position]);
             for (Directory directory : metadata.getDirectories()) {
                 for (com.drew.metadata.Tag tag : directory.getTags()) {
-                    //System.out.println(tag.toString());
                     if(tag.getTagName().equals("Contact")){
                         contact = tag.getDescription();
                     }else if(tag.getTagName().equals("Keywords")){
@@ -119,6 +121,8 @@ public class EfficientAdapter extends BaseAdapter {
         holder.sent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                System.out.println("sentttttttttttttttttt");
+
                 try {
                     byte[] img = new byte[(int) fileImage.length()];
                     BufferedInputStream buf = new BufferedInputStream(new FileInputStream(fileImage));
@@ -150,6 +154,7 @@ public class EfficientAdapter extends BaseAdapter {
 
             }
         });
+
         return convertView;
     }
 

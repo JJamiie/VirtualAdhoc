@@ -157,24 +157,33 @@ public class ConnectionManager extends Thread {
             }
         };
         availableAP = new ArrayList<>();
-        while (true) {
+
+        while(true) {
+
             enableWifi(contexts);
+            try {
+                Thread.sleep(10000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             listAP(contexts);
-            String r = availableAP.size() + "";
-            //Log.d("ConnectionManager",r);
+
+            String r = availableAP.size()+"";
+             Log.d("ConnectionManager",r);
             if (availableAP.size() <= 0) {
                 System.out.println("sleep-1 ");
-                /*
+
                 System.out.println("eieieiei");
                 //Noone around here use this App so turn on AP.
-                ApManager.configApState(contexts, true);
+                //
+                 ApManager.configApState(contexts, true);
                 try {
-                    Thread.sleep(180000);
+                    Thread.sleep(120000);
                     ApManager.configApState(contexts, false);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                */
+
             } else {
                 System.out.println("sleep0 ");
                 //connect AP
@@ -191,7 +200,7 @@ public class ConnectionManager extends Thread {
                     }
                     try {
                         System.out.println("get it ");
-                        Thread.sleep(15000);// change ? Dynamic?
+                        Thread.sleep(30000);// change ? Dynamic?
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -200,13 +209,24 @@ public class ConnectionManager extends Thread {
         }
     }
 
-    public static boolean joinAp(String SSID) {
+    public static boolean joinAp(String SSID,Context context){
         WifiConfiguration conf = new WifiConfiguration();
         conf.SSID = "\"" + SSID + "\"";
         // conf.wepKeys[0] = "\"" + networkPass + "\"";    In case of network has password
         conf.wepTxKeyIndex = 0;
         conf.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
         conf.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP40);
+        WifiManager wifiManager = (WifiManager) context.getSystemService(context.WIFI_SERVICE);
+        List<WifiConfiguration> list = wifiManager.getConfiguredNetworks();
+        for( WifiConfiguration i : list ) {
+            if(i.SSID != null && i.SSID.equals("\"" + SSID + "\"")) {
+                wifiManager.disconnect();
+                wifiManager.enableNetwork(i.networkId, true);
+                wifiManager.reconnect();
+
+                break;
+            }
+        }
         return true;
     }
 
@@ -223,12 +243,14 @@ public class ConnectionManager extends Thread {
         String SSID = null;
         String[] tokens = null;
         WifiManager wifiManager = (WifiManager) context.getSystemService(context.WIFI_SERVICE);
+        ApManager.configApState(contexts, false);
         wifiManager.setWifiEnabled(true);
         wifiManager.startScan();
         results = wifiManager.getScanResults();
-        size = results.size();
-        int tsize = size - 1;
-        //System.out.println("tsize"+tsize);
+
+        size =results.size();
+        int tsize = size-1;
+        System.out.println("tsize"+tsize);
         availableAP.clear();
         for (int i = 0; i <= tsize; i++) {
             Log.d("ConnectionManager", results.get(i).SSID);
@@ -248,7 +270,8 @@ public class ConnectionManager extends Thread {
         String SSID = null;
         if (!availableAP.isEmpty()) { //check and select the strongest signal
             SSID = availableAP.get(0);
-            joinAp(SSID);
+            System.out.println("SSIDNAME="+SSID);
+            joinAp(SSID,context);
             availableAP.remove(0);
 
         }

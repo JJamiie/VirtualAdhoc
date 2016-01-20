@@ -89,13 +89,15 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
         //set senderName
         Intent intent = getIntent();
         String username = intent.getStringExtra("username");
-        if(username != null) {
+        if (username != null) {
             senderName = username;
         }
+
 //        connectionManager = new ConnectionManager(getApplicationContext());
 //        connectionManager.start();
 
     }
+
     private void dispatchTakePictureIntent(int actionCode) {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         switch (actionCode) {
@@ -119,7 +121,7 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
     private void handleCameraPhoto() {
         if (currentPhoto != null) {
 //            finish(); // finish this activity
-            //Start Caption Activity
+            // Start Caption Activity
             Intent intent = new Intent(getApplicationContext(), CaptionActivity.class);
             intent.putExtra("currentPhotoPath", currentPhoto.getAbsolutePath());
             intent.putExtra("senderName", senderName);
@@ -255,6 +257,7 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
             return null;
         }
     }
+
     public static Context getAppContext() {
         return TabActivity.context;
     }
@@ -262,11 +265,12 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
     @Override
     public void onBackPressed() {
         // your code.
-//        finish();
+        finish();
     }
 
-    public static Activity getActivity(){return  TabActivity.getActivity();}
-
+    public static Activity getActivity() {
+        return TabActivity.getActivity();
+    }
 
 
 }
