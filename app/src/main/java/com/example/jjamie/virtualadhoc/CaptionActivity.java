@@ -2,6 +2,7 @@ package com.example.jjamie.virtualadhoc;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -53,7 +54,7 @@ public class CaptionActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_caption);
-        gpsLatLon="";
+        gpsLatLon = "";
         currentPhotoImageView = (ImageView) findViewById(R.id.imageForCaption);
         messageEditText = (EditText) findViewById(R.id.captionEditText);
         editMessageButton = (Button) findViewById(R.id.edit_message);
@@ -133,8 +134,19 @@ public class CaptionActivity extends AppCompatActivity {
                         }
                     });
             Location location = locationManager.getLastKnownLocation(provider);
+
+            while (location == null) {
+                ProgressDialog dialog = new ProgressDialog(CaptionActivity.this);
+                dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                dialog.setMessage("Loading. Please wait...");
+                dialog.setIndeterminate(true);
+                dialog.setCanceledOnTouchOutside(false);
+                dialog.show();
+            }
+
+
             if (location != null) {
-                gpsLatLon = "Latitude: "+location.getLatitude()+" Longtitude: "+location.getLongitude();
+                gpsLatLon = "Latitude: " + location.getLatitude() + " Longtitude: " + location.getLongitude();
             }else{
                 gpsLatLon="";
             }
@@ -169,7 +181,7 @@ public class CaptionActivity extends AppCompatActivity {
             FileInputStream fin = new FileInputStream(currentPhoto.getAbsolutePath());
             FileOutputStream fout = new FileOutputStream("/storage/emulated/0/Pictures/Pegion/" + currentPhoto.getName() + "_0.jpg");
             String message = messageEditText.getText().toString();
-            Metadata.insertIPTC(fin, fout, ManageImage.createIPTCDataSet(senderName, message,gpsLatLon), true);
+            Metadata.insertIPTC(fin, fout, ManageImage.createIPTCDataSet(senderName, message, gpsLatLon), true);
             fin.close();
             fout.close();
             currentPhoto.delete();

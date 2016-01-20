@@ -60,6 +60,7 @@ public class EfficientAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+
         ViewHolder holder = null;
         if (convertView == null) {
             //load layout
@@ -86,7 +87,6 @@ public class EfficientAdapter extends BaseAdapter {
             com.drew.metadata.Metadata metadata = ImageMetadataReader.readMetadata(ManageImage.getFile()[position]);
             for (Directory directory : metadata.getDirectories()) {
                 for (com.drew.metadata.Tag tag : directory.getTags()) {
-                  //  System.out.println(tag.toString());
                     if(tag.getTagName().equals("Contact")){
                         contact = tag.getDescription();
                     }else if(tag.getTagName().equals("Keywords")){
@@ -154,6 +154,7 @@ public class EfficientAdapter extends BaseAdapter {
 
             }
         });
+
         return convertView;
     }
 

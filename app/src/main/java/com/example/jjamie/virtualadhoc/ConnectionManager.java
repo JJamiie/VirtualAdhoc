@@ -7,6 +7,7 @@ import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.support.annotation.NonNull;
 import android.util.Log;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -26,15 +27,17 @@ public class ConnectionManager extends Thread {
     private static List<ScanResult> results;
     static int size = 0;
     static List<String> availableAP;
-    static Map<String,Integer> apHistory;
-    static boolean scannerStatus =true;
+    static Map<String, Integer> apHistory;
+    static boolean scannerStatus = true;
     static File[] imgFile;
-    static Context contexts ;
+    static Context contexts;
     Activity activity;
-    public ConnectionManager(Context context){
+
+    public ConnectionManager(Context context) {
         contexts = context;
     }
-    public void run(){
+
+    public void run() {
         enableWifi(contexts);
         results = new List<ScanResult>() {
             @Override
@@ -158,6 +161,7 @@ public class ConnectionManager extends Thread {
             }
         };
         availableAP = new ArrayList<>();
+
         while(true) {
             enableWifi(contexts);
             try {
@@ -166,6 +170,7 @@ public class ConnectionManager extends Thread {
                 e.printStackTrace();
             }
             listAP(contexts);
+
             String r = availableAP.size()+"";
              Log.d("ConnectionManager",r);
             if (availableAP.size() <= 0) {
@@ -184,28 +189,14 @@ public class ConnectionManager extends Thread {
                 System.out.println("sleep0 ");
                 //connect AP
                 //apHistory.put(availableAP.get(0),3);////////////////////////////////////////////////////////////////////////////
-                while(availableAP.size()>=0){
+                while (availableAP.size() >= 0) {
                     System.out.println("sleep1 ");
                     connectAP(contexts);
-                    imgFile=ManageImage.getFile();
-                    System.out.println("Fiel lenght"+imgFile.length);
-
-                    for (int i=0;i<imgFile.length;i++){
-                        try {
-                            byte[] img = new byte[(int) imgFile[i].length()];
-                            BufferedInputStream buf = new BufferedInputStream(new FileInputStream(imgFile[i]));
-                            buf.read(img, 0, img.length);
-                            buf.close();
-                            Image image = new Image(TabActivity.senderName,1,img);
-                            Broadcaster.broadcast(image);
-                        } catch (SenderNameIncorrectLengthException e) {
-                            e.printStackTrace();
-                        } catch (FileNotFoundException e) {
-                            e.printStackTrace();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-
+                    imgFile = ManageImage.getFile();
+                    System.out.println("Fiel lenght" + imgFile.length);
+                    for (int i = 0; i < imgFile.length; i++) {
+                        Image image = ManageImage.changeFileToImage(imgFile[i]);
+                        Broadcaster.broadcast(image);
                     }
                     try {
                         System.out.println("Going to sleep");
@@ -217,6 +208,7 @@ public class ConnectionManager extends Thread {
             }
         }
     }
+
     public static boolean joinAp(String SSID,Context context){
         WifiConfiguration conf = new WifiConfiguration();
         conf.SSID = "\"" + SSID + "\"";
@@ -237,13 +229,15 @@ public class ConnectionManager extends Thread {
         }
         return true;
     }
-    public static boolean enableWifi(Context context){
+
+    public static boolean enableWifi(Context context) {
         ApManager.configApState(contexts, false);
         WifiManager wifiManager = (WifiManager) context.getSystemService(context.WIFI_SERVICE);
         wifiManager.setWifiEnabled(true);
         return true;
 
     }
+
     public static boolean disconnectWifi(Context context){
         WifiManager wifiManager = (WifiManager) context.getSystemService(context.WIFI_SERVICE);
         wifiManager.disconnect();
@@ -251,35 +245,38 @@ public class ConnectionManager extends Thread {
         return true;
 
     }
-    public static boolean listAP(Context context){
 
-        String SSID= null;
+    public static boolean listAP(Context context) {
+
+        String SSID = null;
         String[] tokens = null;
         WifiManager wifiManager = (WifiManager) context.getSystemService(context.WIFI_SERVICE);
         ApManager.configApState(contexts, false);
         wifiManager.setWifiEnabled(true);
         wifiManager.startScan();
         results = wifiManager.getScanResults();
+
         size =results.size();
         int tsize = size-1;
         System.out.println("tsize"+tsize);
         availableAP.clear();
-        for (int i=0; i<=tsize;i++){
-            Log.d("ConnectionManager",results.get(i).SSID);
+        for (int i = 0; i <= tsize; i++) {
+            Log.d("ConnectionManager", results.get(i).SSID);
             tokens = results.get(i).SSID.split(":");
-            if(tokens[0].equals("ViR")){
+            if (tokens[0].equals("ViR")) {
 
                 availableAP.add(results.get(i).SSID);
 
-                System.out.println("AvailableAP"+availableAP.size());
+                System.out.println("AvailableAP" + availableAP.size());
             }
         }
         //////////////////////////////////////////////////delete ap from history
         return true;
     }
-    public static boolean connectAP(Context context){ // Change algo later ex. Ap which this device joined
-        String SSID= null;
-        if (!availableAP.isEmpty()){ //check and select the strongest signal
+
+    public static boolean connectAP(Context context) { // Change algo later ex. Ap which this device joined
+        String SSID = null;
+        if (!availableAP.isEmpty()) { //check and select the strongest signal
             SSID = availableAP.get(0);
             System.out.println("SSIDNAME="+SSID);
             joinAp(SSID,context);
@@ -288,12 +285,14 @@ public class ConnectionManager extends Thread {
         }
         return true;
     }
-    public static List getAplist(){
+
+    public static List getAplist() {
         return availableAP;
 
     }
-    public static boolean isBusy(){
-        if (scannerStatus){
+
+    public static boolean isBusy() {
+        if (scannerStatus) {
             return false;
         }
         return true;

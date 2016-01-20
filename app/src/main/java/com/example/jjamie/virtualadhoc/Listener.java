@@ -46,13 +46,13 @@ public class Listener extends Thread {
                 byte[] img = (byte[]) objectInputStream.readObject();
                 Image image = new Image(img, img.length);
                 System.out.println("SenderName: " + image.senderName + " Senquence number: " + image.sequenceNumber + " Size packet:" + image.getImageBytes().length);
+
                 if (!image.senderName.equals(TabActivity.senderName)) {
                     File file = ManageImage.setUpPhotoFile(activity, mAlbumStorageDirFactory);
                     FileOutputStream fileOutputStream = new FileOutputStream(file);
                     fileOutputStream.write(image.getImageBytes());
                     ManageImage.galleryAddPic(file.getAbsolutePath(), activity);
                     socket.close();
-
 
                     Log.d("Listener", "Finished...");
 
