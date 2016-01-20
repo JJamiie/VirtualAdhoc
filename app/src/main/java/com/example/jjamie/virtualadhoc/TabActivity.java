@@ -94,8 +94,8 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
         if(username != null) {
             senderName = username;
         }
-       //connectionManager = new ConnectionManager(getApplicationContext());
-       // connectionManager.start();
+       connectionManager = new ConnectionManager(getApplicationContext());
+       connectionManager.start();
 
     }
     private void dispatchTakePictureIntent(int actionCode) {

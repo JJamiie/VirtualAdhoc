@@ -159,7 +159,6 @@ public class ConnectionManager extends Thread {
         };
         availableAP = new ArrayList<>();
         while(true) {
-
             enableWifi(contexts);
             try {
                 Thread.sleep(10000);
@@ -170,9 +169,7 @@ public class ConnectionManager extends Thread {
             String r = availableAP.size()+"";
              Log.d("ConnectionManager",r);
             if (availableAP.size() <= 0) {
-                System.out.println("sleep-1 ");
-
-                System.out.println("eieieiei");
+                System.out.println("No AP around ");
                 //Noone around here use this App so turn on AP.
                 //
                  ApManager.configApState(contexts, true);
@@ -190,9 +187,9 @@ public class ConnectionManager extends Thread {
                 while(availableAP.size()>=0){
                     System.out.println("sleep1 ");
                     connectAP(contexts);
-
                     imgFile=ManageImage.getFile();
                     System.out.println("Fiel lenght"+imgFile.length);
+
                     for (int i=0;i<imgFile.length;i++){
                         try {
                             byte[] img = new byte[(int) imgFile[i].length()];
@@ -211,7 +208,7 @@ public class ConnectionManager extends Thread {
 
                     }
                     try {
-                        System.out.println("get it ");
+                        System.out.println("Going to sleep");
                         Thread.sleep(30000);// change ? Dynamic?
                     } catch (InterruptedException e) {
                         e.printStackTrace();
@@ -244,6 +241,13 @@ public class ConnectionManager extends Thread {
         ApManager.configApState(contexts, false);
         WifiManager wifiManager = (WifiManager) context.getSystemService(context.WIFI_SERVICE);
         wifiManager.setWifiEnabled(true);
+        return true;
+
+    }
+    public static boolean disconnectWifi(Context context){
+        WifiManager wifiManager = (WifiManager) context.getSystemService(context.WIFI_SERVICE);
+        wifiManager.disconnect();
+        System.out.println("Disconnected");
         return true;
 
     }
