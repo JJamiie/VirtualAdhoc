@@ -92,7 +92,7 @@ public class EfficientAdapter extends BaseAdapter {
                     }else if(tag.getTagName().equals("Keywords")){
                         caption = tag.getDescription();
                     }else if(tag.getTagName().equals("Sub-location")){
-                        if(!tag.getDescription().equals("")){
+                        if(!tag.getDescription().equals("null")){
                             holder.show_gps_map.setVisibility(View.VISIBLE);
                         }
                     }

@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -18,7 +19,7 @@ public class Listener extends Thread {
 
     private static final String TAG = "Listener";
     private WifiManager mWifi;
-    private static final int PORT = 3333;
+    private static final int PORT = 12234;
     private ServerSocket serverSocket;
     private Activity activity;
     private AlbumStorageDirFactory mAlbumStorageDirFactory;
@@ -34,7 +35,9 @@ public class Listener extends Thread {
     public void run() {
         Socket socket = null;
         try {
-            serverSocket = new ServerSocket(PORT);
+            serverSocket = new ServerSocket(); // <-- create an unbound socket first
+            serverSocket.setReuseAddress(true);
+            serverSocket.bind(new InetSocketAddress(PORT));
             while (true) {
                 Log.d(TAG, "Waiting...");
                 socket = serverSocket.accept();
