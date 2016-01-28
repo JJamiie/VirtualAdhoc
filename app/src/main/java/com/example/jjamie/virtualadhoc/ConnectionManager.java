@@ -164,11 +164,13 @@ public class ConnectionManager extends Thread {
 
         while(true) {
             enableWifi(contexts);
+            System.out.println("Stage: Sleep0");
             try {
-                Thread.sleep(10000);
+                Thread.sleep(5000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+            System.out.println("Stage: Awake0");
             listAP(contexts);
 
             String r = availableAP.size()+"";
@@ -178,32 +180,41 @@ public class ConnectionManager extends Thread {
                 //Noone around here use this App so turn on AP.
                 //
                  ApManager.configApState(contexts, true);
+                System.out.println("Stage: Sleep1");
                 try {
                     Thread.sleep(120000);
                     ApManager.configApState(contexts, false);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+                System.out.println("Stage: Awake1");
 
             } else {
-                System.out.println("sleep0 ");
+                System.out.println("Stage: else condition");
                 //connect AP
                 //apHistory.put(availableAP.get(0),3);////////////////////////////////////////////////////////////////////////////
-                while (availableAP.size() >= 0) {
-                    System.out.println("sleep1 ");
+                while (availableAP.size() > 0) {
+                    System.out.println("Stage: AvailableApSize>0");
                     connectAP(contexts);
+
                     imgFile = ManageImage.getFile();
-                    System.out.println("Fiel lenght" + imgFile.length);
-                    for (int i = 0; i < imgFile.length; i++) {
-                        Image image = ManageImage.changeFileToImage(imgFile[i]);
-                        Broadcaster.broadcast(image);
+                    if(imgFile!=null){
+                        System.out.println("Fiel lenght" + imgFile.length);
+                        for (int i = 0; i < imgFile.length; i++) {
+                            Image image = ManageImage.changeFileToImage(imgFile[i]);
+                            Broadcaster.broadcast(image);
+                        }
                     }
+                    else System.out.println("No photo history");
+
+                    /*
                     try {
                         System.out.println("Going to sleep");
                         Thread.sleep(30000);// change ? Dynamic?
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
+                    */
                 }
             }
         }
@@ -213,10 +224,14 @@ public class ConnectionManager extends Thread {
         WifiConfiguration conf = new WifiConfiguration();
         conf.SSID = "\"" + SSID + "\"";
         // conf.wepKeys[0] = "\"" + networkPass + "\"";    In case of network has password
+        /*
         conf.wepTxKeyIndex = 0;
         conf.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
         conf.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP40);
+        */
+        conf.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
         WifiManager wifiManager = (WifiManager) context.getSystemService(context.WIFI_SERVICE);
+        wifiManager.addNetwork(conf);
         List<WifiConfiguration> list = wifiManager.getConfiguredNetworks();
         for( WifiConfiguration i : list ) {
             if(i.SSID != null && i.SSID.equals("\"" + SSID + "\"")) {
@@ -226,6 +241,14 @@ public class ConnectionManager extends Thread {
 
                 break;
             }
+        }
+
+        try {
+            System.out.println("Going to sleep");
+            Thread.sleep(30000);// change ? Dynamic?
+            System.out.println("wake");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
         return true;
     }
