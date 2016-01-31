@@ -1,12 +1,19 @@
 package com.example.jjamie.virtualadhoc;
 
 import android.content.Context;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+
+import com.bumptech.glide.Glide;
+
+import jp.wasabeef.glide.transformations.BlurTransformation;
+import jp.wasabeef.glide.transformations.CropCircleTransformation;
 
 
 /**
@@ -58,13 +65,22 @@ public class ProfileFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_profile, container, false);
+        View view = inflater.inflate(R.layout.fragment_profile, container, false);
+
+        //bind object
+        ImageView profile_picture = (ImageView) view.findViewById(R.id.profile_picture);
+        Glide.with(this).load(R.drawable.my_profile_picture).placeholder(new ColorDrawable(0xFFc5c4c4)).bitmapTransform(new CropCircleTransformation(getContext())).into(profile_picture);
+        ImageView profile_picture_background = (ImageView) view.findViewById(R.id.profile_picture_background);
+        Glide.with(this).load(R.drawable.my_profile_picture).placeholder(new ColorDrawable(0xFFc5c4c4)).bitmapTransform(new BlurTransformation(getContext())).into(profile_picture_background);
+
+        return view;
     }
 
     // TODO: Rename method, update argument and hook method into UI event

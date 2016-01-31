@@ -21,7 +21,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.TextView;
 
-public class TabActivity extends AppCompatActivity implements NewFeedFragment.OnFragmentInteractionListener, MateFragment.OnFragmentInteractionListener {
+public class TabActivity extends AppCompatActivity implements NewFeedFragment.OnFragmentInteractionListener, MateFragment.OnFragmentInteractionListener,ProfileFragment.OnFragmentInteractionListener{
     private static Context context;
     private static ConnectionManager connectionManager;
     public static String senderName;
@@ -157,6 +157,8 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
                     return NewFeedFragment.newInstance("", "");
                 case 1:
                     return MateFragment.newInstance("", "");
+                case 2:
+                    return ProfileFragment.newInstance("","");
             }
             return PlaceholderFragment.newInstance(position + 1);
         }
@@ -164,7 +166,7 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
         @Override
         public int getCount() {
             // Show 3 total pages.
-            return 2;
+            return 3;
         }
 
         private int[] imageResId = {
@@ -178,6 +180,8 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
                     return "Home";
                 case 1:
                     return "Mate";
+                case 2:
+                    return "Profile";
                 default:
                     break;
             }
@@ -185,9 +189,6 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
         }
     }
 
-    public static Context getAppContext() {
-        return TabActivity.context;
-    }
 
     @Override
     public void onBackPressed() {

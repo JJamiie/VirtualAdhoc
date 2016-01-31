@@ -89,7 +89,7 @@ public class EfficientAdapter extends BaseAdapter {
                     holder.picture_show = (ImageView) convertView.findViewById(R.id.item_picture);
                     holder.description = (TextView) convertView.findViewById(R.id.item_listview_description);
                     holder.sent = (Button) convertView.findViewById(R.id.sent);
-                    holder.show_gps_map = (ImageView) convertView.findViewById(R.id.show_gps_map);
+                    holder.show_gps_map = (ImageView) convertView.findViewById(R.id.gps_button_image);
                     convertView.setTag(holder); //deposit to tag
                 } else {
                     holder = (ViewHolder) convertView.getTag();
@@ -106,7 +106,7 @@ public class EfficientAdapter extends BaseAdapter {
                                 caption = tag.getDescription();
                             } else if (tag.getTagName().equals("Sub-location")) {
                                 if (!tag.getDescription().equals("null")) {
-                                    holder.show_gps_map.setVisibility(View.VISIBLE);
+//                                    holder.show_gps_map.setVisibility(View.VISIBLE);
                                 }
                             }
                         }
