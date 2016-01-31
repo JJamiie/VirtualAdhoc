@@ -4,12 +4,13 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
@@ -31,8 +32,8 @@ public class NewFeedFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
     private ListView listview;
     private EfficientAdapter adapter;
-
-
+    private AppBarLayout appBar;
+    private FloatingActionButton mFabButton;
     public NewFeedFragment() {
         // Required empty public constructor
     }
@@ -58,6 +59,7 @@ public class NewFeedFragment extends Fragment {
         fragment.setArguments(args);
         return fragment;
     }
+
     AlbumStorageDirFactory mAlbumStorageDirFactory;
     Listener listener;
 
@@ -74,8 +76,8 @@ public class NewFeedFragment extends Fragment {
         } else {
             mAlbumStorageDirFactory = new BaseAlbumDirFactory();
         }
-
-
+        appBar = (AppBarLayout) getActivity().findViewById(R.id.appbar);
+        mFabButton = (FloatingActionButton) getActivity().findViewById(R.id.fab);
     }
 
     @Override
@@ -87,12 +89,15 @@ public class NewFeedFragment extends Fragment {
         adapter = new EfficientAdapter(getActivity());
         listview.setAdapter(adapter);
         //Listener start
-        if(listener == null) {
+        if (listener == null) {
             listener = new Listener(getActivity(), mAlbumStorageDirFactory, adapter);
             listener.start();
         }
         return v;
     }
+
+
+
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {

@@ -13,20 +13,15 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.TextView;
 
-import java.io.File;
-
 public class TabActivity extends AppCompatActivity implements NewFeedFragment.OnFragmentInteractionListener, ProfileFragment.OnFragmentInteractionListener {
-    public static final int ACTION_TAKE_PHOTO_B = 1;
-    public AlbumStorageDirFactory mAlbumStorageDirFactory;
-    public File currentPhoto;
     private static Context context;
     private static ConnectionManager connectionManager;
     public static String senderName;
@@ -37,11 +32,11 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        requestWindowFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
         super.onCreate(savedInstanceState);
         TabActivity.context = getApplicationContext();
         setContentView(R.layout.activity_tab);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+
         // Create the adapter that will return a fragment for each of the two
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
@@ -183,7 +178,7 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
         public CharSequence getPageTitle(int position) {
             switch (position) {
                 case 0:
-                    return "NEW FEED";
+                    return "Home";
                 case 1:
                     return "PROFILE";
                 default:
