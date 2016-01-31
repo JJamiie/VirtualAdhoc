@@ -39,6 +39,7 @@ public class EfficientAdapter extends BaseAdapter {
     private static final int TYPE_MAX_COUNT = 2;
     private static final int TYPE_ITEM = 0;
     private static final int TYPE_FIRST = 1;
+    private ConnectionManager connectionManager;
 
     public EfficientAdapter(Activity activity) {
         this.mContext = activity.getApplicationContext();
@@ -220,6 +221,10 @@ public class EfficientAdapter extends BaseAdapter {
                             circleTurn2.startAnimation(rotation2);
                             textUnderLogo.setText("Running Pegion...");
                             isStartPegion = true;
+                            if (connectionManager == null) {
+                                connectionManager = new ConnectionManager(getActivity());
+                            }
+                            connectionManager.start();
                         }else{
                             logoPegion.setImageResource(R.drawable.logo4);
                             layoutTouchToPegion.setBackgroundColor(Color.parseColor("#303F9F"));
@@ -229,6 +234,7 @@ public class EfficientAdapter extends BaseAdapter {
                             circleTurn2.startAnimation(rotation2);
                             textUnderLogo.setText("Touch to Pegion");
                             isStartPegion = false;
+                            connectionManager.stop();
                         }
                     }
                 });

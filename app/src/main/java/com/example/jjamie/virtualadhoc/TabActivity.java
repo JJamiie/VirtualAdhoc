@@ -72,8 +72,8 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
         }
 
 
-        connectionManager = new ConnectionManager(getApplicationContext());
-        connectionManager.start();
+//        connectionManager = new ConnectionManager(getApplicationContext());
+//        connectionManager.start();
 
 
     }
