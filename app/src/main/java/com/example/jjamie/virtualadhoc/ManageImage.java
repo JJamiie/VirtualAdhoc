@@ -124,7 +124,6 @@ public class ManageImage {
     public static File[] getFile(){
 
         String path = Environment.getExternalStorageDirectory()+"/pictures/pegion";
-        System.out.println("get file---"+path);
         File dir = new File(path);
         File[] files = dir.listFiles();
         if(files == null) return null;

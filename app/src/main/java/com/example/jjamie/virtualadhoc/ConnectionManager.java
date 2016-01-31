@@ -8,11 +8,7 @@ import android.net.wifi.WifiManager;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -32,6 +28,7 @@ public class ConnectionManager extends Thread {
     static File[] imgFile;
     static Context contexts;
     Activity activity;
+    private boolean active = false;
 
     public ConnectionManager(Context context) {
         contexts = context;
@@ -163,6 +160,16 @@ public class ConnectionManager extends Thread {
         availableAP = new ArrayList<>();
 
         while(true) {
+            while(!active){
+                try {
+                    synchronized (this){
+                        wait();
+                    }
+                } catch (InterruptedException e) {
+                    System.out.println("Connection manager"+e.getMessage());
+                }
+            }
+
             enableWifi(contexts);
             System.out.println("Stage: Sleep0");
             try {
@@ -321,4 +328,12 @@ public class ConnectionManager extends Thread {
         return true;
     }
 
+    public synchronized void wake() {
+        active = true;
+        notifyAll();
+    }
+
+    public void sleep() {
+        active = false;
+    }
 }

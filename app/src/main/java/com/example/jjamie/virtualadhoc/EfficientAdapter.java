@@ -1,5 +1,4 @@
 package com.example.jjamie.virtualadhoc;
-
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
@@ -15,17 +14,14 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.bumptech.glide.Glide;
 import com.drew.imaging.ImageMetadataReader;
 import com.drew.imaging.ImageProcessingException;
 import com.drew.metadata.Directory;
-
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-
 import jp.wasabeef.glide.transformations.CropCircleTransformation;
 
 /**
@@ -223,8 +219,16 @@ public class EfficientAdapter extends BaseAdapter {
                             isStartPegion = true;
                             if (connectionManager == null) {
                                 connectionManager = new ConnectionManager(getActivity());
+                                connectionManager.start();
+                                connectionManager.sleep();
+
+                                System.out.println("Connection manager start");
+
+                            }else{
+                                connectionManager.wake();
+                                System.out.println("Connection manager resume");
+
                             }
-                            connectionManager.start();
                         }else{
                             logoPegion.setImageResource(R.drawable.logo4);
                             layoutTouchToPegion.setBackgroundColor(Color.parseColor("#303F9F"));
@@ -234,7 +238,8 @@ public class EfficientAdapter extends BaseAdapter {
                             circleTurn2.startAnimation(rotation2);
                             textUnderLogo.setText("Touch to Pegion");
                             isStartPegion = false;
-                            connectionManager.stop();
+                            connectionManager.sleep();
+                            System.out.println("Connection manager sleep");
                         }
                     }
                 });
