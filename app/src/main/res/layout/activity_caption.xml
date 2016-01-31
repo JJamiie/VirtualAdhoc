@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#d8d7d9"
     tools:context="com.example.jjamie.virtualadhoc.CaptionActivity">
 
     <android.support.design.widget.AppBarLayout
@@ -26,127 +27,249 @@
                 android:id="@+id/toolbar_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Add message"
                 android:background="#07000000"
+                android:text="Add message"
                 android:textColor="@android:color/white"
                 android:textSize="20dp" />
-
-            <RelativeLayout
-                android:layout_width="50dp"
-                android:layout_height="60dp"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:layout_gravity="right"
-                android:padding="0dp">
-
-                <Button
-                    android:id="@+id/edit_message"
-                    style="?android:attr/borderlessButtonStyle"
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
-                    android:layout_centerInParent="true"
-                    android:background="#265ea7"
-                    android:stateListAnimator="@null" />
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
-                    android:background="#265ea7"
-                    android:padding="15dp"
-                    android:src="@drawable/check" />
-            </RelativeLayout>
 
         </android.support.v7.widget.Toolbar>
 
 
     </android.support.design.widget.AppBarLayout>
 
-
-    <EditText
-        android:id="@+id/captionEditText"
+    <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/imageZone"
         android:layout_width="match_parent"
-        android:layout_height="120dp"
+        android:layout_height="wrap_content"
         android:layout_below="@id/appbar"
-        android:backgroundTint="#494848"
-        android:hint="Write a message..."
-        android:paddingLeft="20dp"
-        android:paddingRight="20dp"
-        android:textColor="#353434"
-        android:textColorHint="#494848" />
+        android:layout_gravity="center"
+        android:layout_marginTop="10dp">
 
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:layout_below="@id/appbar"
+            android:background="#FFFFFF"
+            android:padding="15dp">
 
-    <RelativeLayout
-        android:id="@+id/addButtonZone"
-        android:layout_width="fill_parent"
-        android:layout_height="40dp"
-        android:layout_below="@id/captionEditText"
-        android:paddingLeft="10dp"
-        android:layout_marginBottom="5dp">
+            <ImageView
+                android:id="@+id/imageForCaption"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:layout_centerVertical="true"
+                android:background="#e1e0e0"
+                android:scaleType="centerCrop" />
 
-        <ImageView
-            android:id="@+id/camera_image"
-            android:layout_width="50dp"
-            android:layout_height="22dp"
-            android:layout_centerVertical="true"
-            android:src="@drawable/caption_camera" />
+            <ImageView
+                android:id="@+id/plusImage"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="40dp"
+                android:background="#e1e0e0"
+                android:scaleType="centerCrop"
+                android:src="@drawable/plus" />
 
-        <ImageView
-            android:id="@+id/sound_button"
-            android:layout_width="50dp"
-            android:layout_height="22dp"
-            android:layout_centerVertical="true"
-            android:layout_toRightOf="@id/camera_image"
-            android:src="@drawable/caption_recorder" />
+            <EditText
+                android:id="@+id/captionEditText"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@id/imageForCaption"
+                android:background="#00000000"
+                android:backgroundTint="#767575"
+                android:gravity="top"
+                android:hint="Write a message..."
+                android:lines="4"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:textColor="#353434"
+                android:textColorHint="#888888" />
 
-        <ImageView
-            android:id="@+id/gps_button_picture"
-            android:layout_width="50dp"
-            android:layout_height="22dp"
-            android:layout_centerVertical="true"
-            android:layout_toRightOf="@id/sound_button"
-            android:src="@drawable/gps_button" />
+            <Button
+                android:id="@+id/camera_button"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:layout_centerVertical="true" />
 
-        <Button
-            android:id="@+id/camera_button"
-            style="?android:attr/borderlessButtonStyle"
-            android:layout_width="50dp"
-            android:layout_height="fill_parent"
-            android:stateListAnimator="@null" />
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
 
-        <Button
-            android:id="@+id/recorder_button"
-            style="?android:attr/borderlessButtonStyle"
-            android:layout_width="50dp"
-            android:layout_height="fill_parent"
-            android:layout_toRightOf="@id/camera_button"
-            android:stateListAnimator="@null" />
+    <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/locationZone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/imageZone"
+        android:layout_gravity="center"
+        android:layout_marginTop="10dp">
 
-        <Button
-            android:id="@+id/gps_button"
-            style="?android:attr/borderlessButtonStyle"
-            android:layout_width="50dp"
-            android:layout_height="fill_parent"
-            android:layout_toRightOf="@id/recorder_button"
-            android:stateListAnimator="@null" />
-
-
-    </RelativeLayout>
-
-    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_below="@id/addButtonZone"
-        android:background="#e1e1e1">
-
-        <ImageView
-            android:id="@+id/imageForCaption"
+        <RelativeLayout
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:adjustViewBounds="true"
-            android:background="#e1e0e0" />
-    </ScrollView>
+            android:layout_height="50dp"
+            android:background="#FFFFFF">
+
+            <ImageView
+                android:id="@+id/gps_button_image"
+                android:layout_width="50dp"
+                android:layout_height="22dp"
+                android:layout_centerVertical="true"
+                android:src="@drawable/gps_button" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@id/gps_button_image"
+                android:text="Add location" />
+
+            <Button
+                android:id="@+id/gps_button"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:stateListAnimator="@null" />
+
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/soundZone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/locationZone"
+        android:layout_gravity="center"
+        android:layout_marginTop="10dp">
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="50dp"
+            android:background="#FFFFFF">
+
+            <ImageView
+                android:id="@+id/recorder_button_image"
+                android:layout_width="50dp"
+                android:layout_height="22dp"
+                android:layout_centerVertical="true"
+                android:src="@drawable/caption_recorder" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@id/recorder_button_image"
+                android:text="Record sound" />
+
+            <Button
+                android:id="@+id/recorder_button"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:stateListAnimator="@null" />
+
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
+
+
+    <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="center">
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="55dp"
+            android:background="#0091EA">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:text="Save"
+                android:textStyle="bold"
+                android:textSize="16dp"
+                android:textColor="#FFFFFF" />
+
+            <Button
+                android:id="@+id/edit_message"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:stateListAnimator="@null" />
+
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
+
+
+    <!--<RelativeLayout-->
+    <!--android:id="@+id/addButtonZone"-->
+    <!--android:layout_width="fill_parent"-->
+    <!--android:layout_height="40dp"-->
+    <!--android:layout_below="@id/imageZone"-->
+    <!--android:layout_marginBottom="5dp"-->
+    <!--android:layout_marginTop="10dp"-->
+    <!--android:background="#FFFFFF"-->
+    <!--android:paddingLeft="10dp">-->
+
+    <!--<ImageView-->
+    <!--android:id="@+id/camera_image"-->
+    <!--android:layout_width="50dp"-->
+    <!--android:layout_height="22dp"-->
+    <!--android:layout_centerVertical="true"-->
+    <!--android:src="@drawable/caption_camera" />-->
+
+    <!--<ImageView-->
+    <!--android:id="@+id/sound_button"-->
+    <!--android:layout_width="50dp"-->
+    <!--android:layout_height="22dp"-->
+    <!--android:layout_centerVertical="true"-->
+    <!--android:layout_toRightOf="@id/camera_image"-->
+    <!--android:src="@drawable/caption_recorder" />-->
+
+    <!--<ImageView-->
+    <!--android:id="@+id/gps_button_picture"-->
+    <!--android:layout_width="50dp"-->
+    <!--android:layout_height="22dp"-->
+    <!--android:layout_centerVertical="true"-->
+    <!--android:layout_toRightOf="@id/sound_button"-->
+    <!--android:src="@drawable/gps_button" />-->
+
+    <!--<Button-->
+    <!--android:id="@+id/camera_button"-->
+    <!--style="?android:attr/borderlessButtonStyle"-->
+    <!--android:layout_width="50dp"-->
+    <!--android:layout_height="fill_parent"-->
+    <!--android:stateListAnimator="@null" />-->
+
+    <!--<Button-->
+    <!--android:id="@+id/recorder_button"-->
+    <!--style="?android:attr/borderlessButtonStyle"-->
+    <!--android:layout_width="50dp"-->
+    <!--android:layout_height="fill_parent"-->
+    <!--android:layout_toRightOf="@id/camera_button"-->
+    <!--android:stateListAnimator="@null" />-->
+
+    <!--<Button-->
+    <!--android:id="@+id/gps_button"-->
+    <!--style="?android:attr/borderlessButtonStyle"-->
+    <!--android:layout_width="50dp"-->
+    <!--android:layout_height="fill_parent"-->
+    <!--android:layout_toRightOf="@id/recorder_button"-->
+    <!--android:stateListAnimator="@null" />-->
+
+
+    <!--</RelativeLayout>-->
+
+    <!--<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"-->
+    <!--android:layout_width="fill_parent"-->
+    <!--android:layout_height="fill_parent"-->
+    <!--android:layout_below="@id/addButtonZone"-->
+    <!--android:background="#e1e1e1">-->
+
+
+    <!--</ScrollView>-->
 
 
 </RelativeLayout>

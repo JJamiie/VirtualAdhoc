@@ -49,6 +49,7 @@ public class CaptionActivity extends AppCompatActivity implements GoogleApiClien
     private Button editMessageButton;
     private Button gps_button;
     private Button camera_button;
+    private ImageView plusImage;
     private ImageView gps_button_picture;
     private String senderName;
     private Boolean gps_button_isClicked;
@@ -71,7 +72,8 @@ public class CaptionActivity extends AppCompatActivity implements GoogleApiClien
         messageEditText = (EditText) findViewById(R.id.captionEditText);
         editMessageButton = (Button) findViewById(R.id.edit_message);
         gps_button = (Button) findViewById(R.id.gps_button);
-        gps_button_picture = (ImageView) findViewById(R.id.gps_button_picture);
+        gps_button_picture = (ImageView) findViewById(R.id.gps_button_image);
+        plusImage = (ImageView) findViewById(R.id.plusImage);
         editMessageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -158,7 +160,8 @@ public class CaptionActivity extends AppCompatActivity implements GoogleApiClien
                 if (resultCode == RESULT_OK) {
                     System.out.println("Set image to currentPhotoImageView");
                     File currentPhoto = ManageImage.getFile()[0];
-                    Glide.with(getApplicationContext()).load(currentPhoto).into(currentPhotoImageView);
+                    Glide.with(getApplicationContext()).load(currentPhoto).centerCrop().into(currentPhotoImageView);
+                    plusImage.setVisibility(View.INVISIBLE);
                     System.out.println(currentPhoto.getName());
                 } else {
                     System.out.println("Delete photo");

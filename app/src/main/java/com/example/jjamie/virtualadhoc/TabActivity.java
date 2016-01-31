@@ -21,7 +21,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.TextView;
 
-public class TabActivity extends AppCompatActivity implements NewFeedFragment.OnFragmentInteractionListener, ProfileFragment.OnFragmentInteractionListener {
+public class TabActivity extends AppCompatActivity implements NewFeedFragment.OnFragmentInteractionListener, MateFragment.OnFragmentInteractionListener {
     private static Context context;
     private static ConnectionManager connectionManager;
     public static String senderName;
@@ -159,7 +159,7 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
                 case 0:
                     return NewFeedFragment.newInstance("", "");
                 case 1:
-                    return ProfileFragment.newInstance("", "");
+                    return MateFragment.newInstance("", "");
             }
             return PlaceholderFragment.newInstance(position + 1);
         }
@@ -180,7 +180,7 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
                 case 0:
                     return "Home";
                 case 1:
-                    return "PROFILE";
+                    return "Mate";
                 default:
                     break;
             }

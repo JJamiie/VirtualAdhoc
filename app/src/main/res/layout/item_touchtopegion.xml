@@ -56,6 +56,7 @@
                     android:layout_height="110dp"
                     android:background="@drawable/round_button"
                     android:layout_centerHorizontal="true"
+                    style="?android:attr/borderlessButtonStyle"
                     />
 
                 <TextView
