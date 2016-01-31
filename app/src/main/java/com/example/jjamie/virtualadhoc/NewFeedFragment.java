@@ -77,7 +77,6 @@ public class NewFeedFragment extends Fragment {
             mAlbumStorageDirFactory = new BaseAlbumDirFactory();
         }
         appBar = (AppBarLayout) getActivity().findViewById(R.id.appbar);
-        mFabButton = (FloatingActionButton) getActivity().findViewById(R.id.fab);
     }
 
     @Override

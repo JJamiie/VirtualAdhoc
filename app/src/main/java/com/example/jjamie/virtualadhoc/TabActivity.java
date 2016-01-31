@@ -1,7 +1,6 @@
 package com.example.jjamie.virtualadhoc;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -22,19 +21,16 @@ import android.view.Window;
 import android.widget.TextView;
 
 public class TabActivity extends AppCompatActivity implements NewFeedFragment.OnFragmentInteractionListener, MateFragment.OnFragmentInteractionListener,ProfileFragment.OnFragmentInteractionListener{
-    private static Context context;
-    private static ConnectionManager connectionManager;
     public static String senderName;
-
+    private FloatingActionButton fab_camera;
+    private FloatingActionButton fab_edit;
     private SectionsPagerAdapter mSectionsPagerAdapter;
-
     private ViewPager mViewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         requestWindowFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
         super.onCreate(savedInstanceState);
-        TabActivity.context = getApplicationContext();
         setContentView(R.layout.activity_tab);
 
         // Create the adapter that will return a fragment for each of the two
@@ -45,16 +41,42 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
+
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
+        tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                mViewPager.setCurrentItem(tab.getPosition());
+                animateFab(tab.getPosition());
+            }
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+
+        fab_camera = (FloatingActionButton) findViewById(R.id.fab_camera);
+        fab_camera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(), CaptionActivity.class);
                 intent.putExtra("senderName", senderName);
                 startActivity(intent);
+            }
+        });
+
+        fab_edit = (FloatingActionButton) findViewById(R.id.fab_edit);
+        fab_edit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
             }
         });
 
@@ -197,6 +219,28 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
 
     public static Activity getActivity() {
         return TabActivity.getActivity();
+    }
+
+    private void animateFab(int position) {
+        switch (position) {
+            case 0:
+                fab_camera.show();
+                fab_edit.hide();
+                break;
+            case 1:
+                fab_camera.hide();
+                fab_edit.hide();
+                break;
+            case 2:
+                fab_camera.hide();
+                fab_edit.show();
+                break;
+
+            default:
+                fab_camera.show();
+                fab_edit.hide();
+                break;
+        }
     }
 
 
