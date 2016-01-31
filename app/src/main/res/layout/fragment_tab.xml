@@ -12,6 +12,8 @@
         android:id="@+id/section_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="#334572"/>
+        android:background="#303f9f"
+        android:textColor="#FFFFFF"
+        />
 
 </RelativeLayout>

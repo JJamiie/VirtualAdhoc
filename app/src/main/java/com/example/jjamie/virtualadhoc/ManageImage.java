@@ -33,6 +33,7 @@ public class ManageImage {
     private static final String JPEG_FILE_SUFFIX = ".jpg";
     public static File setUpPhotoFile(Activity activity,AlbumStorageDirFactory mAlbumStorageDirFactory) throws IOException {
         File f = createImageFile(activity, mAlbumStorageDirFactory);
+        System.out.println("Real Path----------------"+f.getAbsolutePath());
         return f;
     }
 
@@ -46,10 +47,11 @@ public class ManageImage {
     }
 
     public static File getAlbumDir(AlbumStorageDirFactory mAlbumStorageDirFactory) {
+        System.out.println("getAlbumDir"+Environment.getExternalStorageState());
         File storageDir = null;
         if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
             storageDir = mAlbumStorageDirFactory.getAlbumStorageDir(getAlbumName());
-
+            System.out.println("StorageDir--"+storageDir);
             if (storageDir != null) {
                 if (! storageDir.mkdirs()) {
                     if (! storageDir.exists()){
@@ -120,7 +122,9 @@ public class ManageImage {
     }
 
     public static File[] getFile(){
-        String path = "/storage/emulated/0/Pictures/Pegion";
+
+        String path = Environment.getExternalStorageDirectory()+"/pictures/pegion";
+        System.out.println("get file---"+path);
         File dir = new File(path);
         File[] files = dir.listFiles();
         if(files == null) return null;

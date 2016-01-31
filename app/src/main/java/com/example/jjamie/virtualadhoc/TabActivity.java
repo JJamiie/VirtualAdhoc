@@ -4,10 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
-import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -15,47 +13,30 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.TextView;
 
-import java.io.File;
-import java.io.IOException;
-
 public class TabActivity extends AppCompatActivity implements NewFeedFragment.OnFragmentInteractionListener, ProfileFragment.OnFragmentInteractionListener {
-    public static final int ACTION_TAKE_PHOTO_B = 1;
-    public AlbumStorageDirFactory mAlbumStorageDirFactory;
-    public File currentPhoto;
     private static Context context;
     private static ConnectionManager connectionManager;
     public static String senderName;
-    /**
-     * The {@link android.support.v4.view.PagerAdapter} that will provide
-     * fragments for each of the sections. We use a
-     * {@link FragmentPagerAdapter} derivative, which will keep every
-     * loaded fragment in memory. If this becomes too memory intensive, it
-     * may be best to switch to a
-     * {@link android.support.v4.app.FragmentStatePagerAdapter}.
-     */
+
     private SectionsPagerAdapter mSectionsPagerAdapter;
 
-    /**
-     * The {@link ViewPager} that will host the section contents.
-     */
     private ViewPager mViewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        requestWindowFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
         super.onCreate(savedInstanceState);
         TabActivity.context = getApplicationContext();
         setContentView(R.layout.activity_tab);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+
         // Create the adapter that will return a fragment for each of the two
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
@@ -71,15 +52,12 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                dispatchTakePictureIntent(ACTION_TAKE_PHOTO_B);
+                Intent intent = new Intent(getApplicationContext(), CaptionActivity.class);
+                intent.putExtra("senderName", senderName);
+                startActivity(intent);
             }
         });
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
-            mAlbumStorageDirFactory = new FroyoAlbumDirFactory();
-        } else {
-            mAlbumStorageDirFactory = new BaseAlbumDirFactory();
-        }
 
         if (android.os.Build.VERSION.SDK_INT > 9) {
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
@@ -93,58 +71,13 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
             senderName = username;
         }
 
+
         connectionManager = new ConnectionManager(getApplicationContext());
         connectionManager.start();
 
+
     }
 
-    private void dispatchTakePictureIntent(int actionCode) {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        switch (actionCode) {
-            case ACTION_TAKE_PHOTO_B:
-                currentPhoto = null;
-                try {
-                    currentPhoto = ManageImage.setUpPhotoFile(this, mAlbumStorageDirFactory);
-                    Log.d("TabActivity", "path: " + currentPhoto.getAbsolutePath());
-                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(currentPhoto));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    currentPhoto = null;
-                }
-                break;
-            default:
-                break;
-        } // switch
-        startActivityForResult(takePictureIntent, actionCode);
-    }
-
-    private void handleCameraPhoto() {
-        if (currentPhoto != null) {
-//            finish(); // finish this activity
-            // Start Caption Activity
-            Intent intent = new Intent(getApplicationContext(), CaptionActivity.class);
-            intent.putExtra("currentPhotoPath", currentPhoto.getAbsolutePath());
-            intent.putExtra("senderName", senderName);
-            startActivity(intent);
-
-            Log.d("Tabactivity", "Add picture");
-            ManageImage.galleryAddPic(currentPhoto.getAbsolutePath(), this);
-            currentPhoto = null;
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case ACTION_TAKE_PHOTO_B: {
-                if (resultCode == RESULT_OK) {
-                    handleCameraPhoto();
-                }
-                break;
-            } // ACTION_TAKE_PHOTO_B
-
-        } // switch
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -172,7 +105,6 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
     public void onFragmentInteraction(Uri uri) {
 
     }
-
 
     /**
      * A placeholder fragment containing a simple view.
@@ -248,7 +180,7 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
         public CharSequence getPageTitle(int position) {
             switch (position) {
                 case 0:
-                    return "NEW FEED";
+                    return "Home";
                 case 1:
                     return "PROFILE";
                 default:
@@ -264,7 +196,6 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
 
     @Override
     public void onBackPressed() {
-        // your code.
         finish();
     }
 
