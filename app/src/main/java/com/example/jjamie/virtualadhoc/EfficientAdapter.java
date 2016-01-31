@@ -179,10 +179,12 @@ public class EfficientAdapter extends BaseAdapter {
                 final ImageView circleTurn1 = (ImageView) convertView.findViewById(R.id.circleTurn1);
                 circleTurn1.setAlpha(130);
                 final Animation rotation = AnimationUtils.loadAnimation(getActivity(), R.anim.rotate);
+                rotation.setFillAfter(true);
                 circleTurn1.startAnimation(rotation);
                 final ImageView circleTurn2 = (ImageView) convertView.findViewById(R.id.circleTurn2);
                 circleTurn2.setAlpha(130);
                 final Animation rotation2 = AnimationUtils.loadAnimation(getActivity(), R.anim.rotate2);
+                rotation2.setFillAfter(true);
                 circleTurn2.startAnimation(rotation2);
 
                 final ImageView logoPegion = (ImageView) convertView.findViewById(R.id.logoPegion);
