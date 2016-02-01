@@ -138,7 +138,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/locationZone"
         android:layout_gravity="center"
-        android:layout_marginTop="10dp">
+        >
 
         <RelativeLayout
             android:layout_width="fill_parent"
@@ -200,75 +200,6 @@
 
         </RelativeLayout>
     </android.support.v7.widget.CardView>
-
-
-    <!--<RelativeLayout-->
-    <!--android:id="@+id/addButtonZone"-->
-    <!--android:layout_width="fill_parent"-->
-    <!--android:layout_height="40dp"-->
-    <!--android:layout_below="@id/imageZone"-->
-    <!--android:layout_marginBottom="5dp"-->
-    <!--android:layout_marginTop="10dp"-->
-    <!--android:background="#FFFFFF"-->
-    <!--android:paddingLeft="10dp">-->
-
-    <!--<ImageView-->
-    <!--android:id="@+id/camera_image"-->
-    <!--android:layout_width="50dp"-->
-    <!--android:layout_height="22dp"-->
-    <!--android:layout_centerVertical="true"-->
-    <!--android:src="@drawable/caption_camera" />-->
-
-    <!--<ImageView-->
-    <!--android:id="@+id/sound_button"-->
-    <!--android:layout_width="50dp"-->
-    <!--android:layout_height="22dp"-->
-    <!--android:layout_centerVertical="true"-->
-    <!--android:layout_toRightOf="@id/camera_image"-->
-    <!--android:src="@drawable/caption_recorder" />-->
-
-    <!--<ImageView-->
-    <!--android:id="@+id/gps_button_picture"-->
-    <!--android:layout_width="50dp"-->
-    <!--android:layout_height="22dp"-->
-    <!--android:layout_centerVertical="true"-->
-    <!--android:layout_toRightOf="@id/sound_button"-->
-    <!--android:src="@drawable/gps_button" />-->
-
-    <!--<Button-->
-    <!--android:id="@+id/camera_button"-->
-    <!--style="?android:attr/borderlessButtonStyle"-->
-    <!--android:layout_width="50dp"-->
-    <!--android:layout_height="fill_parent"-->
-    <!--android:stateListAnimator="@null" />-->
-
-    <!--<Button-->
-    <!--android:id="@+id/recorder_button"-->
-    <!--style="?android:attr/borderlessButtonStyle"-->
-    <!--android:layout_width="50dp"-->
-    <!--android:layout_height="fill_parent"-->
-    <!--android:layout_toRightOf="@id/camera_button"-->
-    <!--android:stateListAnimator="@null" />-->
-
-    <!--<Button-->
-    <!--android:id="@+id/gps_button"-->
-    <!--style="?android:attr/borderlessButtonStyle"-->
-    <!--android:layout_width="50dp"-->
-    <!--android:layout_height="fill_parent"-->
-    <!--android:layout_toRightOf="@id/recorder_button"-->
-    <!--android:stateListAnimator="@null" />-->
-
-
-    <!--</RelativeLayout>-->
-
-    <!--<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"-->
-    <!--android:layout_width="fill_parent"-->
-    <!--android:layout_height="fill_parent"-->
-    <!--android:layout_below="@id/addButtonZone"-->
-    <!--android:background="#e1e1e1">-->
-
-
-    <!--</ScrollView>-->
 
 
 </RelativeLayout>

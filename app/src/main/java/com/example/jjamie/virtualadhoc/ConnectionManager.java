@@ -26,6 +26,7 @@ public class ConnectionManager extends Thread {
     static Map<String, Integer> apHistory;
     static boolean scannerStatus = true;
     static File[] imgFile;
+    static File[] imgMetadata;
     static Context contexts;
     Activity activity;
     private boolean active = false;
@@ -205,10 +206,14 @@ public class ConnectionManager extends Thread {
                     connectAP(contexts);
 
                     imgFile = ManageImage.getFile();
+                    imgMetadata = ManageImage.getFileMetadata();
+
                     if(imgFile!=null){
-                        System.out.println("Fiel lenght" + imgFile.length);
+                        System.out.println("File lenght" + imgFile.length);
                         for (int i = 0; i < imgFile.length; i++) {
-                            Image image = ManageImage.changeFileToImage(imgFile[i]);
+                            String data = ManageImage.readFromFileText(imgMetadata[i]);
+
+                            Image image = ManageImage.changeFileToImage(data,imgFile[i]);
                             Broadcaster.broadcast(image);
                         }
                     }

@@ -1,4 +1,5 @@
 package com.example.jjamie.virtualadhoc;
+
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
@@ -14,14 +15,14 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.bumptech.glide.Glide;
-import com.drew.imaging.ImageMetadataReader;
-import com.drew.imaging.ImageProcessingException;
-import com.drew.metadata.Directory;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+
 import jp.wasabeef.glide.transformations.CropCircleTransformation;
 
 /**
@@ -48,7 +49,7 @@ public class EfficientAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        if (ManageImage.getFile() == null) return 0;
+        if (ManageImage.getFile() == null) return 1;
         return ManageImage.getFile().length + 1;
     }
 
@@ -89,45 +90,28 @@ public class EfficientAdapter extends BaseAdapter {
                     holder.picture_show = (ImageView) convertView.findViewById(R.id.item_picture);
                     holder.description = (TextView) convertView.findViewById(R.id.item_listview_description);
                     holder.sent = (Button) convertView.findViewById(R.id.sent);
-                    holder.show_gps_map = (ImageView) convertView.findViewById(R.id.gps_button_image);
+                    holder.gps_zone = (RelativeLayout) convertView.findViewById(R.id.gpsZone);
+                    holder.gps_button = (Button) convertView.findViewById(R.id.gps_button);
                     convertView.setTag(holder); //deposit to tag
                 } else {
                     holder = (ViewHolder) convertView.getTag();
                 }
-                String contact = "";
-                String caption = "";
-                try {
-                    com.drew.metadata.Metadata metadata = ImageMetadataReader.readMetadata(ManageImage.getFile()[position - 1]);
-                    for (Directory directory : metadata.getDirectories()) {
-                        for (com.drew.metadata.Tag tag : directory.getTags()) {
-                            if (tag.getTagName().equals("Contact")) {
-                                contact = tag.getDescription();
-                            } else if (tag.getTagName().equals("Keywords")) {
-                                caption = tag.getDescription();
-                            } else if (tag.getTagName().equals("Sub-location")) {
-                                if (!tag.getDescription().equals("null")) {
-//                                    holder.show_gps_map.setVisibility(View.VISIBLE);
-                                }
-                            }
-                        }
-                    }
-                } catch (ImageProcessingException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+
+                String data = ManageImage.getFileMetadata(position - 1);
+                String[] d = data.split("---");
                 //Set sender's name
-                final String senderName = contact;
+                final String senderName = d[0];
                 holder.title.setText(senderName);
                 //Set description
-                final String description = contact;
-                holder.description.setText(caption);
+                final String message = d[1];
+                holder.description.setText(message);
+                //Set location
+                final String location = d[2];
                 //Set picture profile
                 Glide.with(mContext).load(R.drawable.profile).bitmapTransform(new CropCircleTransformation(mContext)).into(holder.picture_profile);
                 //Set image in list
                 final File fileImage = new File(ManageImage.getFile()[position - 1].getPath());
                 Glide.with(mContext).load(fileImage).centerCrop().placeholder(new ColorDrawable(0xFFc5c4c4)).into(holder.picture_show);
-
 
                 //Set sent button
                 holder.sent.setOnClickListener(new View.OnClickListener() {
@@ -140,7 +124,7 @@ public class EfficientAdapter extends BaseAdapter {
                             BufferedInputStream buf = new BufferedInputStream(new FileInputStream(fileImage));
                             buf.read(img, 0, img.length);
                             buf.close();
-                            Image image = new Image(senderName, sequenceNumber, img);
+                            Image image = new Image(senderName, sequenceNumber, message, location, img);
                             sequenceNumber++;
                             Broadcaster.broadcast(image);
 
@@ -152,18 +136,23 @@ public class EfficientAdapter extends BaseAdapter {
                             });
                         } catch (IOException ex) {
 
-                        } catch (SenderNameIncorrectLengthException ex) {
+                        } catch (LengthIncorrectLengthException ex) {
 
                         }
                     }
                 });
 
                 //Set gps button
-                holder.show_gps_map.setOnClickListener(new View.OnClickListener() {
+                holder.gps_button.setOnClickListener(new View.OnClickListener() {
 
                     @Override
                     public void onClick(View v) {
-
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(getActivity(), location, Toast.LENGTH_LONG).show();
+                            }
+                        });
                     }
                 });
 
@@ -185,17 +174,17 @@ public class EfficientAdapter extends BaseAdapter {
                 circleTurn2.startAnimation(rotation2);
 
                 final ImageView logoPegion = (ImageView) convertView.findViewById(R.id.logoPegion);
-                final RelativeLayout layoutTouchToPegion = (RelativeLayout)convertView.findViewById(R.id.layoutTouchToPegion);
+                final RelativeLayout layoutTouchToPegion = (RelativeLayout) convertView.findViewById(R.id.layoutTouchToPegion);
                 final TextView textUnderLogo = (TextView) convertView.findViewById(R.id.textUnderLogo);
 
-                if(!isStartPegion){
+                if (!isStartPegion) {
                     logoPegion.setImageResource(R.drawable.logo4);
                     rotation.setDuration(8000);
                     circleTurn1.startAnimation(rotation);
                     rotation2.setDuration(9000);
                     circleTurn2.startAnimation(rotation2);
                     textUnderLogo.setText("Touch to Pegion");
-                }else{
+                } else {
                     logoPegion.setImageResource(R.drawable.logopink);
                     rotation.setDuration(2000);
                     circleTurn1.startAnimation(rotation);
@@ -208,7 +197,7 @@ public class EfficientAdapter extends BaseAdapter {
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if(!isStartPegion){
+                        if (!isStartPegion) {
                             logoPegion.setImageResource(R.drawable.logopink);
                             layoutTouchToPegion.setBackgroundColor(Color.parseColor("#e91e63"));
                             rotation.setDuration(2000);
@@ -224,12 +213,12 @@ public class EfficientAdapter extends BaseAdapter {
 
                                 System.out.println("Connection manager start");
 
-                            }else{
+                            } else {
                                 connectionManager.wake();
                                 System.out.println("Connection manager resume");
 
                             }
-                        }else{
+                        } else {
                             logoPegion.setImageResource(R.drawable.logo4);
                             layoutTouchToPegion.setBackgroundColor(Color.parseColor("#303F9F"));
                             rotation.setDuration(8000);
@@ -259,8 +248,11 @@ public class EfficientAdapter extends BaseAdapter {
         ImageView picture_show;
         TextView description;
         Button sent;
-        ImageView show_gps_map;
+        RelativeLayout gps_zone;
+        Button gps_button;
+
     }
+
 
 }
 

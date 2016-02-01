@@ -10,8 +10,6 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -36,11 +34,7 @@ import com.google.android.gms.location.LocationSettingsStates;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-
-import pixy.meta.Metadata;
 
 public class CaptionActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, LocationListener {
@@ -53,13 +47,14 @@ public class CaptionActivity extends AppCompatActivity implements GoogleApiClien
     private ImageView gps_button_picture;
     private String senderName;
     private Boolean gps_button_isClicked;
+    private Boolean gotLocation = true;
     private GoogleApiClient googleApiClient;
     private Double latitude;
     private Double longitude;
     protected static final int REQUEST_CHECK_SETTINGS = 111111;
     public static final int ACTION_TAKE_PHOTO = 22222;
     public AlbumStorageDirFactory mAlbumStorageDirFactory;
-
+    private Boolean isCaptured = false;
     private ImageView currentPhotoImageView;
 
     @Override
@@ -77,7 +72,12 @@ public class CaptionActivity extends AppCompatActivity implements GoogleApiClien
         editMessageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addMessageToPicture();
+                if (gps_button_isClicked) {
+                    showProgressDialog("Loading...");
+                    System.out.println("Set location: " + latitude + "," + longitude);
+                } else {
+                    addMessageToPicture();
+                }
                 finish();
 
             }
@@ -98,6 +98,9 @@ public class CaptionActivity extends AppCompatActivity implements GoogleApiClien
                         if (!isSettingRequest) {
                             settingsrequest();
                         }
+                        gps_button_picture.setImageResource(R.drawable.gps_button_click);
+                        gps_button_isClicked = true;
+                        gotLocation = false;
                         startLocationUpdates();
                     } else if (gps_button_isClicked) {
                         gps_button_picture.setImageResource(R.drawable.gps_button);
@@ -111,6 +114,9 @@ public class CaptionActivity extends AppCompatActivity implements GoogleApiClien
         camera_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (isCaptured) {
+                    ManageImage.getFile()[0].delete();
+                }
                 dispatchTakePictureIntent(ACTION_TAKE_PHOTO);
             }
         });
@@ -161,6 +167,7 @@ public class CaptionActivity extends AppCompatActivity implements GoogleApiClien
                     System.out.println("Set image to currentPhotoImageView");
                     File currentPhoto = ManageImage.getFile()[0];
                     Glide.with(getApplicationContext()).load(currentPhoto).centerCrop().into(currentPhotoImageView);
+                    isCaptured = true;
                     plusImage.setVisibility(View.INVISIBLE);
                     System.out.println(currentPhoto.getName());
                 } else {
@@ -172,25 +179,15 @@ public class CaptionActivity extends AppCompatActivity implements GoogleApiClien
     }
 
     private void addMessageToPicture() {
-        try {
-            Glide.get(getApplicationContext()).clearMemory();
             File currentPhoto = new File(ManageImage.getFile()[0].getAbsolutePath());
-            FileInputStream fin = new FileInputStream(ManageImage.getFile()[0].getAbsolutePath());
-            FileOutputStream fout = new FileOutputStream("/storage/emulated/0/Pictures/Pegion/" + currentPhoto.getName() + "_0.jpg");
             String message = messageEditText.getText().toString();
-            String latitudeAndLongtitude="null";
-            if(gps_button_isClicked){
-//                showProgressDialog("Loading...");
-                latitudeAndLongtitude = latitude + "," + longitude;
-                System.out.println("Set location"+latitudeAndLongtitude);
+            String latitudeAndLongtitude = latitude + "," + longitude;
+            if (gps_button_isClicked) {
+                ManageImage.writeDataToFile(senderName,message,latitudeAndLongtitude, currentPhoto.getName());
+            } else {
+                ManageImage.writeDataToFile(senderName,message,"null",currentPhoto.getName());
+
             }
-            Metadata.insertIPTC(fin, fout, ManageImage.createIPTCDataSet(senderName, message, latitudeAndLongtitude), true);
-            fin.close();
-            fout.close();
-            currentPhoto.delete();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
 
@@ -219,6 +216,7 @@ public class CaptionActivity extends AppCompatActivity implements GoogleApiClien
             public void onResult(Status status) {
                 gps_button_picture.setImageResource(R.drawable.gps_button_click);
                 gps_button_isClicked = true;
+                gotLocation = false;
             }
         });
     }
@@ -234,13 +232,13 @@ public class CaptionActivity extends AppCompatActivity implements GoogleApiClien
         // Do something when Google API Client connection failed
     }
 
-    Boolean gotLocation;
 
     @Override
     public void onLocationChanged(Location location) {
         latitude = location.getLatitude();
         longitude = location.getLongitude();
         gotLocation = true;
+        System.out.println("GotLocation: " + gotLocation);
         System.out.println("Latitude : " + location.getLatitude() + "  " + "Longitude : " + location.getLongitude());
     }
 
@@ -289,7 +287,6 @@ public class CaptionActivity extends AppCompatActivity implements GoogleApiClien
     private ProgressDialog progressDialog;
 
     public void showProgressDialog(String message) {
-        gotLocation = false;
         progressDialog = new ProgressDialog(CaptionActivity.this);
         progressDialog.setMessage(message);
         progressDialog.setCancelable(false);
@@ -298,7 +295,9 @@ public class CaptionActivity extends AppCompatActivity implements GoogleApiClien
             public void run() {
                 while (true) {
                     if (gotLocation) {
-                        handler.sendEmptyMessage(0);
+                        progressDialog.dismiss();
+//                        handler.sendEmptyMessage(0);
+                        addMessageToPicture();
                         break;
                     }
                 }
@@ -307,12 +306,12 @@ public class CaptionActivity extends AppCompatActivity implements GoogleApiClien
 
     }
 
-    Handler handler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            progressDialog.dismiss();
-        }
-    };
+//    Handler handler = new Handler() {
+//        @Override
+//        public void handleMessage(Message msg) {
+//            progressDialog.dismiss();
+//        }
+//    };
 
     @Override
     public void onBackPressed() {
@@ -325,11 +324,16 @@ public class CaptionActivity extends AppCompatActivity implements GoogleApiClien
         switch (item.getItemId()) {
             case android.R.id.home:
                 // app icon in action bar clicked; go home
+                if (isCaptured) {
+                    ManageImage.getFile()[0].delete();
+                }
                 finish();
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
+
+
 
 }
 

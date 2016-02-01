@@ -19,7 +19,6 @@ public class Listener extends Thread {
 
     private static final String TAG = "Listener";
     private WifiManager mWifi;
-    private static final int PORT = 12234;
     private ServerSocket serverSocket;
     private Activity activity;
     private AlbumStorageDirFactory mAlbumStorageDirFactory;
@@ -37,7 +36,7 @@ public class Listener extends Thread {
         try {
             serverSocket = new ServerSocket(); // <-- create an unbound socket first
             serverSocket.setReuseAddress(true);
-            serverSocket.bind(new InetSocketAddress(PORT));
+            serverSocket.bind(new InetSocketAddress(Broadcaster.PORT));
             while (true) {
                 Log.d(TAG, "Waiting...");
                 socket = serverSocket.accept();
@@ -48,13 +47,14 @@ public class Listener extends Thread {
                 ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
                 byte[] img = (byte[]) objectInputStream.readObject();
                 Image image = new Image(img, img.length);
-                System.out.println("SenderName: " + image.senderName + " Senquence number: " + image.sequenceNumber + " Size packet:" + image.getImageBytes().length);
+                System.out.println("SenderName: " + image.senderName + " Senquence number: " + image.sequenceNumber + " Message: " + image.message + " Location: " + image.location);
 
                 if (!image.senderName.equals(TabActivity.senderName)) {
                     File file = ManageImage.setUpPhotoFile(activity, mAlbumStorageDirFactory);
                     FileOutputStream fileOutputStream = new FileOutputStream(file);
                     fileOutputStream.write(image.getImageBytes());
                     ManageImage.galleryAddPic(file.getAbsolutePath(), activity);
+                    ManageImage.writeDataToFile(image.senderName,image.message,image.location,file.getName());
                     socket.close();
 
                     Log.d("Listener", "Finished...");
