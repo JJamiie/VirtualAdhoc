@@ -73,13 +73,12 @@ public class CaptionActivity extends AppCompatActivity implements GoogleApiClien
             @Override
             public void onClick(View v) {
                 if (gps_button_isClicked) {
-
                     showProgressDialog("Loading...");
                     System.out.println("Set location: " + latitude + "," + longitude);
                 } else {
                     addMessageToPicture();
-                    finish();
                 }
+                finish();
 
             }
         });
@@ -101,8 +100,8 @@ public class CaptionActivity extends AppCompatActivity implements GoogleApiClien
                         }
                         gps_button_picture.setImageResource(R.drawable.gps_button_click);
                         gps_button_isClicked = true;
-//                        gotLocation = false;
-//                        startLocationUpdates();
+                        gotLocation = false;
+                        startLocationUpdates();
                     } else if (gps_button_isClicked) {
                         gps_button_picture.setImageResource(R.drawable.gps_button);
                         gps_button_isClicked = false;
@@ -186,7 +185,7 @@ public class CaptionActivity extends AppCompatActivity implements GoogleApiClien
             if (gps_button_isClicked) {
                 ManageImage.writeDataToFile(senderName,message,latitudeAndLongtitude, currentPhoto.getName());
             } else {
-                ManageImage.writeDataToFile(senderName, message, "null",currentPhoto.getName());
+                ManageImage.writeDataToFile(senderName,message,"null",currentPhoto.getName());
 
             }
     }
@@ -215,12 +214,11 @@ public class CaptionActivity extends AppCompatActivity implements GoogleApiClien
         LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this).setResultCallback(new ResultCallback<Status>() {
             @Override
             public void onResult(Status status) {
-//                gotLocation = false;
                 gps_button_picture.setImageResource(R.drawable.gps_button_click);
                 gps_button_isClicked = true;
+                gotLocation = false;
             }
         });
-
     }
 
 
@@ -240,6 +238,7 @@ public class CaptionActivity extends AppCompatActivity implements GoogleApiClien
         latitude = location.getLatitude();
         longitude = location.getLongitude();
         gotLocation = true;
+        System.out.println("GotLocation: " + gotLocation);
         System.out.println("Latitude : " + location.getLatitude() + "  " + "Longitude : " + location.getLongitude());
     }
 
@@ -282,15 +281,12 @@ public class CaptionActivity extends AppCompatActivity implements GoogleApiClien
                 }
             }
         });
-
     }
 
 
     private ProgressDialog progressDialog;
 
     public void showProgressDialog(String message) {
-        gotLocation=false;
-        startLocationUpdates();
         progressDialog = new ProgressDialog(CaptionActivity.this);
         progressDialog.setMessage(message);
         progressDialog.setCancelable(false);
@@ -302,7 +298,6 @@ public class CaptionActivity extends AppCompatActivity implements GoogleApiClien
                         progressDialog.dismiss();
 //                        handler.sendEmptyMessage(0);
                         addMessageToPicture();
-                        finish();
                         break;
                     }
                 }

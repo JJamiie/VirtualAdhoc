@@ -113,12 +113,6 @@ public class EfficientAdapter extends BaseAdapter {
                 final File fileImage = new File(ManageImage.getFile()[position - 1].getPath());
                 Glide.with(mContext).load(fileImage).centerCrop().placeholder(new ColorDrawable(0xFFc5c4c4)).into(holder.picture_show);
 
-                if(location.equals("null")){
-                    holder.gps_zone.setVisibility(View.INVISIBLE);
-                }else{
-                    holder.gps_zone.setVisibility(View.VISIBLE);
-                }
-
                 //Set sent button
                 holder.sent.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -161,6 +155,7 @@ public class EfficientAdapter extends BaseAdapter {
                         });
                     }
                 });
+
 
                 break;
             case TYPE_FIRST:
