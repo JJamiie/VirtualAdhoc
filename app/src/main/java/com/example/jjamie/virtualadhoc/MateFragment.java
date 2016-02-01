@@ -7,6 +7,11 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+
+import com.bumptech.glide.Glide;
+
+import jp.wasabeef.glide.transformations.CropCircleTransformation;
 
 
 /**
@@ -64,7 +69,12 @@ public class MateFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_mate, container, false);
+        View view = inflater.inflate(R.layout.fragment_mate,container,false);
+        ImageView image_people_nearby = (ImageView) view.findViewById(R.id.people_picture);
+        Glide.with(this).load(R.drawable.my_profile_picture).bitmapTransform(new CropCircleTransformation(getContext())).into(image_people_nearby);
+        ImageView image_people_network = (ImageView) view.findViewById(R.id.people_network_picture);
+        Glide.with(this).load(R.drawable.my_profile_picture).bitmapTransform(new CropCircleTransformation(getContext())).into(image_people_network);
+        return view;
     }
 
     // TODO: Rename method, update argument and hook method into UI event

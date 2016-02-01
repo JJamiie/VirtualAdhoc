@@ -5,9 +5,124 @@
     tools:context="com.example.jjamie.virtualadhoc.MateFragment">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="180dp"
+            android:background="#455A64"
+            android:gravity="center">
+
+            <!--<TextView-->
+            <!--android:id="@+id/text_status"-->
+            <!--android:layout_centerHorizontal="true"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:textSize="25dp"-->
+            <!--android:textStyle="bold"-->
+            <!--android:text="Hotspot"-->
+            <!--android:textColor="#FFFFFF" />-->
+
+            <ImageView
+                android:id="@+id/image_status"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_centerHorizontal="true"
+                android:src="@drawable/hotspot" />
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="10dp">
+
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:background="#FFFFFF"
+                android:layout_weight="1">
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    style="?android:attr/borderlessButtonStyle"
+                    android:stateListAnimator="@null"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Create network"
+                    android:layout_centerInParent="true"
+                    android:textStyle="bold"/>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:background="#FFFFFF"
+                android:layout_weight="1">
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    style="?android:attr/borderlessButtonStyle"
+                    android:stateListAnimator="@null"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Join network"
+                    android:layout_centerInParent="true"
+                    android:textStyle="bold"/>
+            </RelativeLayout>
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="110dp"
+            android:background="#FFFFFF"
+            android:paddingLeft="10dp"
+            android:paddingTop="10dp">
+
+            <TextView
+                android:id="@+id/pegion_network_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Pegion networks"
+                android:textSize="14dp"
+                android:textStyle="bold" />
+
+            <ImageView
+                android:id="@+id/people_network_picture"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_below="@id/pegion_network_text"
+                android:layout_marginTop="8dp"
+                android:background="#FFFFFF" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="110dp"
+            android:background="#FFFFFF"
+            android:paddingLeft="10dp"
+            android:paddingTop="10dp">
+
+            <TextView
+                android:id="@+id/people_nearby_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="People nearby"
+                android:textSize="14dp"
+                android:textStyle="bold" />
+
+            <ImageView
+                android:id="@+id/people_picture"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_below="@id/people_nearby_text"
+                android:layout_marginTop="8dp"
+                android:background="#FFFFFF" />
+        </RelativeLayout>
+    </LinearLayout>
 </FrameLayout>
