@@ -125,4 +125,24 @@
                 android:background="#FFFFFF" />
         </RelativeLayout>
     </LinearLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_gravity="bottom"
+        android:background="#EF5350">
+        <Button
+            android:id="@+id/disable_pegion_network_button"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:stateListAnimator="@null"
+            style="?android:attr/borderlessButtonStyle"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="Disable Pegion networks"
+            android:textStyle="bold"
+            android:textSize="18dp"
+            android:textColor="#FFFFFF"/>
+    </RelativeLayout>
 </FrameLayout>
