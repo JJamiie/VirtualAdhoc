@@ -2,6 +2,7 @@ package com.example.jjamie.virtualadhoc;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.view.LayoutInflater;
@@ -156,7 +157,10 @@ public class EfficientAdapter extends BaseAdapter {
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                Toast.makeText(getActivity(), location, Toast.LENGTH_LONG).show();
+                                Intent mapActivityIntent = new Intent(getActivity(),MapsActivity.class);
+                                mapActivityIntent.putExtra("location",location);
+                                getActivity().startActivity(mapActivityIntent);
+                                System.out.println("location"+ location);
                             }
                         });
                     }
