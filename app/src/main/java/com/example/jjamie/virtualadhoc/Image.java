@@ -8,23 +8,23 @@ import java.nio.charset.Charset;
 
 public class Image {
     public static final int SENDER_NAME_LENGTH = 50;
-    public static final int MESSAGE_LENGTH = 100;
-    public static final int GPS_LENGTH = 30;
-    public static final int SEQUENCE_NUMBER_LENGTH = 4;
+    public static final int FILE_NAME_LENGTH = 100;
+    public static final int MESSAGE_LENGTH = 200;
+    public static final int LOCATION_LENGTH = 30;
 
     public String senderName;
-    public int sequenceNumber;
+    public String filename;
     public String message;
     public String location;
     public byte[] imageBytes;
 
 
-    public Image(String senderName, int sequenceNumber, String message, String location, byte[] imageBytes) throws LengthIncorrectLengthException {
-        if (senderName.length() > SENDER_NAME_LENGTH || message.length() > MESSAGE_LENGTH || location.length() > GPS_LENGTH) {
+    public Image(String senderName, String filename, String message, String location, byte[] imageBytes) throws LengthIncorrectLengthException {
+        if (senderName.length() > SENDER_NAME_LENGTH || message.length() > MESSAGE_LENGTH || location.length() > LOCATION_LENGTH || filename.length() > FILE_NAME_LENGTH) {
             throw new LengthIncorrectLengthException();
         }
         this.senderName = senderName;
-        this.sequenceNumber = sequenceNumber;
+        this.filename = filename;
         this.message = message;
         this.location = location;
         this.imageBytes = imageBytes;
@@ -49,27 +49,28 @@ public class Image {
         String senderNameString = new String(senderNameBytes, 0, findActuallength(senderNameBytes), Charset.forName("UTF-8"));
         this.senderName = senderNameString;
 
-        //	assign the sequenceNumber
-        byte[] sequenceNumberBytes = new byte[SEQUENCE_NUMBER_LENGTH];
-        System.arraycopy(imageBytes, SENDER_NAME_LENGTH, sequenceNumberBytes, 0, SEQUENCE_NUMBER_LENGTH);
-        this.sequenceNumber = Image.bytesToInt(sequenceNumberBytes);
+        //	assign the filename
+        byte[] filenameBytes = new byte[FILE_NAME_LENGTH];
+        System.arraycopy(imageBytes, SENDER_NAME_LENGTH, filenameBytes, 0, FILE_NAME_LENGTH);
+        String filenameString = new String(filenameBytes,0,findActuallength(filenameBytes),Charset.forName("UTF-8"));
+        this.filename = filenameString;
 
         // assign message
         byte[] messageBytes = new byte[MESSAGE_LENGTH];
-        System.arraycopy(imageBytes, SENDER_NAME_LENGTH + SEQUENCE_NUMBER_LENGTH, messageBytes, 0, MESSAGE_LENGTH);
+        System.arraycopy(imageBytes, SENDER_NAME_LENGTH + FILE_NAME_LENGTH, messageBytes, 0, MESSAGE_LENGTH);
         String messageString = new String(messageBytes, 0, findActuallength(messageBytes), Charset.forName("UTF-8"));
         this.message = messageString;
 
         // assign location
-        byte[] locationBytes = new byte[GPS_LENGTH];
-        System.arraycopy(imageBytes, SENDER_NAME_LENGTH + SEQUENCE_NUMBER_LENGTH + MESSAGE_LENGTH, locationBytes, 0, GPS_LENGTH);
+        byte[] locationBytes = new byte[LOCATION_LENGTH];
+        System.arraycopy(imageBytes, SENDER_NAME_LENGTH + FILE_NAME_LENGTH + MESSAGE_LENGTH, locationBytes, 0, LOCATION_LENGTH);
         String locationString = new String(locationBytes, 0, findActuallength(locationBytes), Charset.forName("UTF-8"));
         this.location = locationString;
 
         //	assign the imageBytes
-        int lengthImage = lengthPacket - (SENDER_NAME_LENGTH + SEQUENCE_NUMBER_LENGTH + MESSAGE_LENGTH + GPS_LENGTH);
+        int lengthImage = lengthPacket - (SENDER_NAME_LENGTH + FILE_NAME_LENGTH + MESSAGE_LENGTH + LOCATION_LENGTH);
         this.imageBytes = new byte[lengthImage];
-        System.arraycopy(imageBytes, SENDER_NAME_LENGTH + SEQUENCE_NUMBER_LENGTH + MESSAGE_LENGTH + GPS_LENGTH, this.imageBytes, 0, lengthImage);
+        System.arraycopy(imageBytes, SENDER_NAME_LENGTH + FILE_NAME_LENGTH + MESSAGE_LENGTH + LOCATION_LENGTH, this.imageBytes, 0, lengthImage);
     }
 
     public static int findActuallength(byte[] bytes) {
@@ -109,23 +110,25 @@ public class Image {
         byte[] senderNameBytesShorter = senderName.getBytes(Charset.forName("UTF-8"));
         System.arraycopy(senderNameBytesShorter, 0, senderNameBytes, 0, senderNameBytesShorter.length);
 
-        byte[] sequenceNumberBytes = Image.intToBytes(sequenceNumber);
+        byte[] filenameBytes = new byte[FILE_NAME_LENGTH];
+        byte[] filenameBytesShorter = filename.getBytes(Charset.forName("UTF-8"));
+        System.arraycopy(filenameBytesShorter,0,filenameBytes,0,filenameBytesShorter.length);
 
         byte[] messageBytes = new byte[MESSAGE_LENGTH];
         byte[] messageBytesShorter = message.getBytes(Charset.forName("UTF-8"));
         System.arraycopy(messageBytesShorter, 0, messageBytes, 0, messageBytesShorter.length);
 
-        byte[] locationBytes = new byte[GPS_LENGTH];
+        byte[] locationBytes = new byte[LOCATION_LENGTH];
         byte[] locationBytesShorter = location.getBytes(Charset.forName("UTF-8"));
         System.arraycopy(locationBytesShorter, 0, locationBytes, 0, locationBytesShorter.length);
 
-        byte[] imageChunkBytes = new byte[SENDER_NAME_LENGTH + SEQUENCE_NUMBER_LENGTH + MESSAGE_LENGTH + GPS_LENGTH + imageBytes.length];
+        byte[] imageChunkBytes = new byte[SENDER_NAME_LENGTH + FILE_NAME_LENGTH + MESSAGE_LENGTH + LOCATION_LENGTH + imageBytes.length];
 
         System.arraycopy(senderNameBytes, 0, imageChunkBytes, 0, SENDER_NAME_LENGTH);
-        System.arraycopy(sequenceNumberBytes, 0, imageChunkBytes, SENDER_NAME_LENGTH, SEQUENCE_NUMBER_LENGTH);
-        System.arraycopy(messageBytes, 0, imageChunkBytes, SENDER_NAME_LENGTH + SEQUENCE_NUMBER_LENGTH, MESSAGE_LENGTH);
-        System.arraycopy(locationBytes, 0, imageChunkBytes, SENDER_NAME_LENGTH + SEQUENCE_NUMBER_LENGTH + MESSAGE_LENGTH, GPS_LENGTH);
-        System.arraycopy(imageBytes, 0, imageChunkBytes, SENDER_NAME_LENGTH + SEQUENCE_NUMBER_LENGTH + MESSAGE_LENGTH + GPS_LENGTH, imageBytes.length);
+        System.arraycopy(filenameBytes, 0, imageChunkBytes, SENDER_NAME_LENGTH, FILE_NAME_LENGTH);
+        System.arraycopy(messageBytes, 0, imageChunkBytes, SENDER_NAME_LENGTH + FILE_NAME_LENGTH, MESSAGE_LENGTH);
+        System.arraycopy(locationBytes, 0, imageChunkBytes, SENDER_NAME_LENGTH + FILE_NAME_LENGTH + MESSAGE_LENGTH, LOCATION_LENGTH);
+        System.arraycopy(imageBytes, 0, imageChunkBytes, SENDER_NAME_LENGTH + FILE_NAME_LENGTH + MESSAGE_LENGTH + LOCATION_LENGTH, imageBytes.length);
 
         return imageChunkBytes;
     }

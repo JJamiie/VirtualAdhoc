@@ -47,10 +47,16 @@ public class Listener extends Thread {
                 ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
                 byte[] img = (byte[]) objectInputStream.readObject();
                 Image image = new Image(img, img.length);
-                System.out.println("SenderName: " + image.senderName + " Senquence number: " + image.sequenceNumber + " Message: " + image.message + " Location: " + image.location);
+                System.out.println("SenderName: " + image.senderName + " Senquence number: " + image.filename + " Message: " + image.message + " Location: " + image.location);
 
-                if (!image.senderName.equals(TabActivity.senderName)) {
-                    File file = ManageImage.setUpPhotoFile(activity, mAlbumStorageDirFactory);
+                if (!image.senderName.equals(TabActivity.senderName) && !ManageImage.checkDuplicate(image.filename)) {
+//                    File file = ManageImage.setUpPhotoFile(mAlbumStorageDirFactory);
+                    String filename = image.filename.substring(0, image.filename.length() - 5);
+                    System.out.println("Receive filename"+filename);
+
+
+
+                    File file =ManageImage.setUpPhotoFile(mAlbumStorageDirFactory,filename);
                     FileOutputStream fileOutputStream = new FileOutputStream(file);
                     fileOutputStream.write(image.getImageBytes());
                     ManageImage.galleryAddPic(file.getAbsolutePath(), activity);

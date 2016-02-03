@@ -74,7 +74,6 @@ public class EfficientAdapter extends BaseAdapter {
         return TYPE_MAX_COUNT;
     }
 
-    int sequenceNumber = 0;
     boolean isStartPegion = false;
 
     @Override
@@ -131,14 +130,15 @@ public class EfficientAdapter extends BaseAdapter {
                             BufferedInputStream buf = new BufferedInputStream(new FileInputStream(fileImage));
                             buf.read(img, 0, img.length);
                             buf.close();
-                            Image image = new Image(senderName, sequenceNumber, message, location, img);
-                            sequenceNumber++;
+                            String filename = fileImage.getName().substring(0,fileImage.getName().length()-5);
+                            System.out.println("filename: "+filename);
+                            Image image = new Image(senderName, filename, message, location, img);
                             Broadcaster.broadcast(image);
 
                             activity.runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    Toast.makeText(activity, "sent", Toast.LENGTH_LONG).show();
+                                    Toast.makeText(activity, "Sent", Toast.LENGTH_LONG).show();
                                 }
                             });
                         } catch (IOException ex) {
@@ -224,6 +224,7 @@ public class EfficientAdapter extends BaseAdapter {
 //                            }
                             connectionManager.wake();
 //                                System.out.println("Connection manager resume");
+
 
                         } else {
                             logoPegion.setImageResource(R.drawable.logo4);
