@@ -69,7 +69,7 @@ public class ApManager {
 
             Method setConfigMethod = wifiManager.getClass().getMethod("setWifiApConfiguration", WifiConfiguration.class);
             setConfigMethod.invoke(wifiManager, wifiConfig);
-
+            System.out.println("check2");
             return true;
         }
         catch (Exception e) {
@@ -78,4 +78,3 @@ public class ApManager {
         }
     }
 }
-

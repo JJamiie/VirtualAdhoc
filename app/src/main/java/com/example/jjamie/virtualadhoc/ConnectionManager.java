@@ -161,15 +161,6 @@ public class ConnectionManager extends Thread {
         availableAP = new ArrayList<>();
 
         while(true) {
-            while(!active){
-                try {
-                    synchronized (this){
-                        wait();
-                    }
-                } catch (InterruptedException e) {
-                    System.out.println("Connection manager"+e.getMessage());
-                }
-            }
 
             enableWifi(contexts);
             System.out.println("Stage: Sleep0");
@@ -180,17 +171,22 @@ public class ConnectionManager extends Thread {
             }
             System.out.println("Stage: Awake0");
             listAP(contexts);
-
+            if (availableAP.size() <= 0) {
+                listAP(contexts);
+            }
+            if (availableAP.size() <= 0) {
+                listAP(contexts);
+            }
             String r = availableAP.size()+"";
-             Log.d("ConnectionManager",r);
+            Log.d("ConnectionManager",r);
             if (availableAP.size() <= 0) {
                 System.out.println("No AP around ");
                 //Noone around here use this App so turn on AP.
                 //
-                 ApManager.configApState(contexts, true);
+                ApManager.configApState(contexts, true);
                 System.out.println("Stage: Sleep1");
                 try {
-                    Thread.sleep(120000);
+                    Thread.sleep(90000);
                     ApManager.configApState(contexts, false);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -235,6 +231,7 @@ public class ConnectionManager extends Thread {
     public static boolean joinAp(String SSID,Context context){
         WifiConfiguration conf = new WifiConfiguration();
         conf.SSID = "\"" + SSID + "\"";
+        //conf.preSharedKey = "\""+ "pegion"+"\"";
         // conf.wepKeys[0] = "\"" + networkPass + "\"";    In case of network has password
         /*
         conf.wepTxKeyIndex = 0;
