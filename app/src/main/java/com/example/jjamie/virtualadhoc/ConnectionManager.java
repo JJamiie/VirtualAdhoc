@@ -190,7 +190,7 @@ public class ConnectionManager extends Thread {
                  ApManager.configApState(contexts, true);
                 System.out.println("Stage: Sleep1");
                 try {
-                    Thread.sleep(120000);
+                    Thread.sleep(12000);
                     ApManager.configApState(contexts, false);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -209,10 +209,9 @@ public class ConnectionManager extends Thread {
                     imgMetadata = ManageImage.getFileMetadata();
 
                     if(imgFile!=null){
-                        System.out.println("File lenght" + imgFile.length);
+                        System.out.println("File length" + imgFile.length);
                         for (int i = 0; i < imgFile.length; i++) {
                             String data = ManageImage.readFromFileText(imgMetadata[i]);
-
                             Image image = ManageImage.changeFileToImage(data,imgFile[i]);
                             Broadcaster.broadcast(image);
                         }
@@ -335,7 +334,7 @@ public class ConnectionManager extends Thread {
 
     public synchronized void wake() {
         active = true;
-        notifyAll();
+        notify();
     }
 
     public void sleep() {

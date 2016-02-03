@@ -34,13 +34,18 @@ public class ManageImage {
     private static final String JPEG_FILE_PREFIX = "IMG_";
     private static final String JPEG_FILE_SUFFIX = ".jpg";
 
-    public static File setUpPhotoFile(Activity activity, AlbumStorageDirFactory mAlbumStorageDirFactory) throws IOException {
-        File f = createImageFile(activity, mAlbumStorageDirFactory);
-        System.out.println("Real Path----------------" + f.getAbsolutePath());
+    public static File setUpPhotoFile(AlbumStorageDirFactory mAlbumStorageDirFactory) throws IOException {
+        File f = createImageFile(mAlbumStorageDirFactory);
+//        System.out.println("Real Path----------------" + f.getAbsolutePath());
         return f;
     }
 
-    public static File createImageFile(Activity activity, AlbumStorageDirFactory mAlbumStorageDirFactory) throws IOException {
+    public static File setUpPhotoFile(AlbumStorageDirFactory mAlbumStorageDirFactory,String filename) throws IOException{
+        File f = createImageFile(mAlbumStorageDirFactory,filename);
+        return f;
+    }
+
+    public static File createImageFile(AlbumStorageDirFactory mAlbumStorageDirFactory) throws IOException {
         // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = JPEG_FILE_PREFIX + timeStamp + "_";
@@ -48,6 +53,14 @@ public class ManageImage {
         File imageF = File.createTempFile(imageFileName, JPEG_FILE_SUFFIX, albumF);
         return imageF;
     }
+    public static File createImageFile(AlbumStorageDirFactory mAlbumStorageDirFactory,String filename) throws IOException {
+        // Create an image file name
+        String imageFileName = filename;
+        File albumF = getAlbumDir(mAlbumStorageDirFactory);
+        File imageF = File.createTempFile(imageFileName, JPEG_FILE_SUFFIX, albumF);
+        return imageF;
+    }
+
 
     public static File getAlbumDir(AlbumStorageDirFactory mAlbumStorageDirFactory) {
 //        System.out.println("getAlbumDir"+Environment.getExternalStorageState());
@@ -217,14 +230,14 @@ public class ManageImage {
     }
 
     public static Image changeFileToImage(String data, File file) {
-        int sequenceNumber = 1;
+//        int sequenceNumber = 1;
         byte[] img = new byte[(int) file.length()];
         try {
             BufferedInputStream buf = new BufferedInputStream(new FileInputStream(file));
             buf.read(img, 0, img.length);
             buf.close();
             String[] d = data.split("---");
-            Image image = new Image(d[0], sequenceNumber, d[1], d[2], img);
+            Image image = new Image(d[0], file.getName(), d[1], d[2], img);
             return image;
         } catch (IOException e) {
             e.printStackTrace();
@@ -263,5 +276,18 @@ public class ManageImage {
         }
     }
 
+    public static boolean checkDuplicate(String filename){
+        String path = Environment.getExternalStorageDirectory() + "/pictures/pegion";
+        File dir = new File(path);
+        File[] files = dir.listFiles();
+
+        for(int i=0;i<files.length;i++){
+            if(files[i].getName().equals(filename)){
+                return true;
+            }
+        }
+        if (files == null) return false;
+        return true;
+    }
 
 }

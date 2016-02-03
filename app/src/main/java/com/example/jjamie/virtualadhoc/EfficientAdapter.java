@@ -74,7 +74,6 @@ public class EfficientAdapter extends BaseAdapter {
         return TYPE_MAX_COUNT;
     }
 
-    int sequenceNumber = 0;
     boolean isStartPegion = false;
 
     @Override
@@ -114,9 +113,9 @@ public class EfficientAdapter extends BaseAdapter {
                 final File fileImage = new File(ManageImage.getFile()[position - 1].getPath());
                 Glide.with(mContext).load(fileImage).centerCrop().placeholder(new ColorDrawable(0xFFc5c4c4)).into(holder.picture_show);
 
-                if(location.equals("null")){
+                if (location.equals("null")) {
                     holder.gps_zone.setVisibility(View.INVISIBLE);
-                }else{
+                } else {
                     holder.gps_zone.setVisibility(View.VISIBLE);
                 }
 
@@ -131,14 +130,15 @@ public class EfficientAdapter extends BaseAdapter {
                             BufferedInputStream buf = new BufferedInputStream(new FileInputStream(fileImage));
                             buf.read(img, 0, img.length);
                             buf.close();
-                            Image image = new Image(senderName, sequenceNumber, message, location, img);
-                            sequenceNumber++;
+                            String filename = fileImage.getName().substring(0,fileImage.getName().length()-5);
+                            System.out.println("filename: "+filename);
+                            Image image = new Image(senderName, filename, message, location, img);
                             Broadcaster.broadcast(image);
 
                             activity.runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    Toast.makeText(activity, "sent", Toast.LENGTH_LONG).show();
+                                    Toast.makeText(activity, "Sent", Toast.LENGTH_LONG).show();
                                 }
                             });
                         } catch (IOException ex) {
@@ -157,10 +157,10 @@ public class EfficientAdapter extends BaseAdapter {
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                Intent mapActivityIntent = new Intent(getActivity(),MapsActivity.class);
-                                mapActivityIntent.putExtra("location",location);
+                                Intent mapActivityIntent = new Intent(getActivity(), MapsActivity.class);
+                                mapActivityIntent.putExtra("location", location);
                                 getActivity().startActivity(mapActivityIntent);
-                                System.out.println("location"+ location);
+                                System.out.println("location" + location);
                             }
                         });
                     }
@@ -215,18 +215,16 @@ public class EfficientAdapter extends BaseAdapter {
                             circleTurn2.startAnimation(rotation2);
                             textUnderLogo.setText("Running Pegion...");
                             isStartPegion = true;
-                            if (connectionManager == null) {
-                                connectionManager = new ConnectionManager(getActivity());
-                                connectionManager.start();
-                                connectionManager.sleep();
+//                            if (connectionManager == null) {
+                            connectionManager = new ConnectionManager(getActivity());
+                            connectionManager.start();
+                            connectionManager.wake();
+                            System.out.println("Connection manager start");
 
-                                System.out.println("Connection manager start");
+//                            }else{
+//                            }
+//                            System.out.println("Connection manager resume");
 
-                            } else {
-                                connectionManager.wake();
-                                System.out.println("Connection manager resume");
-
-                            }
                         } else {
                             logoPegion.setImageResource(R.drawable.logo4);
                             layoutTouchToPegion.setBackgroundColor(Color.parseColor("#303F9F"));

@@ -143,7 +143,7 @@ public class CaptionActivity extends AppCompatActivity implements GoogleApiClien
     private void dispatchTakePictureIntent(int actionCode) {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         try {
-            File currentPhoto = ManageImage.setUpPhotoFile(this, mAlbumStorageDirFactory);
+            File currentPhoto = ManageImage.setUpPhotoFile(mAlbumStorageDirFactory);
             takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(currentPhoto));
         } catch (IOException e) {
             e.printStackTrace();
@@ -180,15 +180,15 @@ public class CaptionActivity extends AppCompatActivity implements GoogleApiClien
     }
 
     private void addMessageToPicture() {
-            File currentPhoto = new File(ManageImage.getFile()[0].getAbsolutePath());
-            String message = messageEditText.getText().toString();
-            String latitudeAndLongtitude = latitude + "," + longitude;
-            if (gps_button_isClicked) {
-                ManageImage.writeDataToFile(senderName,message,latitudeAndLongtitude, currentPhoto.getName());
-            } else {
-                ManageImage.writeDataToFile(senderName, message, "null",currentPhoto.getName());
+        File currentPhoto = new File(ManageImage.getFile()[0].getAbsolutePath());
+        String message = messageEditText.getText().toString();
+        String latitudeAndLongtitude = latitude + "," + longitude;
+        if (gps_button_isClicked) {
+            ManageImage.writeDataToFile(senderName, message, latitudeAndLongtitude, currentPhoto.getName());
+        } else {
+            ManageImage.writeDataToFile(senderName, message, "null", currentPhoto.getName());
 
-            }
+        }
     }
 
 
@@ -289,7 +289,7 @@ public class CaptionActivity extends AppCompatActivity implements GoogleApiClien
     private ProgressDialog progressDialog;
 
     public void showProgressDialog(String message) {
-        gotLocation=false;
+        gotLocation = false;
         startLocationUpdates();
         progressDialog = new ProgressDialog(CaptionActivity.this);
         progressDialog.setMessage(message);
@@ -337,7 +337,6 @@ public class CaptionActivity extends AppCompatActivity implements GoogleApiClien
                 return super.onOptionsItemSelected(item);
         }
     }
-
 
 
 }
