@@ -23,6 +23,7 @@ public class ConnectionManager extends Thread {
     private static List<ScanResult> results;
     static int size = 0;
     static List<String> availableAP;
+    static List<String> allAP;
     static Map<String, Integer> apHistory;
     static boolean scannerStatus = true;
     static File[] imgFile;
@@ -230,13 +231,7 @@ public class ConnectionManager extends Thread {
     public static boolean joinAp(String SSID,Context context){
         WifiConfiguration conf = new WifiConfiguration();
         conf.SSID = "\"" + SSID + "\"";
-        //conf.preSharedKey = "\""+ "pegion"+"\"";
-        // conf.wepKeys[0] = "\"" + networkPass + "\"";    In case of network has password
-        /*
-        conf.wepTxKeyIndex = 0;
-        conf.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
-        conf.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP40);
-        */
+        conf.preSharedKey = "\""+ "pegionee"+"\"";
         conf.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
         WifiManager wifiManager = (WifiManager) context.getSystemService(context.WIFI_SERVICE);
         wifiManager.addNetwork(conf);
@@ -261,6 +256,7 @@ public class ConnectionManager extends Thread {
         return true;
     }
 
+
     public static boolean enableWifi(Context context) {
         ApManager.configApState(contexts, false);
         WifiManager wifiManager = (WifiManager) context.getSystemService(context.WIFI_SERVICE);
@@ -278,15 +274,12 @@ public class ConnectionManager extends Thread {
     }
 
     public static boolean listAP(Context context) {
-
-        String SSID = null;
         String[] tokens = null;
         WifiManager wifiManager = (WifiManager) context.getSystemService(context.WIFI_SERVICE);
         ApManager.configApState(contexts, false);
         wifiManager.setWifiEnabled(true);
         wifiManager.startScan();
         results = wifiManager.getScanResults();
-
         size =results.size();
         int tsize = size-1;
         System.out.println("tsize"+tsize);
@@ -295,9 +288,7 @@ public class ConnectionManager extends Thread {
             Log.d("ConnectionManager", results.get(i).SSID);
             tokens = results.get(i).SSID.split(":");
             if (tokens[0].equals("ViR")) {
-
                 availableAP.add(results.get(i).SSID);
-
                 System.out.println("AvailableAP" + availableAP.size());
             }
         }
@@ -316,25 +307,43 @@ public class ConnectionManager extends Thread {
         }
         return true;
     }
-
     public static List getAplist() {
         return availableAP;
 
     }
-
     public static boolean isBusy() {
         if (scannerStatus) {
             return false;
         }
         return true;
     }
-
     public synchronized void wake() {
         active = true;
         notify();
     }
-
     public void sleep() {
         active = false;
+    }
+    public static List<String> listNeighbourAp(Context context){
+        String[] tokens = null;
+        //Todo add if this node is hotspot
+
+        //below is normal case
+        WifiManager wifiManager = (WifiManager) context.getSystemService(context.WIFI_SERVICE);
+        ApManager.configApState(contexts, false);
+        wifiManager.setWifiEnabled(true);
+        wifiManager.startScan();
+        List<ScanResult> results = wifiManager.getScanResults();
+        int size =results.size();
+        int tsize = size-1;
+        allAP.clear();
+        for (int i = 0; i <= tsize; i++) {
+            Log.d("ConnectionManager", results.get(i).SSID);
+            tokens = results.get(i).SSID.split(":");
+            if (tokens[0].equals("ViR")) {
+                allAP.add(results.get(i).SSID);
+            }
+        }
+        return allAP;
     }
 }

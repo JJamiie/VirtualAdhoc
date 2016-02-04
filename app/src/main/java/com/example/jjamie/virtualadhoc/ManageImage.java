@@ -287,7 +287,7 @@ public class ManageImage {
             }
         }
         if (files == null) return false;
-        return true;
+        return false;
     }
 
 }
