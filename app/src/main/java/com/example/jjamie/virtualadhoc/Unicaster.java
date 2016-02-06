@@ -18,6 +18,7 @@ public class Unicaster{
             //Send file
             ObjectOutputStream objectOutputStream=new ObjectOutputStream(socket.getOutputStream());
             Log.d("Unicast","Sending...");
+
             objectOutputStream.writeObject(image.getBytes());
             objectOutputStream.flush();
             socket.close();
@@ -36,6 +37,7 @@ public class Unicaster{
         Log.d("Unicast", "Finished...");
 
     }
+
 
 
 }

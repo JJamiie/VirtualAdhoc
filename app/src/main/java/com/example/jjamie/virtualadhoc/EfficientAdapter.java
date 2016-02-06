@@ -3,6 +3,8 @@ package com.example.jjamie.virtualadhoc;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.view.LayoutInflater;
@@ -13,6 +15,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -38,6 +41,10 @@ public class EfficientAdapter extends BaseAdapter {
     private static final int TYPE_ITEM = 0;
     private static final int TYPE_FIRST = 1;
     private ConnectionManager connectionManager;
+    private boolean isStartPegion = false;
+    private SQLiteDatabase sqLiteDatabase;
+    private MyDatabase myDatabase;
+    private Cursor mCursor;
 
     public EfficientAdapter(Activity activity) {
         this.mContext = activity.getApplicationContext();
@@ -45,13 +52,16 @@ public class EfficientAdapter extends BaseAdapter {
         mInflater = LayoutInflater.from(mContext);
         adapter = this;
 
-
+        // Create database
+        myDatabase = new MyDatabase(getActivity());
+        sqLiteDatabase = myDatabase.getWritableDatabase();
+        // Get all row in picture table in pigeon database
+        updateTable();
     }
 
     @Override
     public int getCount() {
-        if (ManageImage.getFile() == null) return 1;
-        return ManageImage.getFile().length + 1;
+        return mCursor.getCount() + 1;
     }
 
     @Override
@@ -74,7 +84,6 @@ public class EfficientAdapter extends BaseAdapter {
         return TYPE_MAX_COUNT;
     }
 
-    boolean isStartPegion = false;
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
@@ -97,43 +106,63 @@ public class EfficientAdapter extends BaseAdapter {
                     holder = (ViewHolder) convertView.getTag();
                 }
 
-                String data = ManageImage.getFileMetadata(position - 1);
-                String[] d = data.split("---");
+                mCursor.moveToPosition(position-1);
                 //Set sender's name
-                final String senderName = d[0];
+                int columnIndex = mCursor.getColumnIndex(MyDatabase.COL_SENDER_NAME);
+                final String senderName = mCursor.getString(columnIndex);
                 holder.title.setText(senderName);
-                //Set description
-                final String message = d[1];
-                holder.description.setText(message);
-                //Set location
-                final String location = d[2];
-                //Set picture profile
-                Glide.with(mContext).load(R.drawable.profile).bitmapTransform(new CropCircleTransformation(mContext)).into(holder.picture_profile);
-                //Set image in list
-                final File fileImage = new File(ManageImage.getFile()[position - 1].getPath());
-                Glide.with(mContext).load(fileImage).centerCrop().placeholder(new ColorDrawable(0xFFc5c4c4)).into(holder.picture_show);
 
+                //Set message
+                columnIndex = mCursor.getColumnIndex(MyDatabase.COL_MESSAGE);
+                final String message = mCursor.getString(columnIndex);
+                holder.description.setText(message);
+
+                //Set location
+                columnIndex = mCursor.getColumnIndex(MyDatabase.COL_LOCATION);
+                final String location = mCursor.getString(columnIndex);
                 if (location.equals("null")) {
                     holder.gps_zone.setVisibility(View.INVISIBLE);
                 } else {
                     holder.gps_zone.setVisibility(View.VISIBLE);
                 }
 
+                //Set picture profile
+                Glide.with(mContext).load(R.drawable.profile).bitmapTransform(new CropCircleTransformation(mContext)).into(holder.picture_profile);
+
+                //Set filename
+                columnIndex = mCursor.getColumnIndex(MyDatabase.COL_FILE_NAME);
+                final String filename = mCursor.getString(columnIndex);
+                final File fileImage = ManageImage.isExist(filename);
+
+                //Set image
+                if (fileImage != null) {
+                    Glide.with(mContext).load(fileImage).centerCrop().placeholder(new ColorDrawable(0xFFc5c4c4)).into(holder.picture_show);
+                    LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 600);
+                    holder.picture_show.setLayoutParams(layoutParams);
+
+                } else {
+                    LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0);
+                    holder.picture_show.setLayoutParams(layoutParams);
+                }
+
+
                 //Set sent button
                 holder.sent.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        System.out.println("sentttttttttttttttttt");
-
+                        System.out.println("Sent file");
                         try {
-                            byte[] img = new byte[(int) fileImage.length()];
-                            BufferedInputStream buf = new BufferedInputStream(new FileInputStream(fileImage));
-                            buf.read(img, 0, img.length);
-                            buf.close();
-                            String filename = fileImage.getName().substring(0,fileImage.getName().length()-5);
-                            System.out.println("filename: "+filename);
-                            Image image = new Image(senderName, filename, message, location, img);
-                            Broadcaster.broadcast(image);
+                            if (fileImage != null) {
+                                byte[] img = new byte[(int) fileImage.length()];
+                                BufferedInputStream buf = new BufferedInputStream(new FileInputStream(fileImage));
+                                buf.read(img, 0, img.length);
+                                buf.close();
+                                Image image = new Image(senderName, filename, message, location, img);
+                                Broadcaster.broadcast(image);
+                            } else {
+                                Image image = new Image(senderName, filename, message, location, null);
+                                Broadcaster.broadcast(image);
+                            }
 
                             activity.runOnUiThread(new Runnable() {
                                 @Override
@@ -165,7 +194,6 @@ public class EfficientAdapter extends BaseAdapter {
                         });
                     }
                 });
-
                 break;
             case TYPE_FIRST:
                 if (convertView == null) {
@@ -215,15 +243,9 @@ public class EfficientAdapter extends BaseAdapter {
                             circleTurn2.startAnimation(rotation2);
                             textUnderLogo.setText("Running Pegion...");
                             isStartPegion = true;
-//                            if (connectionManager == null) {
                             connectionManager = new ConnectionManager(getActivity());
                             connectionManager.start();
-
-//                                System.out.println("Connection manager start");
-
-//                            }
                             connectionManager.wake();
-//                                System.out.println("Connection manager resume");
 
 
                         } else {
@@ -236,6 +258,7 @@ public class EfficientAdapter extends BaseAdapter {
                             textUnderLogo.setText("Touch to Pegion");
                             isStartPegion = false;
                             connectionManager.sleep();
+                            connectionManager = null;
                             System.out.println("Connection manager sleep");
                         }
                     }
@@ -244,6 +267,11 @@ public class EfficientAdapter extends BaseAdapter {
 
         return convertView;
 
+    }
+
+    public void updateTable(){
+        mCursor = sqLiteDatabase.rawQuery("SELECT * FROM " + MyDatabase.TABLE_NAME_PICTURE+" ORDER BY _id DESC", null);
+        mCursor.moveToFirst();
     }
 
     public Activity getActivity() {

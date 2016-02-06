@@ -1,14 +1,19 @@
 package com.example.jjamie.virtualadhoc;
 
-import android.app.Activity;
 import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -21,19 +26,24 @@ import java.util.Map;
  */
 public class ConnectionManager extends Thread {
     private static List<ScanResult> results;
-    static int size = 0;
-    static List<String> availableAP;
+    public static int size = 0;
+    public static List<String> availableAP;
     static List<String> allAP;
-    static Map<String, Integer> apHistory;
-    static boolean scannerStatus = true;
-    static File[] imgFile;
-    static File[] imgMetadata;
-    static Context contexts;
-    Activity activity;
+    public static Map<String, Integer> apHistory;
+    public static boolean scannerStatus = true;
+    public static Context contexts;
+    private SQLiteDatabase sqLiteDatabase;
+    private MyDatabase myDatabase;
+    private Cursor mCursor;
+
+    // Active for start and stop thread
     private boolean active = false;
+
 
     public ConnectionManager(Context context) {
         contexts = context;
+        myDatabase = new MyDatabase(context);
+        sqLiteDatabase = myDatabase.getWritableDatabase();
     }
 
     public void run() {
@@ -161,7 +171,7 @@ public class ConnectionManager extends Thread {
         };
         availableAP = new ArrayList<>();
 
-        while(true) {
+        while (true) {
 
             enableWifi(contexts);
             System.out.println("Stage: Sleep0");
@@ -178,8 +188,8 @@ public class ConnectionManager extends Thread {
             if (availableAP.size() <= 0) {
                 listAP(contexts);
             }
-            String r = availableAP.size()+"";
-            Log.d("ConnectionManager",r);
+            String r = availableAP.size() + "";
+            Log.d("ConnectionManager", r);
             if (availableAP.size() <= 0) {
                 System.out.println("No AP around ");
                 //Noone around here use this App so turn on AP.
@@ -201,19 +211,7 @@ public class ConnectionManager extends Thread {
                 while (availableAP.size() > 0) {
                     System.out.println("Stage: AvailableApSize>0");
                     connectAP(contexts);
-
-                    imgFile = ManageImage.getFile();
-                    imgMetadata = ManageImage.getFileMetadata();
-
-                    if(imgFile!=null){
-                        System.out.println("File length" + imgFile.length);
-                        for (int i = 0; i < imgFile.length; i++) {
-                            String data = ManageImage.readFromFileText(imgMetadata[i]);
-                            Image image = ManageImage.changeFileToImage(data,imgFile[i]);
-                            Broadcaster.broadcast(image);
-                        }
-                    }
-                    else System.out.println("No photo history");
+                    sendData();
 
                     /*
                     try {
@@ -226,17 +224,23 @@ public class ConnectionManager extends Thread {
                 }
             }
         }
+
     }
 
-    public static boolean joinAp(String SSID,Context context){
+    public static boolean joinAp(String SSID, Context context) {
         WifiConfiguration conf = new WifiConfiguration();
         conf.SSID = "\"" + SSID + "\"";
+<<<<<<< HEAD
         conf.preSharedKey = "\""+ "pegionee"+"\"";
+=======
+        conf.preSharedKey = "\"" + "pegionee" + "\"";
+        conf.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
+>>>>>>> e0300c2aab6018ecf7eb39a560a2b9975e72c4e4
         WifiManager wifiManager = (WifiManager) context.getSystemService(context.WIFI_SERVICE);
         wifiManager.addNetwork(conf);
         List<WifiConfiguration> list = wifiManager.getConfiguredNetworks();
-        for( WifiConfiguration i : list ) {
-            if(i.SSID != null && i.SSID.equals("\"" + SSID + "\"")) {
+        for (WifiConfiguration i : list) {
+            if (i.SSID != null && i.SSID.equals("\"" + SSID + "\"")) {
                 wifiManager.disconnect();
                 wifiManager.enableNetwork(i.networkId, true);
                 wifiManager.reconnect();
@@ -264,7 +268,7 @@ public class ConnectionManager extends Thread {
 
     }
 
-    public static boolean disconnectWifi(Context context){
+    public static boolean disconnectWifi(Context context) {
         WifiManager wifiManager = (WifiManager) context.getSystemService(context.WIFI_SERVICE);
         wifiManager.disconnect();
         System.out.println("Disconnected");
@@ -279,9 +283,10 @@ public class ConnectionManager extends Thread {
         wifiManager.setWifiEnabled(true);
         wifiManager.startScan();
         results = wifiManager.getScanResults();
-        size =results.size();
-        int tsize = size-1;
-        System.out.println("tsize"+tsize);
+
+        size = results.size();
+        int tsize = size - 1;
+        System.out.println("tsize" + tsize);
         availableAP.clear();
         for (int i = 0; i <= tsize; i++) {
             Log.d("ConnectionManager", results.get(i).SSID);
@@ -299,31 +304,81 @@ public class ConnectionManager extends Thread {
         String SSID = null;
         if (!availableAP.isEmpty()) { //check and select the strongest signal
             SSID = availableAP.get(0);
-            System.out.println("SSIDNAME="+SSID);
-            joinAp(SSID,context);
+            System.out.println("SSIDNAME=" + SSID);
+            joinAp(SSID, context);
             availableAP.remove(0);
 
         }
         return true;
     }
+
     public static List getAplist() {
         return availableAP;
 
     }
+
     public static boolean isBusy() {
         if (scannerStatus) {
             return false;
         }
         return true;
     }
+
     public synchronized void wake() {
         active = true;
         notify();
     }
+
     public void sleep() {
         active = false;
     }
-    public static List<String> listNeighbourAp(Context context){
+
+
+    public void sendData() {
+        // Query data from TABLE_NAME_PICTURE
+        mCursor = sqLiteDatabase.rawQuery("SELECT * FROM " + MyDatabase.TABLE_NAME_PICTURE + " ORDER BY _id DESC", null);
+        mCursor.moveToFirst();
+
+        for (int position = 0; position < mCursor.getColumnCount(); ++position) {
+            //Set sendername
+            int columnIndex = mCursor.getColumnIndex(MyDatabase.COL_SENDER_NAME);
+            String senderName = mCursor.getString(columnIndex);
+
+            //Set message
+            columnIndex = mCursor.getColumnIndex(MyDatabase.COL_MESSAGE);
+            String message = mCursor.getString(columnIndex);
+
+            //Set location
+            columnIndex = mCursor.getColumnIndex(MyDatabase.COL_LOCATION);
+            String location = mCursor.getString(columnIndex);
+
+            //Set filename
+            columnIndex = mCursor.getColumnIndex(MyDatabase.COL_FILE_NAME);
+            String filename = mCursor.getString(columnIndex);
+            File fileImage = ManageImage.isExist(filename);
+            try {
+                if (fileImage != null) {
+                    byte[] img = new byte[(int) fileImage.length()];
+                    BufferedInputStream buf = new BufferedInputStream(new FileInputStream(fileImage));
+                    buf.read(img, 0, img.length);
+                    buf.close();
+                    Image image = new Image(senderName, filename, message, location, img);
+                    Broadcaster.broadcast(image);
+                } else {
+                    Image image = new Image(senderName, filename, message, location, null);
+                    Broadcaster.broadcast(image);
+                }
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (LengthIncorrectLengthException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static List<String> listNeighbourAp(Context context) {
         String[] tokens = null;
         //Todo add if this node is hotspot
 
@@ -333,8 +388,8 @@ public class ConnectionManager extends Thread {
         wifiManager.setWifiEnabled(true);
         wifiManager.startScan();
         List<ScanResult> results = wifiManager.getScanResults();
-        int size =results.size();
-        int tsize = size-1;
+        int size = results.size();
+        int tsize = size - 1;
         allAP.clear();
         for (int i = 0; i <= tsize; i++) {
             Log.d("ConnectionManager", results.get(i).SSID);

@@ -2,6 +2,8 @@ package com.example.jjamie.virtualadhoc;
 
 import android.app.Activity;
 import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.wifi.WifiManager;
 import android.text.format.Formatter;
 import android.util.Log;
@@ -23,12 +25,20 @@ public class Listener extends Thread {
     private Activity activity;
     private AlbumStorageDirFactory mAlbumStorageDirFactory;
     private EfficientAdapter adapter;
+    private SQLiteDatabase sqLiteDatabase;
+    private MyDatabase myDatabase;
+    private Cursor mCursor;
 
     public Listener(Activity activity, AlbumStorageDirFactory mAlbumStorageDirFactory, EfficientAdapter adapter) {
         this.activity = activity;
         this.mAlbumStorageDirFactory = mAlbumStorageDirFactory;
         this.mWifi = (WifiManager) activity.getSystemService(Context.WIFI_SERVICE);
         this.adapter = adapter;
+
+        myDatabase = new MyDatabase(activity);
+        sqLiteDatabase = myDatabase.getWritableDatabase();
+
+
     }
 
     public void run() {
@@ -47,20 +57,24 @@ public class Listener extends Thread {
                 ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
                 byte[] img = (byte[]) objectInputStream.readObject();
                 Image image = new Image(img, img.length);
-                System.out.println("SenderName: " + image.senderName + " Senquence number: " + image.filename + " Message: " + image.message + " Location: " + image.location);
+                System.out.println("SenderName: " + image.senderName + " Filename: " + image.filename + " Message: " + image.message + " Location: " + image.location);
 
-                if (!image.senderName.equals(TabActivity.senderName) && !ManageImage.checkDuplicate(image.filename)) {
-//                    File file = ManageImage.setUpPhotoFile(mAlbumStorageDirFactory);
-                    String filename = image.filename.substring(0, image.filename.length() - 5);
-                    System.out.println("Receive filename"+filename);
+                mCursor = sqLiteDatabase.rawQuery("SELECT * FROM " + MyDatabase.TABLE_NAME_PICTURE +
+                        " WHERE " + MyDatabase.COL_SENDER_NAME + " = '" + image.senderName + "' AND " +
+                        MyDatabase.COL_FILE_NAME + " = '" + image.filename + "' AND " +
+                        MyDatabase.COL_MESSAGE + " = '" + image.message + "' AND " +
+                        MyDatabase.COL_LOCATION + " = '" + image.location + "'", null);
 
-
-
-                    File file =ManageImage.setUpPhotoFile(mAlbumStorageDirFactory,filename);
-                    FileOutputStream fileOutputStream = new FileOutputStream(file);
-                    fileOutputStream.write(image.getImageBytes());
-                    ManageImage.galleryAddPic(file.getAbsolutePath(), activity);
-                    ManageImage.writeDataToFile(image.senderName,image.message,image.location,file.getName());
+                if (mCursor.getCount() == 0) {
+                    if (image.imageBytes != null) {
+                        String filename = image.filename.substring(0, image.filename.length() - 4);
+                        File file = ManageImage.setUpPhotoFile(mAlbumStorageDirFactory, filename);
+                        System.out.println("filename :===="+file.getName());
+                        FileOutputStream fileOutputStream = new FileOutputStream(file);
+                        fileOutputStream.write(image.getImageBytes());
+                        ManageImage.galleryAddPic(file.getAbsolutePath(), activity);
+                    }
+                    myDatabase.addToTablePicture(sqLiteDatabase, image.senderName, image.filename, image.message, image.location);
                     socket.close();
 
                     Log.d("Listener", "Finished...");
@@ -70,6 +84,7 @@ public class Listener extends Thread {
                     activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+                            adapter.updateTable();
                             adapter.notifyDataSetChanged();
                             Toast.makeText(activity, sentMsg, Toast.LENGTH_LONG).show();
                         }
