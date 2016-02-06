@@ -246,7 +246,7 @@ public class EfficientAdapter extends BaseAdapter {
                             connectionManager = new ConnectionManager(getActivity());
                             connectionManager.start();
                             connectionManager.wake();
-                            System.out.println("Connection manager start");
+
 
                         } else {
                             logoPegion.setImageResource(R.drawable.logo4);

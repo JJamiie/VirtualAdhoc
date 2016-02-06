@@ -130,6 +130,7 @@ public class ManageImage {
             result = new File(tmpDirFile, prefix + suffix);
         } while (!result.createNewFile());
         return result;
+
     }
 
 }
