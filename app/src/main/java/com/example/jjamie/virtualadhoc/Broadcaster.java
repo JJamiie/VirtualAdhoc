@@ -6,9 +6,7 @@ import java.util.ArrayList;
 
 public class Broadcaster {
 
-    private static final String TAG = "Broadcast";
     public static int PORT = 3333;
-
     public static void broadcast(Image image) {
         broadcastToNeighbor(image);
     }

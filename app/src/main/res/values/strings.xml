@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="hello">Hello World, VirtualAdhoc</string>
-    <string name="app_name">Pegion</string>
+    <string name="app_name">Pigeon</string>
     <string name="btnIntend">Take Picture</string>
     <string name="cannot">Cannot</string>
-    <string name="album_name">Pegion</string>
+    <string name="album_name">Pigeon</string>
     <string name="broadcast">Broadcast picture</string>
     <string name="title_activity_login">loginActivity</string>
 

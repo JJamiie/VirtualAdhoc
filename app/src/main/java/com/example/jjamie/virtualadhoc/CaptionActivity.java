@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
+import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
@@ -18,6 +19,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.common.ConnectionResult;
@@ -56,6 +58,8 @@ public class CaptionActivity extends AppCompatActivity implements GoogleApiClien
     public AlbumStorageDirFactory mAlbumStorageDirFactory;
     private Boolean isCaptured = false;
     private ImageView currentPhotoImageView;
+    SQLiteDatabase sQLiteDatabase;
+    MyDatabase myDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,7 +82,6 @@ public class CaptionActivity extends AppCompatActivity implements GoogleApiClien
                     System.out.println("Set location: " + latitude + "," + longitude);
                 } else {
                     addMessageToPicture();
-                    finish();
                 }
 
             }
@@ -101,8 +104,6 @@ public class CaptionActivity extends AppCompatActivity implements GoogleApiClien
                         }
                         gps_button_picture.setImageResource(R.drawable.gps_button_click);
                         gps_button_isClicked = true;
-//                        gotLocation = false;
-//                        startLocationUpdates();
                     } else if (gps_button_isClicked) {
                         gps_button_picture.setImageResource(R.drawable.gps_button);
                         gps_button_isClicked = false;
@@ -137,7 +138,10 @@ public class CaptionActivity extends AppCompatActivity implements GoogleApiClien
         assert getSupportActionBar() != null;
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-
+        //Initial database
+        myDatabase = new MyDatabase(this);
+        // open database
+        sQLiteDatabase = myDatabase.getWritableDatabase();
     }
 
     private void dispatchTakePictureIntent(int actionCode) {
@@ -180,14 +184,26 @@ public class CaptionActivity extends AppCompatActivity implements GoogleApiClien
     }
 
     private void addMessageToPicture() {
-        File currentPhoto = new File(ManageImage.getFile()[0].getAbsolutePath());
         String message = messageEditText.getText().toString();
         String latitudeAndLongtitude = latitude + "," + longitude;
-        if (gps_button_isClicked) {
-            ManageImage.writeDataToFile(senderName, message, latitudeAndLongtitude, currentPhoto.getName());
-        } else {
-            ManageImage.writeDataToFile(senderName, message, "null", currentPhoto.getName());
 
+        if (isCaptured) {
+            File currentPhoto = new File(ManageImage.getFile()[0].getAbsolutePath());
+            if (gps_button_isClicked) {
+                myDatabase.addToTablePicture(sQLiteDatabase, senderName, currentPhoto.getName(), message, latitudeAndLongtitude);
+            } else {
+                myDatabase.addToTablePicture(sQLiteDatabase, senderName, currentPhoto.getName(), message, null);
+            }
+            finish();
+        } else if (messageEditText.getText().length() == 0) {
+            Toast.makeText(getApplicationContext(), "Please add a message before save.", Toast.LENGTH_SHORT).show();
+        } else {
+            if (gps_button_isClicked) {
+                myDatabase.addToTablePicture(sQLiteDatabase, senderName, null, message, latitudeAndLongtitude);
+            } else {
+                myDatabase.addToTablePicture(sQLiteDatabase, senderName, null, message, null);
+            }
+            finish();
         }
     }
 
@@ -311,12 +327,6 @@ public class CaptionActivity extends AppCompatActivity implements GoogleApiClien
 
     }
 
-//    Handler handler = new Handler() {
-//        @Override
-//        public void handleMessage(Message msg) {
-//            progressDialog.dismiss();
-//        }
-//    };
 
     @Override
     public void onBackPressed() {

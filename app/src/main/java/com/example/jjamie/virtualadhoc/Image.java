@@ -52,7 +52,7 @@ public class Image {
         //	assign the filename
         byte[] filenameBytes = new byte[FILE_NAME_LENGTH];
         System.arraycopy(imageBytes, SENDER_NAME_LENGTH, filenameBytes, 0, FILE_NAME_LENGTH);
-        String filenameString = new String(filenameBytes,0,findActuallength(filenameBytes),Charset.forName("UTF-8"));
+        String filenameString = new String(filenameBytes, 0, findActuallength(filenameBytes), Charset.forName("UTF-8"));
         this.filename = filenameString;
 
         // assign message
@@ -69,8 +69,13 @@ public class Image {
 
         //	assign the imageBytes
         int lengthImage = lengthPacket - (SENDER_NAME_LENGTH + FILE_NAME_LENGTH + MESSAGE_LENGTH + LOCATION_LENGTH);
-        this.imageBytes = new byte[lengthImage];
-        System.arraycopy(imageBytes, SENDER_NAME_LENGTH + FILE_NAME_LENGTH + MESSAGE_LENGTH + LOCATION_LENGTH, this.imageBytes, 0, lengthImage);
+        if (lengthImage != 0) {
+            this.imageBytes = new byte[lengthImage];
+            System.arraycopy(imageBytes, SENDER_NAME_LENGTH + FILE_NAME_LENGTH + MESSAGE_LENGTH + LOCATION_LENGTH, this.imageBytes, 0, lengthImage);
+        } else {
+            this.imageBytes = null;
+        }
+
     }
 
     public static int findActuallength(byte[] bytes) {
@@ -112,7 +117,7 @@ public class Image {
 
         byte[] filenameBytes = new byte[FILE_NAME_LENGTH];
         byte[] filenameBytesShorter = filename.getBytes(Charset.forName("UTF-8"));
-        System.arraycopy(filenameBytesShorter,0,filenameBytes,0,filenameBytesShorter.length);
+        System.arraycopy(filenameBytesShorter, 0, filenameBytes, 0, filenameBytesShorter.length);
 
         byte[] messageBytes = new byte[MESSAGE_LENGTH];
         byte[] messageBytesShorter = message.getBytes(Charset.forName("UTF-8"));
@@ -122,14 +127,28 @@ public class Image {
         byte[] locationBytesShorter = location.getBytes(Charset.forName("UTF-8"));
         System.arraycopy(locationBytesShorter, 0, locationBytes, 0, locationBytesShorter.length);
 
-        byte[] imageChunkBytes = new byte[SENDER_NAME_LENGTH + FILE_NAME_LENGTH + MESSAGE_LENGTH + LOCATION_LENGTH + imageBytes.length];
+        // check if image == null , length of image byte is equal 0.
+        int imageByteLength = 0;
+        if (imageBytes != null) {
+            imageByteLength = imageBytes.length;
+        }
+
+        byte[] imageChunkBytes = new byte[SENDER_NAME_LENGTH + FILE_NAME_LENGTH + MESSAGE_LENGTH + LOCATION_LENGTH + imageByteLength];
 
         System.arraycopy(senderNameBytes, 0, imageChunkBytes, 0, SENDER_NAME_LENGTH);
         System.arraycopy(filenameBytes, 0, imageChunkBytes, SENDER_NAME_LENGTH, FILE_NAME_LENGTH);
         System.arraycopy(messageBytes, 0, imageChunkBytes, SENDER_NAME_LENGTH + FILE_NAME_LENGTH, MESSAGE_LENGTH);
         System.arraycopy(locationBytes, 0, imageChunkBytes, SENDER_NAME_LENGTH + FILE_NAME_LENGTH + MESSAGE_LENGTH, LOCATION_LENGTH);
-        System.arraycopy(imageBytes, 0, imageChunkBytes, SENDER_NAME_LENGTH + FILE_NAME_LENGTH + MESSAGE_LENGTH + LOCATION_LENGTH, imageBytes.length);
 
+        if (imageBytes != null) {
+            System.arraycopy(imageBytes, 0, imageChunkBytes, SENDER_NAME_LENGTH + FILE_NAME_LENGTH + MESSAGE_LENGTH + LOCATION_LENGTH, imageByteLength);
+            System.out.println("Sent Image");
+
+        } else {
+            System.out.println("Sent text");
+        }
         return imageChunkBytes;
     }
+
+
 }
