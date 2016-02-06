@@ -187,7 +187,7 @@ public class ConnectionManager extends Thread {
                 ApManager.configApState(contexts, true);
                 System.out.println("Stage: Sleep1");
                 try {
-                    Thread.sleep(90000);
+                    Thread.sleep(60000);
                     ApManager.configApState(contexts, false);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -232,7 +232,6 @@ public class ConnectionManager extends Thread {
         WifiConfiguration conf = new WifiConfiguration();
         conf.SSID = "\"" + SSID + "\"";
         conf.preSharedKey = "\""+ "pegionee"+"\"";
-        conf.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
         WifiManager wifiManager = (WifiManager) context.getSystemService(context.WIFI_SERVICE);
         wifiManager.addNetwork(conf);
         List<WifiConfiguration> list = wifiManager.getConfiguredNetworks();
