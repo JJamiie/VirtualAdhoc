@@ -10,6 +10,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -55,56 +56,31 @@ public class Listener extends Thread {
                 Log.d(TAG, "Receiving...");
 
                 ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
-                byte[] img = (byte[]) objectInputStream.readObject();
+                byte[] byte_packet = (byte[]) objectInputStream.readObject();
+                socket.close();
 
-                
+                //Check type of packet if type is 0, packet is image.
+                //                     if type is 1, packet is sender name and IP Address.
+                byte[] type_packet_byte = new byte[TYPE_LENGTH];
+                System.arraycopy(byte_packet, 0, type_packet_byte, 0, TYPE_LENGTH);
+                int type_packet = Image.bytesToInt(type_packet_byte);
 
-                Image image = new Image(img, img.length);
-                System.out.println("SenderName: " + image.senderName + " Filename: " + image.filename + " Message: " + image.message + " Location: " + image.location);
+                switch (type_packet) {
+                    case 0:
+                        saveImage(byte_packet);
+                        break;
+                    case 1:
 
-                mCursor = sqLiteDatabase.rawQuery("SELECT * FROM " + MyDatabase.TABLE_NAME_PICTURE +
-                        " WHERE " + MyDatabase.COL_SENDER_NAME + " = '" + image.senderName + "' AND " +
-                        MyDatabase.COL_FILE_NAME + " = '" + image.filename + "' AND " +
-                        MyDatabase.COL_MESSAGE + " = '" + image.message + "' AND " +
-                        MyDatabase.COL_LOCATION + " = '" + image.location + "'", null);
-
-                if (mCursor.getCount() == 0) {
-                    if (image.imageBytes != null) {
-                        String filename = image.filename.substring(0, image.filename.length() - 4);
-                        File file = ManageImage.setUpPhotoFile(mAlbumStorageDirFactory, filename);
-                        System.out.println("filename :===="+file.getName());
-                        FileOutputStream fileOutputStream = new FileOutputStream(file);
-                        fileOutputStream.write(image.getImageBytes());
-                        ManageImage.galleryAddPic(file.getAbsolutePath(), activity);
-                    }
-                    myDatabase.addToTablePicture(sqLiteDatabase, image.senderName, image.filename, image.message, image.location);
-                    socket.close();
-
-                    Log.d("Listener", "Finished...");
-
-
-                    final String sentMsg = "Received";
-                    activity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            adapter.updateTable();
-                            adapter.notifyDataSetChanged();
-                            Toast.makeText(activity, sentMsg, Toast.LENGTH_LONG).show();
-                        }
-                    });
-
-                    //Sent to other node
-                    if (getIPAddressItSelf().equals("0.0.0.0")) {
-                        Broadcaster.broadcast(image);
-                    }
-
+                        break;
+                    default:
+                        break;
                 }
+
+
             }
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (ImageChunkIncorrectLengthException e) {
             e.printStackTrace();
         } finally {
             if (socket != null) {
@@ -117,45 +93,60 @@ public class Listener extends Thread {
         }
     }
 
+    public void saveImage(byte[] img) {
+        try {
+            Image image = new Image(img);
+            System.out.println("SenderName: " + image.senderName + " Filename: " + image.filename + " Message: " + image.message + " Location: " + image.location);
+
+            mCursor = sqLiteDatabase.rawQuery("SELECT * FROM " + MyDatabase.TABLE_NAME_PICTURE +
+                    " WHERE " + MyDatabase.COL_SENDER_NAME + " = '" + image.senderName + "' AND " +
+                    MyDatabase.COL_FILE_NAME + " = '" + image.filename + "' AND " +
+                    MyDatabase.COL_MESSAGE + " = '" + image.message + "' AND " +
+                    MyDatabase.COL_LOCATION + " = '" + image.location + "'", null);
+
+            if (mCursor.getCount() == 0) {
+                if (image.imageBytes != null) {
+                    String filename = image.filename.substring(0, image.filename.length() - 4);
+                    File file = ManageImage.setUpPhotoFile(mAlbumStorageDirFactory, filename);
+                    System.out.println("filename :====" + file.getName());
+                    FileOutputStream fileOutputStream = new FileOutputStream(file);
+                    fileOutputStream.write(image.getImageBytes());
+                    ManageImage.galleryAddPic(file.getAbsolutePath(), activity);
+                }
+                myDatabase.addToTablePicture(sqLiteDatabase, image.senderName, image.filename, image.message, image.location);
+
+                Log.d("Listener", "Finished...");
+
+
+                final String sentMsg = "Received";
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        adapter.updateTable();
+                        adapter.notifyDataSetChanged();
+                        Toast.makeText(activity, sentMsg, Toast.LENGTH_LONG).show();
+                    }
+                });
+
+                //Sent to other node
+                if (getIPAddressItSelf().equals("0.0.0.0")) {
+                    Broadcaster.broadcast(image);
+                }
+
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (ImageChunkIncorrectLengthException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     public String getIPAddressItSelf() { //if it is hotspot, it will return 0.0.0.0
         return Formatter.formatIpAddress(mWifi.getConnectionInfo().getIpAddress());
     }
 
-//    DatagramSocket socket = null;
-//    public void run() {
-//        byte[] buf = new byte[65000];
-//        try {
-//            socket = new DatagramSocket(PORT, InetAddress.getByName("0.0.0.0"));
-//            socket.setBroadcast(true);
-//
-//            while (true) {
-//                System.out.println("---------Listener run---------");
-//                DatagramPacket packet = new DatagramPacket(buf, buf.length);
-//                socket.receive(packet);
-//                System.out.println("Receive from: " + socket.getInetAddress() + " packet: " + packet.getLength());
-//
-//                //write file
-//                File file = ManageImage.setUpPhotoFile();
-//
-//                try{
-//                    Image image = new Image(packet.getData(),packet.getLength());
-//                    System.out.println("SenderName: " + image.senderName + " Senquence number: " + image.sequenceNumber + " Size packet:" + image.getImageBytes().length);
-//                    FileOutputStream fileOutputStream = new FileOutputStream(file);
-//                    fileOutputStream.write(image.getImageBytes());
-//                    Intent mediaScanintent = ManageImage.galleryAddPic(file.getAbsolutePath());
-//                    MainActivity.th.sendBroadcast(mediaScanintent);
-//                }catch (ImageChunkIncorrectLengthException ex){
-//                    System.out.println("ImageChunkIncorrectLengthException: "+ex);
-//                }
-//
-//            }
-//
-//        } catch (SocketTimeoutException e) {
-//            Log.d(TAG, "Receive timed out: "+ e);
-//        } catch (IOException e){
-//            Log.d(TAG, "IOException: " + e);
-//        }
-//    }
 
 }

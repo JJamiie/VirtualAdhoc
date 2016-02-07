@@ -152,10 +152,10 @@ public class EfficientAdapter extends BaseAdapter {
                                 BufferedInputStream buf = new BufferedInputStream(new FileInputStream(fileImage));
                                 buf.read(img, 0, img.length);
                                 buf.close();
-                                Image image = new Image(senderName, filename, message, location, img);
+                                Image image = new Image(0,senderName, filename, message, location, img);
                                 Broadcaster.broadcast(image);
                             } else {
-                                Image image = new Image(senderName, filename, message, location, null);
+                                Image image = new Image(0,senderName, filename, message, location, null);
                                 Broadcaster.broadcast(image);
                             }
 

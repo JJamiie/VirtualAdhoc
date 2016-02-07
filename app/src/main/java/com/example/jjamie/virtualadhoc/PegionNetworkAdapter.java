@@ -112,7 +112,9 @@ public class PegionNetworkAdapter extends BaseAdapter {
         if (is_enable_network) {
             scanning();
         } else {
-            th_scanning.interrupt();
+            if(th_scanning != null) {
+                th_scanning.interrupt();
+            }
             setTxtScanningInvisibility(View.INVISIBLE);
         }
     }
@@ -121,7 +123,7 @@ public class PegionNetworkAdapter extends BaseAdapter {
         return enabled_network;
     }
 
-    private Thread th_scanning;
+    private Thread th_scanning = null;
 
     public void scanning() {
         th_scanning = new Thread() {
