@@ -33,7 +33,7 @@ public class Broadcaster {
                 if (splitted != null) {
                     // Basic sanity check
                     String mac = splitted[3];
-                    if (mac.matches("..:..:..:..:..:..")) {
+                    if (mac.matches("t")) {
                         macCount++;
                         clientList.add(splitted[0]);
                         System.out.println("Count : " + macCount + " IP Address : " + splitted[0]);

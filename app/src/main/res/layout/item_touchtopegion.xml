@@ -22,7 +22,7 @@
             android:orientation="vertical">
 
             <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:id="@+id/layoutTouchToPegion"
+                android:id="@+id/layoutTouchToPigeon"
                 android:layout_width="match_parent"
                 android:layout_height="220dp"
                 android:background="#303F9F"
@@ -43,7 +43,7 @@
                     android:src="@drawable/circle_turn"></ImageView>
 
                 <ImageView
-                    android:id="@+id/logoPegion"
+                    android:id="@+id/logopigeon"
                     android:layout_marginTop="10dp"
                     android:layout_width="110dp"
                     android:layout_height="110dp"
@@ -51,7 +51,7 @@
                     android:src="@drawable/logo4"></ImageView>
 
                 <Button
-                    android:id="@+id/startPegion"
+                    android:id="@+id/startpigeon"
                     android:layout_marginTop="10dp"
                     android:layout_width="110dp"
                     android:layout_height="110dp"
@@ -64,11 +64,11 @@
                     android:id="@+id/textUnderLogo"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/logoPegion"
+                    android:layout_below="@id/logopigeon"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="20dp"
                     android:fontFamily="sans-serif-light"
-                    android:text="Touch to Pegion"
+                    android:text="Touch to pigeon"
                     android:textColor="#FFFFFF"
                     android:textSize="20dp" />
             </RelativeLayout>

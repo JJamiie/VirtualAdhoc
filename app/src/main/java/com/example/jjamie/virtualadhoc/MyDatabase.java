@@ -59,6 +59,9 @@ public class MyDatabase extends SQLiteOpenHelper {
                 + ", " + COL_MESSAGE + ", " + COL_LOCATION + ") VALUES ('" + sendername + "', '" + filename + "', '" + message + "', '" + location + "');");
     }
 
+    public void addToTableUsername(SQLiteDatabase db, String username, String password, String name, String surename,String sex,String birthdate,String address) {
+
+    }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {

@@ -37,112 +37,96 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="10dp">
+            android:layout_marginBottom="10dp"
+            android:orientation="horizontal">
 
             <RelativeLayout
                 android:layout_width="0dp"
                 android:layout_height="50dp"
-                android:background="#FFFFFF"
-                android:layout_weight="1">
+                android:layout_weight="1"
+                android:background="#FFFFFF">
+
                 <Button
+                    android:id="@+id/btn_manage_network"
+                    style="?android:attr/borderlessButtonStyle"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    style="?android:attr/borderlessButtonStyle"
-                    android:stateListAnimator="@null"/>
+                    android:stateListAnimator="@null" />
+
                 <TextView
+                    android:id="@+id/txt_mange_network"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Create network"
                     android:layout_centerInParent="true"
-                    android:textStyle="bold"/>
+                    android:text="Enable network"
+                    android:textStyle="bold" />
             </RelativeLayout>
 
             <RelativeLayout
                 android:layout_width="0dp"
                 android:layout_height="50dp"
-                android:background="#FFFFFF"
-                android:layout_weight="1">
+                android:layout_weight="1"
+                android:background="#FFFFFF">
+
                 <Button
+                    android:id="@+id/btn_create_network"
+                    style="?android:attr/borderlessButtonStyle"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    style="?android:attr/borderlessButtonStyle"
-                    android:stateListAnimator="@null"/>
+                    android:stateListAnimator="@null" />
+
                 <TextView
+                    android:id="@+id/txt_create_network"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Join network"
                     android:layout_centerInParent="true"
-                    android:textStyle="bold"/>
+                    android:text="Create network"
+                    android:textStyle="bold" />
             </RelativeLayout>
         </LinearLayout>
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="110dp"
-            android:background="#FFFFFF"
-            android:paddingLeft="10dp"
-            android:paddingTop="10dp">
+            android:layout_height="wrap_content"
+            android:background="#FFFFFF">
 
             <TextView
-                android:id="@+id/pegion_network_text"
+                android:id="@+id/pigeon_network_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Pegion networks"
+                android:layout_marginLeft="5dp"
+                android:padding="6dp"
+                android:text="Pigeon networks"
                 android:textSize="14dp"
                 android:textStyle="bold" />
 
-            <ImageView
-                android:id="@+id/people_network_picture"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:layout_below="@id/pegion_network_text"
-                android:layout_marginTop="8dp"
-                android:background="#FFFFFF" />
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="110dp"
-            android:background="#FFFFFF"
-            android:paddingLeft="10dp"
-            android:paddingTop="10dp">
-
             <TextView
-                android:id="@+id/people_nearby_text"
+                android:id="@+id/txt_scanningNetwork"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="People nearby"
+                android:layout_alignParentRight="true"
+                android:background="#FFFFFF"
+                android:padding="6dp"
+                android:layout_marginRight="6dp"
+                android:text="Scanning..."
                 android:textSize="14dp"
-                android:textStyle="bold" />
-
-            <ImageView
-                android:id="@+id/people_picture"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:layout_below="@id/people_nearby_text"
-                android:layout_marginTop="8dp"
-                android:background="#FFFFFF" />
+                android:textStyle="bold"
+                android:visibility="gone" />
         </RelativeLayout>
-    </LinearLayout>
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_gravity="bottom"
-        android:background="#EF5350">
-        <Button
-            android:id="@+id/disable_pegion_network_button"
+
+        <ListView
+            android:id="@+id/list_pigeon_network"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:stateListAnimator="@null"
-            style="?android:attr/borderlessButtonStyle"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:text="Disable Pegion networks"
-            android:textStyle="bold"
-            android:textSize="18dp"
-            android:textColor="#FFFFFF"/>
-    </RelativeLayout>
+            android:background="#00000000"
+            android:cacheColorHint="#00000000"
+            android:divider="@null"
+            android:drawSelectorOnTop="false"
+            android:gravity="center_vertical"
+            android:listSelector="@android:color/transparent"
+            android:scrollbars="none"></ListView>
+
+
+    </LinearLayout>
+
 </FrameLayout>
