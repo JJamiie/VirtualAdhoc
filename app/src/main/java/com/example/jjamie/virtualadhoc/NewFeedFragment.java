@@ -5,7 +5,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,13 +32,8 @@ public class NewFeedFragment extends Fragment {
     private ListView listview;
     private EfficientAdapter adapter;
     private AppBarLayout appBar;
-    private FloatingActionButton mFabButton;
     public NewFeedFragment() {
         // Required empty public constructor
-    }
-
-    public ListView getListview() {
-        return listview;
     }
 
     /**

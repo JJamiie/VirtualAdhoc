@@ -28,7 +28,7 @@ public class ConnectionManager extends Thread {
     private static List<ScanResult> results;
     public static int size = 0;
     public static List<String> availableAP;
-    static List<String> allAP;
+    static ArrayList<String> allAP;
     public static Map<String, Integer> apHistory;
     public static boolean scannerStatus = true;
     public static Context contexts;
@@ -230,10 +230,6 @@ public class ConnectionManager extends Thread {
     public static boolean joinAp(String SSID, Context context) {
         WifiConfiguration conf = new WifiConfiguration();
         conf.SSID = "\"" + SSID + "\"";
-/*
-        conf.preSharedKey = "\"" + "pegionee" + "\"";
-        conf.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
-*/
         conf.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
         WifiManager wifiManager = (WifiManager) context.getSystemService(context.WIFI_SERVICE);
         wifiManager.addNetwork(conf);
@@ -377,19 +373,19 @@ public class ConnectionManager extends Thread {
         }
     }
 
-    public static List<String> listNeighbourAp(Context context) {
-        String[] tokens = null;
+    public static ArrayList<String> listNeighbourAp(Context context) {
+        String tokens[] = null;
         //Todo add if this node is hotspot
-
+        allAP = new ArrayList<>();
         //below is normal case
         WifiManager wifiManager = (WifiManager) context.getSystemService(context.WIFI_SERVICE);
         ApManager.configApState(context, false);
         wifiManager.setWifiEnabled(true);
         wifiManager.startScan();
         List<ScanResult> results = wifiManager.getScanResults();
+        System.out.println("scan result: " + results.size());
         int size = results.size();
         int tsize = size - 1;
-        allAP.clear();
         for (int i = 0; i <= tsize; i++) {
             Log.d("ConnectionManager", results.get(i).SSID);
             tokens = results.get(i).SSID.split(":");
@@ -397,6 +393,7 @@ public class ConnectionManager extends Thread {
                 allAP.add(results.get(i).SSID);
             }
         }
+
         return allAP;
     }
 }

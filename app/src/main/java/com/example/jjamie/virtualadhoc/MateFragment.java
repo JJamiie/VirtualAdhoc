@@ -1,17 +1,16 @@
 package com.example.jjamie.virtualadhoc;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-
-import com.bumptech.glide.Glide;
-
-import jp.wasabeef.glide.transformations.CropCircleTransformation;
+import android.widget.Button;
+import android.widget.ListView;
+import android.widget.TextView;
 
 
 /**
@@ -27,12 +26,19 @@ public class MateFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-
+    private PegionNetworkAdapter pegionNetworkAdapter;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-
+    private ListView listViewPigeonNetwork;
     private OnFragmentInteractionListener mListener;
+
+    private Button btn_manage_network;
+    private Boolean is_btn_manage_network_click = false;
+    private Button btn_create_network;
+    private Boolean is_btn_create_network_click = false;
+    private TextView txt_manage_network;
+    private TextView txt_create_network;
 
     public MateFragment() {
         // Required empty public constructor
@@ -69,11 +75,57 @@ public class MateFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_mate,container,false);
-        ImageView image_people_nearby = (ImageView) view.findViewById(R.id.people_picture);
-        Glide.with(this).load(R.drawable.my_profile_picture).bitmapTransform(new CropCircleTransformation(getContext())).into(image_people_nearby);
-        ImageView image_people_network = (ImageView) view.findViewById(R.id.people_network_picture);
-        Glide.with(this).load(R.drawable.my_profile_picture).bitmapTransform(new CropCircleTransformation(getContext())).into(image_people_network);
+        View view = inflater.inflate(R.layout.fragment_mate, container, false);
+        // Add pigeon network adapter
+        listViewPigeonNetwork = (ListView) view.findViewById(R.id.list_pigeon_network);
+        pegionNetworkAdapter = new PegionNetworkAdapter(getActivity(), view);
+        listViewPigeonNetwork.setAdapter(pegionNetworkAdapter);
+
+        btn_manage_network = (Button) view.findViewById(R.id.btn_manage_network);
+        btn_create_network = (Button) view.findViewById(R.id.btn_create_network);
+        txt_manage_network = (TextView) view.findViewById(R.id.txt_mange_network);
+        txt_create_network = (TextView) view.findViewById(R.id.txt_create_network);
+        btn_manage_network.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!is_btn_manage_network_click) {
+                    txt_manage_network.setText("Stop finding network");
+                    pegionNetworkAdapter.setEnabled_network(true);
+                    is_btn_manage_network_click = true;
+                } else {
+                    txt_manage_network.setText("Find network");
+                    pegionNetworkAdapter.setEnabled_network(false);
+                    is_btn_manage_network_click = false;
+                }
+            }
+        });
+
+        btn_create_network.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!is_btn_create_network_click) {
+                    pegionNetworkAdapter.setEnabled_network(false);
+                    txt_manage_network.setText("Find network");
+                    btn_manage_network.setEnabled(false);
+                    is_btn_manage_network_click = false;
+
+                    txt_manage_network.setTextColor(Color.parseColor("#bababa"));
+                    txt_create_network.setText("Destroy network");
+                    ApManager.configApState(getActivity(), true);
+                    is_btn_create_network_click = true;
+
+                } else {
+                    btn_manage_network.setEnabled(true);
+                    txt_manage_network.setTextColor(Color.parseColor("#71717D"));
+                    txt_create_network.setText("Create network");
+                    ApManager.configApState(getActivity(), false);
+                    is_btn_create_network_click = false;
+
+                }
+            }
+        });
+
+
         return view;
     }
 

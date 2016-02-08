@@ -28,6 +28,8 @@ public class Listener extends Thread {
     private SQLiteDatabase sqLiteDatabase;
     private MyDatabase myDatabase;
     private Cursor mCursor;
+    public static final int TYPE_LENGTH = 4;
+
 
     public Listener(Activity activity, AlbumStorageDirFactory mAlbumStorageDirFactory, EfficientAdapter adapter) {
         this.activity = activity;
@@ -37,8 +39,6 @@ public class Listener extends Thread {
 
         myDatabase = new MyDatabase(activity);
         sqLiteDatabase = myDatabase.getWritableDatabase();
-
-
     }
 
     public void run() {
@@ -56,6 +56,9 @@ public class Listener extends Thread {
 
                 ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
                 byte[] img = (byte[]) objectInputStream.readObject();
+
+                
+
                 Image image = new Image(img, img.length);
                 System.out.println("SenderName: " + image.senderName + " Filename: " + image.filename + " Message: " + image.message + " Location: " + image.location);
 

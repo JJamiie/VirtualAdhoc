@@ -1,7 +1,6 @@
 package com.example.jjamie.virtualadhoc;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -33,24 +32,20 @@ import jp.wasabeef.glide.transformations.CropCircleTransformation;
  * Created by JJamie on 1/2/16 AD.
  */
 public class EfficientAdapter extends BaseAdapter {
-    public Context mContext;
     public LayoutInflater mInflater;
     public Activity activity;
-    public static EfficientAdapter adapter;
     private static final int TYPE_MAX_COUNT = 2;
     private static final int TYPE_ITEM = 0;
     private static final int TYPE_FIRST = 1;
     private ConnectionManager connectionManager;
-    private boolean isStartPegion = false;
+    private boolean isStartpigeon = false;
     private SQLiteDatabase sqLiteDatabase;
     private MyDatabase myDatabase;
     private Cursor mCursor;
 
     public EfficientAdapter(Activity activity) {
-        this.mContext = activity.getApplicationContext();
         this.activity = activity;
-        mInflater = LayoutInflater.from(mContext);
-        adapter = this;
+        mInflater = LayoutInflater.from(activity);
 
         // Create database
         myDatabase = new MyDatabase(getActivity());
@@ -127,7 +122,7 @@ public class EfficientAdapter extends BaseAdapter {
                 }
 
                 //Set picture profile
-                Glide.with(mContext).load(R.drawable.profile).bitmapTransform(new CropCircleTransformation(mContext)).into(holder.picture_profile);
+                Glide.with(activity).load(R.drawable.profile).bitmapTransform(new CropCircleTransformation(activity)).into(holder.picture_profile);
 
                 //Set filename
                 columnIndex = mCursor.getColumnIndex(MyDatabase.COL_FILE_NAME);
@@ -136,7 +131,7 @@ public class EfficientAdapter extends BaseAdapter {
 
                 //Set image
                 if (fileImage != null) {
-                    Glide.with(mContext).load(fileImage).centerCrop().placeholder(new ColorDrawable(0xFFc5c4c4)).into(holder.picture_show);
+                    Glide.with(activity).load(fileImage).centerCrop().placeholder(new ColorDrawable(0xFFc5c4c4)).into(holder.picture_show);
                     LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 600);
                     holder.picture_show.setLayoutParams(layoutParams);
 
@@ -210,53 +205,53 @@ public class EfficientAdapter extends BaseAdapter {
                 rotation2.setFillAfter(true);
                 circleTurn2.startAnimation(rotation2);
 
-                final ImageView logoPegion = (ImageView) convertView.findViewById(R.id.logoPegion);
-                final RelativeLayout layoutTouchToPegion = (RelativeLayout) convertView.findViewById(R.id.layoutTouchToPegion);
+                final ImageView logoPigeon = (ImageView) convertView.findViewById(R.id.logopigeon);
+                final RelativeLayout layoutTouchTopigeon = (RelativeLayout) convertView.findViewById(R.id.layoutTouchToPigeon);
                 final TextView textUnderLogo = (TextView) convertView.findViewById(R.id.textUnderLogo);
 
-                if (!isStartPegion) {
-                    logoPegion.setImageResource(R.drawable.logo4);
+                if (!isStartpigeon) {
+                    logoPigeon.setImageResource(R.drawable.logo4);
                     rotation.setDuration(8000);
                     circleTurn1.startAnimation(rotation);
                     rotation2.setDuration(9000);
                     circleTurn2.startAnimation(rotation2);
-                    textUnderLogo.setText("Touch to Pegion");
+                    textUnderLogo.setText("Touch to pigeon");
                 } else {
-                    logoPegion.setImageResource(R.drawable.logopink);
+                    logoPigeon.setImageResource(R.drawable.logopink);
                     rotation.setDuration(2000);
                     circleTurn1.startAnimation(rotation);
                     rotation2.setDuration(3000);
                     circleTurn2.startAnimation(rotation2);
-                    textUnderLogo.setText("Running Pegion...");
+                    textUnderLogo.setText("Running Pigeon...");
                 }
 
-                Button button = (Button) convertView.findViewById(R.id.startPegion);
+                Button button = (Button) convertView.findViewById(R.id.startpigeon);
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if (!isStartPegion) {
-                            logoPegion.setImageResource(R.drawable.logopink);
-                            layoutTouchToPegion.setBackgroundColor(Color.parseColor("#e91e63"));
+                        if (!isStartpigeon) {
+                            logoPigeon.setImageResource(R.drawable.logopink);
+                            layoutTouchTopigeon.setBackgroundColor(Color.parseColor("#e91e63"));
                             rotation.setDuration(2000);
                             circleTurn1.startAnimation(rotation);
                             rotation2.setDuration(3000);
                             circleTurn2.startAnimation(rotation2);
-                            textUnderLogo.setText("Running Pegion...");
-                            isStartPegion = true;
+                            textUnderLogo.setText("Flying Pigeon...");
+                            isStartpigeon = true;
                             connectionManager = new ConnectionManager(getActivity());
                             connectionManager.start();
                             connectionManager.wake();
 
 
                         } else {
-                            logoPegion.setImageResource(R.drawable.logo4);
-                            layoutTouchToPegion.setBackgroundColor(Color.parseColor("#303F9F"));
+                            logoPigeon.setImageResource(R.drawable.logo4);
+                            layoutTouchTopigeon.setBackgroundColor(Color.parseColor("#303F9F"));
                             rotation.setDuration(8000);
                             circleTurn1.startAnimation(rotation);
                             rotation2.setDuration(9000);
                             circleTurn2.startAnimation(rotation2);
-                            textUnderLogo.setText("Touch to Pegion");
-                            isStartPegion = false;
+                            textUnderLogo.setText("Touch to pigeon");
+                            isStartpigeon = false;
                             connectionManager.sleep();
                             connectionManager = null;
                             System.out.println("Connection manager sleep");
