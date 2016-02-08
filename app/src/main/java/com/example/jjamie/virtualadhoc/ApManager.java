@@ -64,11 +64,18 @@ public class ApManager {
             WifiConfiguration wifiConfig = (WifiConfiguration) getConfigMethod.invoke(wifiManager);
             String SSID = "ViR:"+macAddress;
             wifiConfig.SSID = SSID;
+            wifiConfig.allowedAuthAlgorithms.clear();
+            wifiConfig.allowedProtocols.clear();
+            wifiConfig.allowedKeyManagement.clear();
+            wifiConfig.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.OPEN);
+            /*
             wifiConfig.preSharedKey="\""+ "pegionee"+"\"";
             wifiConfig.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.SHARED);
             wifiConfig.allowedProtocols.set(WifiConfiguration.Protocol.RSN);
             wifiConfig.allowedProtocols.set(WifiConfiguration.Protocol.WPA);
             wifiConfig.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);
+            */
+
             Method setConfigMethod = wifiManager.getClass().getMethod("setWifiApConfiguration", WifiConfiguration.class);
             setConfigMethod.invoke(wifiManager, wifiConfig);
             System.out.println("check2");

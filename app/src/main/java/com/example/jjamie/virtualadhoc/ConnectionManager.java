@@ -230,12 +230,11 @@ public class ConnectionManager extends Thread {
     public static boolean joinAp(String SSID, Context context) {
         WifiConfiguration conf = new WifiConfiguration();
         conf.SSID = "\"" + SSID + "\"";
-<<<<<<< HEAD
-        conf.preSharedKey = "\""+ "pegionee"+"\"";
-=======
+/*
         conf.preSharedKey = "\"" + "pegionee" + "\"";
         conf.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
->>>>>>> e0300c2aab6018ecf7eb39a560a2b9975e72c4e4
+*/
+        conf.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
         WifiManager wifiManager = (WifiManager) context.getSystemService(context.WIFI_SERVICE);
         wifiManager.addNetwork(conf);
         List<WifiConfiguration> list = wifiManager.getConfiguredNetworks();
@@ -384,7 +383,7 @@ public class ConnectionManager extends Thread {
 
         //below is normal case
         WifiManager wifiManager = (WifiManager) context.getSystemService(context.WIFI_SERVICE);
-        ApManager.configApState(contexts, false);
+        ApManager.configApState(context, false);
         wifiManager.setWifiEnabled(true);
         wifiManager.startScan();
         List<ScanResult> results = wifiManager.getScanResults();
