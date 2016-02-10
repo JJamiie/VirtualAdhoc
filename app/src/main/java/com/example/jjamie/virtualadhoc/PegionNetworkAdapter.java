@@ -27,10 +27,10 @@ public class PegionNetworkAdapter extends BaseAdapter {
     private Boolean enabled_network = false;
     private TextView txt_scanning_Network;
 
+
     public PegionNetworkAdapter(Activity activity, View view) {
         this.activity = activity;
         mInflater = LayoutInflater.from(activity);
-//        getListNeighbor();
         txt_scanning_Network = (TextView) view.findViewById(R.id.txt_scanningNetwork);
     }
 
@@ -83,7 +83,21 @@ public class PegionNetworkAdapter extends BaseAdapter {
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 dialog.cancel();
-                                ConnectionManager.joinAp(SSID,activity);
+                                setEnabled_network(false);
+                                ConnectionManager.clientJoinAp(SSID, activity);
+                                //Wait for time to connect Hotspot
+                                new Thread(){
+                                    @Override
+                                    public void run() {
+                                        super.run();
+                                        try {
+                                            Thread.sleep(4000);
+                                            ReportNeighbor.clientReportInformation();
+                                        } catch (InterruptedException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                }.start();
                             }
                         });
 
@@ -136,9 +150,9 @@ public class PegionNetworkAdapter extends BaseAdapter {
                         if (!getEnabled_network()) {
                             break;
                         }
-                        Thread.sleep(3000);
+                        Thread.sleep(2000);
                         setTxtScanningInvisibility(View.INVISIBLE);
-                        Thread.sleep(5000);
+                        Thread.sleep(3000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }

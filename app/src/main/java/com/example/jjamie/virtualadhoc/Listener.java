@@ -14,6 +14,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -30,6 +31,9 @@ public class Listener extends Thread {
     private MyDatabase myDatabase;
     private Cursor mCursor;
     public static final int TYPE_LENGTH = 4;
+    public static final int IMAGE_TYPE = 1;
+    public static final int REPORT_NEIGHBOR_TYPE = 2;
+    public static final int CLIENT_REPORT_TYPE = 3;
 
 
     public Listener(Activity activity, AlbumStorageDirFactory mAlbumStorageDirFactory, EfficientAdapter adapter) {
@@ -53,24 +57,35 @@ public class Listener extends Thread {
                 socket = serverSocket.accept();
 
                 //Receive file
-                Log.d(TAG, "Receiving...");
+                Log.d(TAG, "Receive from " + socket.getInetAddress());
+
+                //Recieve from IP
+                InetAddress receivedIP = socket.getInetAddress();
 
                 ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
                 byte[] byte_packet = (byte[]) objectInputStream.readObject();
                 socket.close();
 
-                //Check type of packet if type is 0, packet is image.
-                //                     if type is 1, packet is sender name and IP Address.
+                //Check type of packet if type is IMAGE_TYPE, packet is image.
+                //                     if type is REPORT_NEIGHBOR_TYPE, packet is sent from hotspot.
+                //                     if type is CLIENT_REPORT_TYPE,packet is sent from client.
                 byte[] type_packet_byte = new byte[TYPE_LENGTH];
                 System.arraycopy(byte_packet, 0, type_packet_byte, 0, TYPE_LENGTH);
                 int type_packet = Image.bytesToInt(type_packet_byte);
 
                 switch (type_packet) {
-                    case 0:
+                    case IMAGE_TYPE:
                         saveImage(byte_packet);
                         break;
-                    case 1:
+                    case REPORT_NEIGHBOR_TYPE:
 
+                        ReportNeighbor.clientRecieveUpdateClient(byte_packet);
+                        break;
+                    case CLIENT_REPORT_TYPE:
+
+                        String senderName = ReportNeighbor.hotspotRecievedSenderNameFromClient(byte_packet);
+                        Neighbor neighbor = new Neighbor(senderName,receivedIP);
+                        MateFragment.addNeightbors(neighbor);
                         break;
                     default:
                         break;
@@ -98,6 +113,7 @@ public class Listener extends Thread {
             Image image = new Image(img);
             System.out.println("SenderName: " + image.senderName + " Filename: " + image.filename + " Message: " + image.message + " Location: " + image.location);
 
+            // checking image is exist in database?
             mCursor = sqLiteDatabase.rawQuery("SELECT * FROM " + MyDatabase.TABLE_NAME_PICTURE +
                     " WHERE " + MyDatabase.COL_SENDER_NAME + " = '" + image.senderName + "' AND " +
                     MyDatabase.COL_FILE_NAME + " = '" + image.filename + "' AND " +
@@ -130,7 +146,7 @@ public class Listener extends Thread {
 
                 //Sent to other node
                 if (getIPAddressItSelf().equals("0.0.0.0")) {
-                    Broadcaster.broadcast(image);
+                    Broadcaster.broadcast(image.getBytes());
                 }
 
             }
@@ -147,6 +163,7 @@ public class Listener extends Thread {
     public String getIPAddressItSelf() { //if it is hotspot, it will return 0.0.0.0
         return Formatter.formatIpAddress(mWifi.getConnectionInfo().getIpAddress());
     }
+
 
 
 }

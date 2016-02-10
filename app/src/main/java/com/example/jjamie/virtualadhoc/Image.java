@@ -2,7 +2,6 @@ package com.example.jjamie.virtualadhoc;
 
 
 import android.util.Log;
-
 import java.nio.charset.Charset;
 
 
@@ -20,11 +19,11 @@ public class Image {
     public byte[] imageBytes;
 
 
-    public Image(int type, String senderName, String filename, String message, String location, byte[] imageBytes) throws LengthIncorrectLengthException {
+    public Image(String senderName, String filename, String message, String location, byte[] imageBytes) throws LengthIncorrectLengthException {
         if (senderName.length() > SENDER_NAME_LENGTH || message.length() > MESSAGE_LENGTH || location.length() > LOCATION_LENGTH || filename.length() > FILE_NAME_LENGTH) {
             throw new LengthIncorrectLengthException();
         }
-        this.type = type;
+        this.type = Listener.IMAGE_TYPE;
         this.senderName = senderName;
         this.filename = filename;
         this.message = message;
@@ -155,6 +154,7 @@ public class Image {
         }
         return imageChunkBytes;
     }
+
 
 
 }

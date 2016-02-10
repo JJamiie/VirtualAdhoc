@@ -10,7 +10,7 @@ import java.net.Socket;
 public class Unicaster{
     Socket socket =null;
 
-    public void unicast(Image image,String dstAddress){
+    public void unicast(byte[] bytes,String dstAddress){
         try{
             socket=new Socket(dstAddress,Broadcaster.PORT);
             Log.d("Unicast", "Connecting...");
@@ -19,7 +19,7 @@ public class Unicaster{
             ObjectOutputStream objectOutputStream=new ObjectOutputStream(socket.getOutputStream());
             Log.d("Unicast","Sending...");
 
-            objectOutputStream.writeObject(image.getBytes());
+            objectOutputStream.writeObject(bytes);
             objectOutputStream.flush();
             socket.close();
 

@@ -255,6 +255,25 @@ public class ConnectionManager extends Thread {
         return true;
     }
 
+    public static void clientJoinAp(String SSID, Context context){
+        WifiConfiguration conf = new WifiConfiguration();
+        conf.SSID = "\"" + SSID + "\"";
+        conf.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
+        WifiManager wifiManager = (WifiManager) context.getSystemService(context.WIFI_SERVICE);
+        wifiManager.addNetwork(conf);
+        List<WifiConfiguration> list = wifiManager.getConfiguredNetworks();
+        for (WifiConfiguration i : list) {
+            if (i.SSID != null && i.SSID.equals("\"" + SSID + "\"")) {
+                wifiManager.disconnect();
+                wifiManager.enableNetwork(i.networkId, true);
+                wifiManager.reconnect();
+
+                break;
+            }
+        }
+
+    }
+
 
     public static boolean enableWifi(Context context) {
         ApManager.configApState(contexts, false);
@@ -358,11 +377,11 @@ public class ConnectionManager extends Thread {
                     BufferedInputStream buf = new BufferedInputStream(new FileInputStream(fileImage));
                     buf.read(img, 0, img.length);
                     buf.close();
-                    Image image = new Image(0, senderName, filename, message, location, img);
-                    Broadcaster.broadcast(image);
+                    Image image = new Image( senderName, filename, message, location, img);
+                    Broadcaster.broadcast(image.getBytes());
                 } else {
-                    Image image = new Image(0, senderName, filename, message, location, null);
-                    Broadcaster.broadcast(image);
+                    Image image = new Image( senderName, filename, message, location, null);
+                    Broadcaster.broadcast(image.getBytes());
                 }
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -384,7 +403,6 @@ public class ConnectionManager extends Thread {
         wifiManager.setWifiEnabled(true);
         wifiManager.startScan();
         List<ScanResult> results = wifiManager.getScanResults();
-        System.out.println("scan result: " + results.size());
         int size = results.size();
         int tsize = size - 1;
         for (int i = 0; i <= tsize; i++) {
@@ -394,6 +412,7 @@ public class ConnectionManager extends Thread {
                 allAP.add(results.get(i).SSID);
             }
         }
+        System.out.println("scan result: " + allAP.size());
 
         return allAP;
     }

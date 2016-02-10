@@ -86,9 +86,11 @@
         </LinearLayout>
 
         <RelativeLayout
+            android:id="@+id/tab_header_pigeon_network"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#FFFFFF">
+            android:background="#FFFFFF"
+            android:visibility="invisible">
 
             <TextView
                 android:id="@+id/pigeon_network_text"

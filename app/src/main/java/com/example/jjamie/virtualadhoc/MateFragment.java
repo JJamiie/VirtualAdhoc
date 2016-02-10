@@ -10,7 +10,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import java.util.ArrayList;
 
 
 /**
@@ -27,6 +30,8 @@ public class MateFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private PegionNetworkAdapter pegionNetworkAdapter;
+    private PeopleNearByAdapter peopleNearByAdapter;
+    private Boolean isShowPeopleByAdapter = false;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
@@ -39,9 +44,14 @@ public class MateFragment extends Fragment {
     private Boolean is_btn_create_network_click = false;
     private TextView txt_manage_network;
     private TextView txt_create_network;
+    private RelativeLayout tab_header_pigeon_network;
+
+    private static ArrayList<Neighbor> neighbors;
+
 
     public MateFragment() {
         // Required empty public constructor
+
     }
 
     /**
@@ -69,6 +79,14 @@ public class MateFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        neighbors = new ArrayList<>();
+    }
+
+
+    public static void addNeightbors(Neighbor neighbor) {
+        neighbors.add(neighbor);
+
+        System.out.println("Size: " + neighbors.size() + " Neighbor: " + neighbor.senderName + " " + neighbor.IP);
     }
 
     @Override
@@ -85,14 +103,18 @@ public class MateFragment extends Fragment {
         btn_create_network = (Button) view.findViewById(R.id.btn_create_network);
         txt_manage_network = (TextView) view.findViewById(R.id.txt_mange_network);
         txt_create_network = (TextView) view.findViewById(R.id.txt_create_network);
+        tab_header_pigeon_network = (RelativeLayout) view.findViewById(R.id.tab_header_pigeon_network);
+
         btn_manage_network.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (!is_btn_manage_network_click) {
-                    txt_manage_network.setText("Stop finding network");
+                    tab_header_pigeon_network.setVisibility(View.VISIBLE);
+                    txt_manage_network.setText("Stop finding");
                     pegionNetworkAdapter.setEnabled_network(true);
                     is_btn_manage_network_click = true;
                 } else {
+                    tab_header_pigeon_network.setVisibility(View.INVISIBLE);
                     txt_manage_network.setText("Find network");
                     pegionNetworkAdapter.setEnabled_network(false);
                     is_btn_manage_network_click = false;
@@ -124,6 +146,12 @@ public class MateFragment extends Fragment {
                 }
             }
         });
+
+        //Add people nearby adapter
+        if(isShowPeopleByAdapter || is_btn_create_network_click){
+            peopleNearByAdapter = new PeopleNearByAdapter(getActivity());
+            listViewPigeonNetwork.setAdapter(peopleNearByAdapter);
+        }
 
 
         return view;

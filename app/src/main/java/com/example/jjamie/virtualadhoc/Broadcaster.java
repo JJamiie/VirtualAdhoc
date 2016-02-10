@@ -7,16 +7,14 @@ import java.util.ArrayList;
 public class Broadcaster {
 
     public static int PORT = 3333;
-    public static void broadcast(Image image) {
-        broadcastToNeighbor(image);
-    }
 
-
-    public static void broadcastToNeighbor(Image image) {
+    public static void broadcast(byte[] bytes) {
         Unicaster unicaster = new Unicaster();
-        if (getNeighborList().size() == 0) return;
-        for (int i = 0; i < getNeighborList().size(); i++) {
-            unicaster.unicast(image, getNeighborList().get(i));
+        //Get neighborlist
+        ArrayList<String> neighborList = getNeighborList();
+        if (neighborList.size() == 0) return;
+        for (int i = 0; i < neighborList.size(); i++) {
+            unicaster.unicast(bytes, neighborList.get(i));
         }
     }
 
@@ -46,6 +44,7 @@ public class Broadcaster {
         }
         return clientList;
     }
+
 
 
 
