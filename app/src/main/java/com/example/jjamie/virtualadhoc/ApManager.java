@@ -1,13 +1,17 @@
 package com.example.jjamie.virtualadhoc;
+
 import android.content.*;
 import android.net.wifi.*;
+
 import java.lang.reflect.*;
+
 /**
  * Created by Administrator on 16/12/2558.
  */
 // this class is used to toggle hotspot
 public class ApManager {
     private static String macAddress;
+
     //check whether wifi hotspot on or off
     public static boolean isApOn(Context context) {
         WifiManager wifimanager = (WifiManager) context.getSystemService(context.WIFI_SERVICE);
@@ -15,13 +19,13 @@ public class ApManager {
             Method method = wifimanager.getClass().getDeclaredMethod("isWifiApEnabled");
             method.setAccessible(true);
             return (Boolean) method.invoke(wifimanager);
+        } catch (Throwable ignored) {
         }
-        catch (Throwable ignored) {}
         return false;
     }
 
     // toggle wifi hotspot on or off
-    public static boolean configApState(Context context,boolean tog) {
+    public static boolean configApState(Context context, boolean tog) {
         setMacAddress(context);
         WifiManager wifimanager = (WifiManager) context.getSystemService(context.WIFI_SERVICE);
         WifiConfiguration wificonfiguration = null;
@@ -31,38 +35,38 @@ public class ApManager {
                 wifimanager.setWifiEnabled(false);
             }*/
             Method method = wifimanager.getClass().getMethod("setWifiApEnabled", WifiConfiguration.class, boolean.class);
-            if(tog){
+            if (tog) {
                 System.out.println("check");
                 setHotspotName(context);
                 wifimanager.setWifiEnabled(!tog);
 
                 method.invoke(wifimanager, wificonfiguration, true);
-            }
-            else {
+            } else {
                 method.invoke(wifimanager, wificonfiguration, false);
                 wifimanager.setWifiEnabled(!tog);
             }
 
             return true;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return false;
     }
-    public static void setMacAddress(Context context){
+
+    public static void setMacAddress(Context context) {
         WifiManager wifiManager = (WifiManager) context.getSystemService(context.WIFI_SERVICE);
         wifiManager.setWifiEnabled(true);
         WifiInfo wInfo = wifiManager.getConnectionInfo();
         macAddress = wInfo.getMacAddress();
     }
+
     public static boolean setHotspotName(Context context) {
         try {
             WifiManager wifiManager = (WifiManager) context.getSystemService(context.WIFI_SERVICE);
 
             Method getConfigMethod = wifiManager.getClass().getMethod("getWifiApConfiguration");
             WifiConfiguration wifiConfig = (WifiConfiguration) getConfigMethod.invoke(wifiManager);
-            String SSID = "ViR:"+macAddress;
+            String SSID = "ViR:" + macAddress;
             wifiConfig.SSID = SSID;
             wifiConfig.allowedAuthAlgorithms.clear();
             wifiConfig.allowedProtocols.clear();
@@ -73,8 +77,7 @@ public class ApManager {
             System.out.println("check2");
             return true;
 
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
