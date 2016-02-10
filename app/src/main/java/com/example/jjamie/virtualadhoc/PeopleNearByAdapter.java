@@ -10,6 +10,8 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
+import java.util.ArrayList;
+
 import jp.wasabeef.glide.transformations.CropCircleTransformation;
 
 /**
@@ -18,15 +20,19 @@ import jp.wasabeef.glide.transformations.CropCircleTransformation;
 public class PeopleNearByAdapter extends BaseAdapter {
     private Activity activity;
     private LayoutInflater mInflater;
+    private static ArrayList<Neighbor> neighbors;
+
+
 
     public PeopleNearByAdapter(Activity activity) {
         this.activity = activity;
         mInflater = LayoutInflater.from(activity);
+        neighbors = new ArrayList<>();
     }
 
     @Override
     public int getCount() {
-        return 0;
+        return neighbors.size();
     }
 
     @Override
@@ -53,9 +59,8 @@ public class PeopleNearByAdapter extends BaseAdapter {
 
         Glide.with(activity).load(R.drawable.profile).bitmapTransform(new CropCircleTransformation(activity)).into(holder.imagePeople);
         //Set neighbor
-        String IP = "xxx-xxx-x-x";
+        String IP = neighbors.get(position).IP.toString();
         holder.textPeopleNearBy.setText(IP);
-
 
         return convertView;
     }
@@ -64,4 +69,12 @@ public class PeopleNearByAdapter extends BaseAdapter {
         ImageView imagePeople;
         TextView textPeopleNearBy;
     }
+
+    public static void addNeightbors(Neighbor neighbor) {
+        neighbors.add(neighbor);
+        System.out.println("Size: " + neighbors.size() + " Neighbor: " + neighbor.senderName + " " + neighbor.IP);
+
+    }
+
+
 }

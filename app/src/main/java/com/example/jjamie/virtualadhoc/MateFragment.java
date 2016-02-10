@@ -15,8 +15,6 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-
 
 /**
  * A simple {@link Fragment} subclass.
@@ -48,8 +46,8 @@ public class MateFragment extends Fragment {
     private TextView txt_manage_network;
     private TextView txt_create_network;
     private RelativeLayout tab_header_pigeon_network;
+    private TextView txt_pigeon_network;
 
-    private static ArrayList<Neighbor> neighbors;
 
 
     public MateFragment() {
@@ -82,15 +80,8 @@ public class MateFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-        neighbors = new ArrayList<>();
     }
 
-
-    public static void addNeightbors(Neighbor neighbor) {
-        neighbors.add(neighbor);
-
-        System.out.println("Size: " + neighbors.size() + " Neighbor: " + neighbor.senderName + " " + neighbor.IP);
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -107,6 +98,7 @@ public class MateFragment extends Fragment {
         txt_manage_network = (TextView) view.findViewById(R.id.txt_mange_network);
         txt_create_network = (TextView) view.findViewById(R.id.txt_create_network);
         tab_header_pigeon_network = (RelativeLayout) view.findViewById(R.id.tab_header_pigeon_network);
+        txt_pigeon_network = (TextView) view.findViewById(R.id.pigeon_network_text);
 
         btn_manage_network.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -202,7 +194,8 @@ public class MateFragment extends Fragment {
                         txt_create_network.setText("Destroy network");
                         ApManager.configApState(getActivity(), true);
                         is_btn_create_network_click = true;
-                        tab_header_pigeon_network.setVisibility(View.VISIBLE);
+                        txt_pigeon_network.setText("People nearby");
+                        tab_header_pigeon_network.setVisibility(View.GONE);
 
                     }
                 });
@@ -218,7 +211,7 @@ public class MateFragment extends Fragment {
     }
 
     public void turnCreateNetworkOff() {
-        tab_header_pigeon_network.setVisibility(View.INVISIBLE);
+        tab_header_pigeon_network.setVisibility(View.GONE);
         btn_manage_network.setEnabled(true);
         txt_manage_network.setTextColor(Color.parseColor("#71717D"));
         txt_create_network.setText("Create network");
@@ -228,10 +221,12 @@ public class MateFragment extends Fragment {
 
 
     public void turnManageNetworkOn() {
-        tab_header_pigeon_network.setVisibility(View.VISIBLE);
+        tab_header_pigeon_network.setVisibility(View.GONE);
+        listViewPeopleNearBy.setVisibility(View.GONE);
         txt_manage_network.setText("Stop finding");
         pegionNetworkAdapter.setEnabled_network(true);
         is_btn_manage_network_click = true;
+        txt_pigeon_network.setText("Pigeon network");
     }
 
     public void turnManangeNetworkOff() {
@@ -239,5 +234,11 @@ public class MateFragment extends Fragment {
         txt_manage_network.setText("Find network");
         pegionNetworkAdapter.setEnabled_network(false);
         is_btn_manage_network_click = false;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        peopleNearByAdapter.notifyDataSetChanged();
     }
 }

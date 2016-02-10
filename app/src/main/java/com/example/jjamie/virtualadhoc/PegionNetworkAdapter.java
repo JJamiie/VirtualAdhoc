@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -26,12 +27,18 @@ public class PegionNetworkAdapter extends BaseAdapter {
     private Activity activity;
     private Boolean enabled_network = false;
     private TextView txt_scanning_Network;
+    private TextView txt_pigeon_network;
+    private ListView list_people_nearby;
+    private ListView list_pigeon_network;
 
 
     public PegionNetworkAdapter(Activity activity, View view) {
         this.activity = activity;
         mInflater = LayoutInflater.from(activity);
         txt_scanning_Network = (TextView) view.findViewById(R.id.txt_scanningNetwork);
+        txt_pigeon_network = (TextView) view.findViewById(R.id.pigeon_network_text);
+        list_people_nearby = (ListView) view.findViewById(R.id.list_people_nearby);
+        list_pigeon_network = (ListView) view.findViewById(R.id.list_pigeon_network);
     }
 
     @Override
@@ -75,7 +82,7 @@ public class PegionNetworkAdapter extends BaseAdapter {
             @Override
             public void onClick(View v) {
                 final AlertDialog.Builder dialog = new AlertDialog.Builder(activity);
-                dialog.setMessage("Are you want to join "+SSID+" ?");
+                dialog.setMessage("Are you want to join " + SSID + " ?");
                 dialog.setCancelable(true);
 
                 dialog.setPositiveButton(
@@ -85,8 +92,11 @@ public class PegionNetworkAdapter extends BaseAdapter {
                                 dialog.cancel();
                                 setEnabled_network(false);
                                 ConnectionManager.clientJoinAp(SSID, activity);
+                                txt_pigeon_network.setText("People nearby");
+                                list_people_nearby.setVisibility(View.VISIBLE);
+                                list_pigeon_network.setVisibility(View.INVISIBLE);
                                 //Wait for time to connect Hotspot
-                                new Thread(){
+                                new Thread() {
                                     @Override
                                     public void run() {
                                         super.run();
@@ -126,7 +136,7 @@ public class PegionNetworkAdapter extends BaseAdapter {
         if (is_enable_network) {
             scanning();
         } else {
-            if(th_scanning != null) {
+            if (th_scanning != null) {
                 th_scanning.interrupt();
             }
             setTxtScanningInvisibility(View.INVISIBLE);
@@ -189,6 +199,7 @@ public class PegionNetworkAdapter extends BaseAdapter {
         Button btn_join_network;
 
     }
+
 }
 
 

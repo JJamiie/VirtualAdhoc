@@ -78,14 +78,12 @@ public class Listener extends Thread {
                         saveImage(byte_packet);
                         break;
                     case REPORT_NEIGHBOR_TYPE:
-
                         ReportNeighbor.clientRecieveUpdateClient(byte_packet);
                         break;
                     case CLIENT_REPORT_TYPE:
-
                         String senderName = ReportNeighbor.hotspotRecievedSenderNameFromClient(byte_packet);
                         Neighbor neighbor = new Neighbor(senderName,receivedIP);
-                        MateFragment.addNeightbors(neighbor);
+                        PeopleNearByAdapter.addNeightbors(neighbor);
                         break;
                     default:
                         break;
