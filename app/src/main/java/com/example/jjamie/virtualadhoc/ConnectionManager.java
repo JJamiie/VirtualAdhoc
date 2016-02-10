@@ -212,6 +212,7 @@ public class ConnectionManager extends Thread {
                 while (availableAP.size() > 0) {
                     System.out.println("Stage: AvailableApSize>0");
                     connectAP(contexts);
+
                     sendData();
                     try {
                         System.out.println("Going to sleep");
