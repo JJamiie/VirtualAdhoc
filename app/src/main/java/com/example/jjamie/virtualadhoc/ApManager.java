@@ -26,7 +26,7 @@ public class ApManager {
 
     // toggle wifi hotspot on or off
     public static boolean configApState(Context context, boolean tog) {
-        setMacAddress(context);
+        //setMacAddress(context);
         WifiManager wifimanager = (WifiManager) context.getSystemService(context.WIFI_SERVICE);
         WifiConfiguration wificonfiguration = null;
         try {
@@ -66,8 +66,7 @@ public class ApManager {
 
             Method getConfigMethod = wifiManager.getClass().getMethod("getWifiApConfiguration");
             WifiConfiguration wifiConfig = (WifiConfiguration) getConfigMethod.invoke(wifiManager);
-            String SSID = "ViR:" + macAddress;
-            wifiConfig.SSID = SSID;
+            wifiConfig.SSID = "ViR:" + TabActivity.senderName;
             wifiConfig.allowedAuthAlgorithms.clear();
             wifiConfig.allowedProtocols.clear();
             wifiConfig.allowedKeyManagement.clear();
