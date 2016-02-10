@@ -177,7 +177,7 @@ public class ConnectionManager extends Thread {
             enableWifi(contexts);
             System.out.println("Stage: Sleep0");
             try {
-                Thread.sleep(5000);
+                Thread.sleep(3000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -213,6 +213,13 @@ public class ConnectionManager extends Thread {
                     System.out.println("Stage: AvailableApSize>0");
                     connectAP(contexts);
                     sendData();
+                    try {
+                        System.out.println("Going to sleep");
+                        Thread.sleep(15000);// change ? Dynamic?
+                        System.out.println("wake");
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
 
                     /*
                     try {
@@ -245,13 +252,6 @@ public class ConnectionManager extends Thread {
             }
         }
 
-        try {
-            System.out.println("Going to sleep");
-            Thread.sleep(30000);// change ? Dynamic?
-            System.out.println("wake");
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         return true;
     }
 
