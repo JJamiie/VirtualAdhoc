@@ -14,14 +14,14 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-public class Listener extends Thread {
+public class ListenerPacket extends Thread {
 
-    private static final String TAG = "Listener";
+    private static final String TAG = "ListenerPacket";
+    public static final int PORT_PACKET = 5555;
     private WifiManager mWifi;
     private ServerSocket serverSocket;
     private Activity activity;
@@ -32,11 +32,9 @@ public class Listener extends Thread {
     private Cursor mCursor;
     public static final int TYPE_LENGTH = 4;
     public static final int IMAGE_TYPE = 1;
-    public static final int REPORT_NEIGHBOR_TYPE = 2;
-    public static final int CLIENT_REPORT_TYPE = 3;
 
 
-    public Listener(Activity activity, AlbumStorageDirFactory mAlbumStorageDirFactory, EfficientAdapter adapter) {
+    public ListenerPacket(Activity activity, AlbumStorageDirFactory mAlbumStorageDirFactory, EfficientAdapter adapter) {
         this.activity = activity;
         this.mAlbumStorageDirFactory = mAlbumStorageDirFactory;
         this.mWifi = (WifiManager) activity.getSystemService(Context.WIFI_SERVICE);
@@ -51,7 +49,7 @@ public class Listener extends Thread {
         try {
             serverSocket = new ServerSocket(); // <-- create an unbound socket first
             serverSocket.setReuseAddress(true);
-            serverSocket.bind(new InetSocketAddress(Broadcaster.PORT));
+            serverSocket.bind(new InetSocketAddress(ListenerPacket.PORT_PACKET));
             while (true) {
                 Log.d(TAG, "Waiting...");
                 socket = serverSocket.accept();
@@ -59,16 +57,12 @@ public class Listener extends Thread {
                 //Receive file
                 Log.d(TAG, "Receive from " + socket.getInetAddress());
 
-                //Recieve from IP
-                InetAddress receivedIP = socket.getInetAddress();
 
                 ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
                 byte[] byte_packet = (byte[]) objectInputStream.readObject();
                 socket.close();
 
-                //Check type of packet if type is IMAGE_TYPE, packet is image.
-                //                     if type is REPORT_NEIGHBOR_TYPE, packet is sent from hotspot.
-                //                     if type is CLIENT_REPORT_TYPE,packet is sent from client.
+                //if type is IMAGE_TYPE, packet is image.
                 byte[] type_packet_byte = new byte[TYPE_LENGTH];
                 System.arraycopy(byte_packet, 0, type_packet_byte, 0, TYPE_LENGTH);
                 int type_packet = Image.bytesToInt(type_packet_byte);
@@ -76,14 +70,6 @@ public class Listener extends Thread {
                 switch (type_packet) {
                     case IMAGE_TYPE:
                         saveImage(byte_packet);
-                        break;
-                    case REPORT_NEIGHBOR_TYPE:
-                        ReportNeighbor.clientRecieveUpdateClient(byte_packet);
-                        break;
-                    case CLIENT_REPORT_TYPE:
-                        String senderName = ReportNeighbor.hotspotRecievedSenderNameFromClient(byte_packet);
-                        Neighbor neighbor = new Neighbor(senderName,receivedIP);
-                        PeopleNearByAdapter.addNeightbors(neighbor);
                         break;
                     default:
                         break;
@@ -129,7 +115,7 @@ public class Listener extends Thread {
                 }
                 myDatabase.addToTablePicture(sqLiteDatabase, image.senderName, image.filename, image.message, image.location);
 
-                Log.d("Listener", "Finished...");
+                Log.d(TAG, "Finished...");
 
 
                 final String sentMsg = "Received";
@@ -144,7 +130,7 @@ public class Listener extends Thread {
 
                 //Sent to other node
                 if (getIPAddressItSelf().equals("0.0.0.0")) {
-                    Broadcaster.broadcast(image.getBytes());
+                    Broadcaster.broadcast(image.getBytes(),ListenerPacket.PORT_PACKET);
                 }
 
             }
@@ -161,7 +147,6 @@ public class Listener extends Thread {
     public String getIPAddressItSelf() { //if it is hotspot, it will return 0.0.0.0
         return Formatter.formatIpAddress(mWifi.getConnectionInfo().getIpAddress());
     }
-
 
 
 }

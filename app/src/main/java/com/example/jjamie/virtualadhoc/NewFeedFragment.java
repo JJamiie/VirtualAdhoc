@@ -30,7 +30,7 @@ public class NewFeedFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
     private ListView listview;
-    private EfficientAdapter adapter;
+    private EfficientAdapter efficientAdapter;
     private AppBarLayout appBar;
     public NewFeedFragment() {
         // Required empty public constructor
@@ -55,7 +55,7 @@ public class NewFeedFragment extends Fragment {
     }
 
     AlbumStorageDirFactory mAlbumStorageDirFactory;
-    Listener listener;
+    ListenerPacket listenerPacket;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -79,12 +79,12 @@ public class NewFeedFragment extends Fragment {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_new_feed, container, false);
         listview = (ListView) v.findViewById(R.id.listview);
-        adapter = new EfficientAdapter(getActivity());
-        listview.setAdapter(adapter);
-        //Listener start
-        if (listener == null) {
-            listener = new Listener(getActivity(), mAlbumStorageDirFactory, adapter);
-            listener.start();
+        efficientAdapter = new EfficientAdapter(getActivity());
+        listview.setAdapter(efficientAdapter);
+        //ListenerPacket start
+        if (listenerPacket == null) {
+            listenerPacket = new ListenerPacket(getActivity(), mAlbumStorageDirFactory, efficientAdapter);
+            listenerPacket.start();
         }
         return v;
     }
@@ -114,9 +114,9 @@ public class NewFeedFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        if (adapter != null) {
-            adapter.updateTable();
-            adapter.notifyDataSetChanged();
+        if (efficientAdapter != null) {
+            efficientAdapter.updateTable();
+            efficientAdapter.notifyDataSetChanged();
         }
     }
 

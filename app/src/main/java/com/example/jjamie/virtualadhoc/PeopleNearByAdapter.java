@@ -20,9 +20,7 @@ import jp.wasabeef.glide.transformations.CropCircleTransformation;
 public class PeopleNearByAdapter extends BaseAdapter {
     private Activity activity;
     private LayoutInflater mInflater;
-    private static ArrayList<Neighbor> neighbors;
-
-
+    private ArrayList<Neighbor> neighbors;
 
     public PeopleNearByAdapter(Activity activity) {
         this.activity = activity;
@@ -49,7 +47,7 @@ public class PeopleNearByAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder holder = new ViewHolder();
         if (convertView == null) {
-            convertView = mInflater.inflate(R.layout.item_listnetwork,null);
+            convertView = mInflater.inflate(R.layout.item_listnetwork, null);
             holder.imagePeople = (ImageView) convertView.findViewById(R.id.item_list_network_picture_network);
             holder.textPeopleNearBy = (TextView) convertView.findViewById(R.id.item_list_network_name);
             convertView.setTag(holder);
@@ -59,8 +57,8 @@ public class PeopleNearByAdapter extends BaseAdapter {
 
         Glide.with(activity).load(R.drawable.profile).bitmapTransform(new CropCircleTransformation(activity)).into(holder.imagePeople);
         //Set neighbor
-        String IP = neighbors.get(position).IP.toString();
-        holder.textPeopleNearBy.setText(IP);
+        String senderName = neighbors.get(position).senderName;
+        holder.textPeopleNearBy.setText(senderName);
 
         return convertView;
     }
@@ -70,10 +68,36 @@ public class PeopleNearByAdapter extends BaseAdapter {
         TextView textPeopleNearBy;
     }
 
-    public static void addNeightbors(Neighbor neighbor) {
+    public ArrayList<Neighbor> addNeighbors(Neighbor neighbor) {
+        //Check neighbor is exist in neighbors
+        for(int i =0;i<neighbors.size();i++){
+            if(neighbors.get(i).senderName.equals(neighbor.senderName)){
+                return new ArrayList<Neighbor>();
+            }
+        }
         neighbors.add(neighbor);
-        System.out.println("Size: " + neighbors.size() + " Neighbor: " + neighbor.senderName + " " + neighbor.IP);
 
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                notifyDataSetChanged();
+            }
+        });
+        return neighbors;
+
+    }
+
+    public void setNeighbors(ArrayList<Neighbor> neighbors) {
+        this.neighbors = neighbors;
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                notifyDataSetChanged();
+            }
+        });
+    }
+    public void clearNeighbor(){
+        neighbors.clear();
     }
 
 

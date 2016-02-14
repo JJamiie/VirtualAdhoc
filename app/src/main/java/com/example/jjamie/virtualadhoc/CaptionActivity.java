@@ -1,11 +1,12 @@
 package com.example.jjamie.virtualadhoc;
-
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
@@ -20,8 +21,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
-
 import com.bumptech.glide.Glide;
+import com.google.android.gms.appindexing.Action;
+import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
@@ -36,10 +38,12 @@ import com.google.android.gms.location.LocationSettingsStates;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 public class CaptionActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, LocationListener {
+
     private LocationRequest locationRequest;
     private EditText messageEditText;
     private Button editMessageButton;
@@ -65,7 +69,9 @@ public class CaptionActivity extends AppCompatActivity implements GoogleApiClien
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_caption);
-        googleApiClient = new GoogleApiClient.Builder(this).addApi(LocationServices.API).addConnectionCallbacks(this).addOnConnectionFailedListener(this).build();
+        // ATTENTION: This "addApi(AppIndex.API)"was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        googleApiClient = new GoogleApiClient.Builder(this).addApi(LocationServices.API).addConnectionCallbacks(this).addOnConnectionFailedListener(this).addApi(AppIndex.API).build();
         camera_button = (Button) findViewById(R.id.camera_button);
         currentPhotoImageView = (ImageView) findViewById(R.id.imageForCaption);
         messageEditText = (EditText) findViewById(R.id.captionEditText);
@@ -170,7 +176,8 @@ public class CaptionActivity extends AppCompatActivity implements GoogleApiClien
             case ACTION_TAKE_PHOTO:
                 if (resultCode == RESULT_OK) {
                     System.out.println("Set image to currentPhotoImageView");
-                    File currentPhoto = ManageImage.getFile()[0];
+                    File lastPhoto = ManageImage.getFile()[0];
+                    File currentPhoto = resizePhoto(lastPhoto);
                     Glide.with(getApplicationContext()).load(currentPhoto).centerCrop().into(currentPhotoImageView);
                     isCaptured = true;
                     plusImage.setVisibility(View.INVISIBLE);
@@ -181,6 +188,35 @@ public class CaptionActivity extends AppCompatActivity implements GoogleApiClien
                 }
                 break;
         }
+    }
+
+    private File resizePhoto(File lastPhoto) {
+        File currentPhoto = null;
+        try {
+            currentPhoto = ManageImage.setUpPhotoFile(mAlbumStorageDirFactory);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Bitmap b = BitmapFactory.decodeFile(lastPhoto.getAbsolutePath());
+        Bitmap out = Bitmap.createScaledBitmap(b, (int) (b.getWidth() * 0.8), (int) (b.getHeight() * 0.8), false);
+
+        FileOutputStream fOut;
+        try {
+
+            fOut = new FileOutputStream(currentPhoto);
+            out.compress(Bitmap.CompressFormat.JPEG, 80, fOut);
+            fOut.flush();
+            fOut.close();
+            b.recycle();
+            out.recycle();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        //Delete old photo
+        lastPhoto.delete();
+
+        return currentPhoto;
     }
 
     private void addMessageToPicture() {
@@ -212,11 +248,37 @@ public class CaptionActivity extends AppCompatActivity implements GoogleApiClien
     public void onStart() {
         super.onStart();
         googleApiClient.connect();
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        Action viewAction = Action.newAction(
+                Action.TYPE_VIEW, // TODO: choose an action type.
+                "Caption Page", // TODO: Define a title for the content shown.
+                // TODO: If you have web page content that matches this app activity's content,
+                // make sure this auto-generated web page URL is correct.
+                // Otherwise, set the URL to null.
+                Uri.parse("http://host/path"),
+                // TODO: Make sure this auto-generated app deep link URI is correct.
+                Uri.parse("android-app://com.example.jjamie.virtualadhoc/http/host/path")
+        );
+        AppIndex.AppIndexApi.start(googleApiClient, viewAction);
     }
 
     @Override
     public void onStop() {
         super.onStop();
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        Action viewAction = Action.newAction(
+                Action.TYPE_VIEW, // TODO: choose an action type.
+                "Caption Page", // TODO: Define a title for the content shown.
+                // TODO: If you have web page content that matches this app activity's content,
+                // make sure this auto-generated web page URL is correct.
+                // Otherwise, set the URL to null.
+                Uri.parse("http://host/path"),
+                // TODO: Make sure this auto-generated app deep link URI is correct.
+                Uri.parse("android-app://com.example.jjamie.virtualadhoc/http/host/path")
+        );
+        AppIndex.AppIndexApi.end(googleApiClient, viewAction);
         if (googleApiClient != null && googleApiClient.isConnected()) {
             googleApiClient.disconnect();
         }

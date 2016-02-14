@@ -379,10 +379,10 @@ public class ConnectionManager extends Thread {
                     buf.read(img, 0, img.length);
                     buf.close();
                     Image image = new Image( senderName, filename, message, location, img);
-                    Broadcaster.broadcast(image.getBytes());
+                    Broadcaster.broadcast(image.getBytes(),ListenerPacket.PORT_PACKET);
                 } else {
                     Image image = new Image( senderName, filename, message, location, null);
-                    Broadcaster.broadcast(image.getBytes());
+                    Broadcaster.broadcast(image.getBytes(),ListenerPacket.PORT_PACKET);
                 }
             } catch (FileNotFoundException e) {
                 e.printStackTrace();

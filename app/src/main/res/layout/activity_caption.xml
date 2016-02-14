@@ -78,6 +78,7 @@
                 android:background="#00000000"
                 android:backgroundTint="#767575"
                 android:gravity="top"
+                android:maxLength="100"
                 android:hint="Write a message..."
                 android:lines="4"
                 android:paddingLeft="20dp"

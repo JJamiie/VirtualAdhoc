@@ -30,15 +30,18 @@ public class PegionNetworkAdapter extends BaseAdapter {
     private TextView txt_pigeon_network;
     private ListView list_people_nearby;
     private ListView list_pigeon_network;
+    private TextView txt_manage_network;
 
 
     public PegionNetworkAdapter(Activity activity, View view) {
         this.activity = activity;
         mInflater = LayoutInflater.from(activity);
         txt_scanning_Network = (TextView) view.findViewById(R.id.txt_scanningNetwork);
+        txt_manage_network = (TextView) view.findViewById(R.id.txt_mange_network);
         txt_pigeon_network = (TextView) view.findViewById(R.id.pigeon_network_text);
         list_people_nearby = (ListView) view.findViewById(R.id.list_people_nearby);
         list_pigeon_network = (ListView) view.findViewById(R.id.list_pigeon_network);
+        listNeighbor = new ArrayList<>();
     }
 
     @Override
@@ -93,6 +96,7 @@ public class PegionNetworkAdapter extends BaseAdapter {
                                 setEnabled_network(false);
                                 ConnectionManager.clientJoinAp(SSID, activity);
                                 txt_pigeon_network.setText("People nearby");
+                                txt_manage_network.setText("Leave network");
                                 list_people_nearby.setVisibility(View.VISIBLE);
                                 list_pigeon_network.setVisibility(View.INVISIBLE);
                                 //Wait for time to connect Hotspot
