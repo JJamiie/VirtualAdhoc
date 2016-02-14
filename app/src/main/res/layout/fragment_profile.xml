@@ -42,8 +42,8 @@
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="12dp"
                 android:text="JJamie Rashata"
-                android:textSize="20dp"
                 android:textColor="#FFFFFF"
+                android:textSize="20dp"
                 android:textStyle="bold" />
 
             <TextView
@@ -65,9 +65,9 @@
                 android:layout_below="@id/profile_mail"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="2dp"
-                android:textColor="#FFFFFF"
                 android:fontFamily="sans-serif-light"
                 android:text="08/04/1994"
+                android:textColor="#FFFFFF"
                 android:textSize="13dp" />
 
         </RelativeLayout>
@@ -98,12 +98,27 @@
                         android:textStyle="bold" />
 
                     <TextView
+                        android:id="@+id/txt_email"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentRight="true"
                         android:layout_centerVertical="true"
                         android:text="jjamie_08@hotmail.com"
                         android:textSize="17dp" />
+
+                    <EditText
+                        android:id="@+id/edit_txt_email"
+                        android:layout_width="180dp"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:backgroundTint="#d7d7d7"
+                        android:ellipsize="end"
+                        android:gravity="right"
+                        android:singleLine="true"
+                        android:textColor="#707070"
+                        android:textSize="17dp"
+                        android:visibility="gone" />
                 </RelativeLayout>
 
                 <RelativeLayout
@@ -121,12 +136,27 @@
                         android:textStyle="bold" />
 
                     <TextView
+                        android:id="@+id/txt_username"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentRight="true"
                         android:layout_centerVertical="true"
                         android:text="JJamie"
                         android:textSize="17dp" />
+
+                    <EditText
+                        android:id="@+id/edit_txt_username"
+                        android:layout_width="180dp"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:backgroundTint="#d7d7d7"
+                        android:ellipsize="end"
+                        android:gravity="right"
+                        android:singleLine="true"
+                        android:textColor="#707070"
+                        android:textSize="17dp"
+                        android:visibility="gone" />
                 </RelativeLayout>
 
                 <RelativeLayout
@@ -144,12 +174,27 @@
                         android:textStyle="bold" />
 
                     <TextView
+                        android:id="@+id/txt_name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentRight="true"
                         android:layout_centerVertical="true"
                         android:text="Kuladech"
                         android:textSize="17dp" />
+
+                    <EditText
+                        android:id="@+id/edit_txt_name"
+                        android:layout_width="180dp"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:backgroundTint="#d7d7d7"
+                        android:ellipsize="end"
+                        android:gravity="right"
+                        android:singleLine="true"
+                        android:textColor="#707070"
+                        android:textSize="17dp"
+                        android:visibility="gone" />
                 </RelativeLayout>
 
                 <RelativeLayout
@@ -167,12 +212,27 @@
                         android:textStyle="bold" />
 
                     <TextView
+                        android:id="@+id/txt_surename"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentRight="true"
                         android:layout_centerVertical="true"
                         android:text="Rashataprucksa"
                         android:textSize="17dp" />
+
+                    <EditText
+                        android:id="@+id/edit_txt_surename"
+                        android:layout_width="180dp"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:backgroundTint="#d7d7d7"
+                        android:ellipsize="end"
+                        android:gravity="right"
+                        android:singleLine="true"
+                        android:textColor="#707070"
+                        android:textSize="17dp"
+                        android:visibility="gone" />
                 </RelativeLayout>
 
                 <RelativeLayout
@@ -190,12 +250,28 @@
                         android:textStyle="bold" />
 
                     <TextView
+                        android:id="@+id/txt_sex"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentRight="true"
                         android:layout_centerVertical="true"
                         android:text="Male"
                         android:textSize="17dp" />
+
+                    <EditText
+                        android:id="@+id/edit_txt_sex"
+                        android:layout_width="180dp"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:ellipsize="end"
+                        android:layout_centerVertical="true"
+                        android:visibility="gone"
+                        android:gravity="right"
+                        android:textSize="17dp"
+                        android:singleLine="true"
+                        android:textColor="#707070"
+                        android:backgroundTint="#d7d7d7"
+                        />
                 </RelativeLayout>
 
                 <RelativeLayout
@@ -213,12 +289,28 @@
                         android:textStyle="bold" />
 
                     <TextView
+                        android:id="@+id/txt_birthdate"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentRight="true"
                         android:layout_centerVertical="true"
                         android:text="08/04/1994"
                         android:textSize="17dp" />
+
+                    <EditText
+                        android:id="@+id/edit_txt_birthdate"
+                        android:layout_width="180dp"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:ellipsize="end"
+                        android:layout_centerVertical="true"
+                        android:visibility="gone"
+                        android:gravity="right"
+                        android:textSize="17dp"
+                        android:singleLine="true"
+                        android:textColor="#707070"
+                        android:backgroundTint="#d7d7d7"
+                        />
                 </RelativeLayout>
 
                 <RelativeLayout
@@ -236,12 +328,28 @@
                         android:textStyle="bold" />
 
                     <TextView
+                        android:id="@+id/txt_address"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentRight="true"
                         android:layout_centerVertical="true"
                         android:text="San Francisco"
                         android:textSize="17dp" />
+
+                    <EditText
+                        android:id="@+id/edit_txt_address"
+                        android:layout_width="180dp"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:ellipsize="end"
+                        android:layout_centerVertical="true"
+                        android:visibility="gone"
+                        android:gravity="right"
+                        android:textSize="17dp"
+                        android:singleLine="true"
+                        android:textColor="#707070"
+                        android:backgroundTint="#d7d7d7"
+                        />
                 </RelativeLayout>
 
                 <RelativeLayout
@@ -267,6 +375,8 @@
                         android:textColor="#FFFFFF"
                         android:textSize="18dp"
                         android:textStyle="bold" />
+
+
                 </RelativeLayout>
 
             </LinearLayout>

@@ -198,17 +198,17 @@ public class CaptionActivity extends AppCompatActivity implements GoogleApiClien
             e.printStackTrace();
         }
         Bitmap b = BitmapFactory.decodeFile(lastPhoto.getAbsolutePath());
-        Bitmap out = Bitmap.createScaledBitmap(b, (int) (b.getWidth() * 0.8), (int) (b.getHeight() * 0.8), false);
+//        Bitmap out = Bitmap.createScaledBitmap(b, (int) (b.getWidth() * 0.8), (int) (b.getHeight() * 0.8), false);
 
         FileOutputStream fOut;
         try {
 
             fOut = new FileOutputStream(currentPhoto);
-            out.compress(Bitmap.CompressFormat.JPEG, 80, fOut);
+            b.compress(Bitmap.CompressFormat.JPEG, 60, fOut);
             fOut.flush();
             fOut.close();
             b.recycle();
-            out.recycle();
+//            out.recycle();
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }

@@ -2,6 +2,8 @@ package com.example.jjamie.virtualadhoc;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -20,12 +22,15 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.TextView;
 
-public class TabActivity extends AppCompatActivity implements NewFeedFragment.OnFragmentInteractionListener, MateFragment.OnFragmentInteractionListener,ProfileFragment.OnFragmentInteractionListener{
+public class TabActivity extends AppCompatActivity implements NewFeedFragment.OnFragmentInteractionListener, MateFragment.OnFragmentInteractionListener, ProfileFragment.OnFragmentInteractionListener {
     public static String senderName;
     private FloatingActionButton fab_camera;
     private FloatingActionButton fab_edit;
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
+    private MyDatabase myDatabase;
+    private SQLiteDatabase sqLiteDatabase;
+    private Cursor mCursor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,12 +78,7 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
         });
 
         fab_edit = (FloatingActionButton) findViewById(R.id.fab_edit);
-        fab_edit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
 
-            }
-        });
 
 
         if (android.os.Build.VERSION.SDK_INT > 9) {
@@ -92,6 +92,7 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
         if (username != null) {
             senderName = username;
         }
+
 
     }
 
@@ -180,7 +181,7 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
                 case 1:
                     return MateFragment.newInstance("", "");
                 case 2:
-                    return ProfileFragment.newInstance("","");
+                    return ProfileFragment.newInstance("", "");
             }
             return PlaceholderFragment.newInstance(position + 1);
         }
