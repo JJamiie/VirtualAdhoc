@@ -211,6 +211,7 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
     @Override
     public void onBackPressed() {
         finish();
+        System.exit(0);
     }
 
     public static Activity getActivity() {
