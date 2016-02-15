@@ -442,9 +442,11 @@ public class ConnectionManager extends Thread {
             System.out.println("Exception while reading the Image " + ioe);
         }
         RequestBody formBody = new FormBody.Builder()
-                .add("name", "JJamie")
-                .add("message", "eieie")
+                .add("Time","xx:xx")
+                .add("Name", "name")
+                .add("Message", "message")
                 .add("image",imageDataString)
+                .add("GPS","GPS")
                 .build();
         Request request = new Request.Builder()
                 .url("http://n2p.in.th/mith/toony.php")
