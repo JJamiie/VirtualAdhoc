@@ -7,24 +7,31 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
-public class Unicaster{
-    Socket socket =null;
+public class Unicaster {
 
-    public void unicast(byte[] bytes,String dstAddress){
-        try{
-            socket=new Socket(dstAddress,Broadcaster.PORT);
+
+    private int port;
+    private Socket socket = null;
+
+    public Unicaster(int port) {
+        this.port = port;
+    }
+
+    public void unicast(byte[] bytes, String dstAddress) {
+        try {
+            socket = new Socket(dstAddress, port);
             Log.d("Unicast", "Connecting...");
 
             //Send file
-            ObjectOutputStream objectOutputStream=new ObjectOutputStream(socket.getOutputStream());
-            Log.d("Unicast","Sending...");
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
+            Log.d("Unicast", "Sending...");
 
             objectOutputStream.writeObject(bytes);
             objectOutputStream.flush();
             socket.close();
 
-        }catch (IOException ex){
-            Log.d("Unicast","IOException: "+ ex);
+        } catch (IOException ex) {
+            Log.d("Unicast", "IOException: " + ex);
         } finally {
             if (socket != null) {
                 try {
@@ -37,7 +44,6 @@ public class Unicaster{
         Log.d("Unicast", "Finished...");
 
     }
-
 
 
 }

@@ -32,7 +32,6 @@
                     android:id="@+id/item_listview_profile_picture"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
-                    android:layout_centerVertical="true"
                     android:layout_marginLeft="5dp"
                     android:layout_marginRight="10dp"
                     android:padding="3dp"
@@ -45,7 +44,6 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
                     android:layout_toRightOf="@+id/item_listview_profile_picture"
-                    android:gravity="center_vertical"
                     android:text="Name"
                     android:textColor="#616161"
                     android:textSize="16sp"
@@ -57,7 +55,6 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/item_listview_name"
                     android:layout_toRightOf="@+id/item_listview_profile_picture"
-                    android:gravity="center_vertical"
                     android:text="Description"
                     android:textColor="#616161"
                     android:textSize="12sp" />

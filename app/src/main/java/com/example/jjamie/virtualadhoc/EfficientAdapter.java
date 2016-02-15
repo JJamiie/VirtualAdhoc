@@ -25,6 +25,8 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import jp.wasabeef.glide.transformations.CropCircleTransformation;
 
@@ -153,10 +155,10 @@ public class EfficientAdapter extends BaseAdapter {
                                 buf.read(img, 0, img.length);
                                 buf.close();
                                 Image image = new Image(senderName, filename, message, location, img);
-                                Broadcaster.broadcast(image.getBytes());
+                                Broadcaster.broadcast(image.getBytes(),ListenerPacket.PORT_PACKET);
                             } else {
                                 Image image = new Image(senderName, filename, message, location, null);
-                                Broadcaster.broadcast(image.getBytes());
+                                Broadcaster.broadcast(image.getBytes(),ListenerPacket.PORT_PACKET);
                             }
 
                             activity.runOnUiThread(new Runnable() {
@@ -222,10 +224,10 @@ public class EfficientAdapter extends BaseAdapter {
                     circleTurn1.startAnimation(rotation);
                     rotation2.setDuration(3000);
                     circleTurn2.startAnimation(rotation2);
-                    textUnderLogo.setText("Running Pigeon...");
+                    textUnderLogo.setText("Flying Pigeon...");
                 }
 
-                Button button = (Button) convertView.findViewById(R.id.startpigeon);
+                final Button button = (Button) convertView.findViewById(R.id.startpigeon);
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -241,6 +243,22 @@ public class EfficientAdapter extends BaseAdapter {
                             connectionManager = new ConnectionManager(getActivity());
                             connectionManager.start();
                             connectionManager.wake();
+
+                            button.setEnabled(false);
+
+                            Timer buttonTimer = new Timer();
+                            buttonTimer.schedule(new TimerTask() {
+
+                                @Override
+                                public void run() {
+                                    getActivity().runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            button.setEnabled(true);
+                                        }
+                                    });
+                                }
+                            }, 800);
 
 
                         } else {

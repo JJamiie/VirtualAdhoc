@@ -1,6 +1,7 @@
 package com.example.jjamie.virtualadhoc;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
@@ -30,11 +31,13 @@ public class MateFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private PegionNetworkAdapter pegionNetworkAdapter;
-    private PeopleNearByAdapter peopleNearByAdapter;
+    public  static PeopleNearByAdapter peopleNearByAdapter;
+    private ListenerNeighbor listenerNeighbor;
     private Boolean is_show_people_nearby = false;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
     private ListView listViewPigeonNetwork;
     private ListView listViewPeopleNearBy;
     private OnFragmentInteractionListener mListener;
@@ -49,10 +52,8 @@ public class MateFragment extends Fragment {
     private TextView txt_pigeon_network;
 
 
-
     public MateFragment() {
         // Required empty public constructor
-
     }
 
     /**
@@ -127,6 +128,9 @@ public class MateFragment extends Fragment {
         peopleNearByAdapter = new PeopleNearByAdapter(getActivity());
         listViewPeopleNearBy.setAdapter(peopleNearByAdapter);
 
+        listenerNeighbor = new ListenerNeighbor(getActivity(),peopleNearByAdapter);
+        listenerNeighbor.start();
+
         if (!is_show_people_nearby) {
             listViewPeopleNearBy.setVisibility(View.VISIBLE);
         } else {
@@ -186,17 +190,21 @@ public class MateFragment extends Fragment {
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         dialog.cancel();
+
                         pegionNetworkAdapter.setEnabled_network(false);
+                        peopleNearByAdapter.clearNeighbor();
+                        showProgressDialog("loading...");
+                        ApManager.configApState(getActivity(), true);
                         txt_manage_network.setText("Find network");
                         btn_manage_network.setEnabled(false);
                         is_btn_manage_network_click = false;
                         txt_manage_network.setTextColor(Color.parseColor("#bababa"));
                         txt_create_network.setText("Destroy network");
-                        ApManager.configApState(getActivity(), true);
                         is_btn_create_network_click = true;
                         txt_pigeon_network.setText("People nearby");
-                        tab_header_pigeon_network.setVisibility(View.GONE);
-
+                        tab_header_pigeon_network.setVisibility(View.VISIBLE);
+                        listViewPeopleNearBy.setVisibility(View.VISIBLE);
+                        listViewPigeonNetwork.setVisibility(View.GONE);
                     }
                 });
 
@@ -210,19 +218,22 @@ public class MateFragment extends Fragment {
         dialog.show();
     }
 
+
     public void turnCreateNetworkOff() {
+        ApManager.configApState(getActivity(), false);
         tab_header_pigeon_network.setVisibility(View.GONE);
+        listViewPeopleNearBy.setVisibility(View.GONE);
         btn_manage_network.setEnabled(true);
         txt_manage_network.setTextColor(Color.parseColor("#71717D"));
         txt_create_network.setText("Create network");
-        ApManager.configApState(getActivity(), false);
         is_btn_create_network_click = false;
     }
 
 
     public void turnManageNetworkOn() {
-        tab_header_pigeon_network.setVisibility(View.GONE);
+        tab_header_pigeon_network.setVisibility(View.VISIBLE);
         listViewPeopleNearBy.setVisibility(View.GONE);
+        listViewPigeonNetwork.setVisibility(View.VISIBLE);
         txt_manage_network.setText("Stop finding");
         pegionNetworkAdapter.setEnabled_network(true);
         is_btn_manage_network_click = true;
@@ -231,14 +242,31 @@ public class MateFragment extends Fragment {
 
     public void turnManangeNetworkOff() {
         tab_header_pigeon_network.setVisibility(View.INVISIBLE);
+        listViewPeopleNearBy.setVisibility(View.GONE);
+        listViewPigeonNetwork.setVisibility(View.GONE);
         txt_manage_network.setText("Find network");
         pegionNetworkAdapter.setEnabled_network(false);
         is_btn_manage_network_click = false;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        peopleNearByAdapter.notifyDataSetChanged();
+    private ProgressDialog progressDialog;
+
+    public void showProgressDialog(String message) {
+        progressDialog = new ProgressDialog(getActivity());
+        progressDialog.setMessage(message);
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+        new Thread() {
+            public void run() {
+                while (true) {
+                    if (ApManager.isApOn(getActivity())) {
+                        progressDialog.dismiss();
+                        break;
+                    }
+                }
+            }
+        }.start();
+
     }
+
 }

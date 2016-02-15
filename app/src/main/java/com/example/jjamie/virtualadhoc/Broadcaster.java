@@ -6,10 +6,9 @@ import java.util.ArrayList;
 
 public class Broadcaster {
 
-    public static int PORT = 3333;
 
-    public static void broadcast(byte[] bytes) {
-        Unicaster unicaster = new Unicaster();
+    public static void broadcast(byte[] bytes,int port) {
+        Unicaster unicaster = new Unicaster(port);
         //Get neighborlist
         ArrayList<String> neighborList = getNeighborList();
         if (neighborList.size() == 0) return;

@@ -11,7 +11,6 @@ import android.net.wifi.WifiManager;
 import android.os.Environment;
 import android.os.StrictMode;
 import android.support.annotation.NonNull;
-import android.telephony.TelephonyManager;
 import android.util.Base64;
 import android.util.Log;
 import okhttp3.FormBody;
@@ -378,10 +377,10 @@ public class ConnectionManager extends Thread {
                     buf.read(img, 0, img.length);
                     buf.close();
                     Image image = new Image( senderName, filename, message, location, img);
-                    Broadcaster.broadcast(image.getBytes());
+                    Broadcaster.broadcast(image.getBytes(),ListenerPacket.PORT_PACKET);
                 } else {
                     Image image = new Image( senderName, filename, message, location, null);
-                    Broadcaster.broadcast(image.getBytes());
+                    Broadcaster.broadcast(image.getBytes(),ListenerPacket.PORT_PACKET);
                 }
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
