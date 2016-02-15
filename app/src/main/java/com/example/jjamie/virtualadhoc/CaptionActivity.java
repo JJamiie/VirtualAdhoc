@@ -8,7 +8,6 @@ import android.content.IntentSender;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
@@ -40,7 +39,9 @@ import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStates;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
@@ -86,7 +87,6 @@ public class CaptionActivity extends AppCompatActivity implements GoogleApiClien
             @Override
             public void onClick(View v) {
                 if (gps_button_isClicked) {
-
                     showProgressDialog("Loading...");
                     System.out.println("Set location: " + latitude + "," + longitude);
                 } else {
@@ -195,6 +195,7 @@ public class CaptionActivity extends AppCompatActivity implements GoogleApiClien
 
     private File resizePhoto(File lastPhoto) {
         File currentPhoto = null;
+
         try {
             currentPhoto = ManageImage.setUpPhotoFile(mAlbumStorageDirFactory);
         } catch (IOException e) {
@@ -202,20 +203,14 @@ public class CaptionActivity extends AppCompatActivity implements GoogleApiClien
         }
         Bitmap b = BitmapFactory.decodeFile(lastPhoto.getAbsolutePath());
 
-//        Bitmap out = Bitmap.createScaledBitmap(b, (int) (b.getWidth() * 0.8), (int) (b.getHeight() * 0.8), false);
-        Matrix matrix = new Matrix();
-        matrix.postRotate(90);
-        Bitmap rotatedBitmap = Bitmap.createBitmap(b , 0, 0, b.getWidth(), b.getHeight(), matrix, true);
         FileOutputStream fOut;
         try {
 
             fOut = new FileOutputStream(currentPhoto);
-            rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 60, fOut);
+            b.compress(Bitmap.CompressFormat.JPEG, 60, fOut);
             fOut.flush();
             fOut.close();
-            rotatedBitmap.recycle();
             b.recycle();
-//            out.recycle();
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -229,24 +224,42 @@ public class CaptionActivity extends AppCompatActivity implements GoogleApiClien
     private void addMessageToPicture() {
         String message = messageEditText.getText().toString();
         String latitudeAndLongtitude = latitude + "," + longitude;
+        File currentPhoto = new File(ManageImage.getFile()[0].getAbsolutePath());
+        byte[] img = new byte[(int) currentPhoto.length()];
+        try {
+            BufferedInputStream buf = new BufferedInputStream(new FileInputStream(currentPhoto));
+            buf.read(img, 0, img.length);
+            buf.close();
+            Image image = null;
+            if (isCaptured) {
+                if (gps_button_isClicked) {
+                    myDatabase.addToTablePicture(sQLiteDatabase, senderName, currentPhoto.getName(), message, latitudeAndLongtitude);
+                    image = new Image(senderName, currentPhoto.getName(), message, latitudeAndLongtitude, img);
+                } else {
+                    myDatabase.addToTablePicture(sQLiteDatabase, senderName, currentPhoto.getName(), message, null);
+                    image = new Image(senderName, currentPhoto.getName(), message, "null", img);
+                }
+                Broadcaster.broadcast(image.getBytes(), ListenerPacket.PORT_PACKET);
+                finish();
+            } else if (messageEditText.getText().length() == 0) {
+                Toast.makeText(getApplicationContext(), "Please add a message before save.", Toast.LENGTH_SHORT).show();
+            } else {
+                if (gps_button_isClicked) {
+                    myDatabase.addToTablePicture(sQLiteDatabase, senderName, null, message, latitudeAndLongtitude);
+                    image = new Image(senderName, "null", message, latitudeAndLongtitude, img);
 
-        if (isCaptured) {
-            File currentPhoto = new File(ManageImage.getFile()[0].getAbsolutePath());
-            if (gps_button_isClicked) {
-                myDatabase.addToTablePicture(sQLiteDatabase, senderName, currentPhoto.getName(), message, latitudeAndLongtitude);
-            } else {
-                myDatabase.addToTablePicture(sQLiteDatabase, senderName, currentPhoto.getName(), message, null);
+                } else {
+                    myDatabase.addToTablePicture(sQLiteDatabase, senderName, null, message, null);
+                    image = new Image(senderName, "null", message, "null", img);
+                }
+                Broadcaster.broadcast(image.getBytes(), ListenerPacket.PORT_PACKET);
+
+                finish();
             }
-            finish();
-        } else if (messageEditText.getText().length() == 0) {
-            Toast.makeText(getApplicationContext(), "Please add a message before save.", Toast.LENGTH_SHORT).show();
-        } else {
-            if (gps_button_isClicked) {
-                myDatabase.addToTablePicture(sQLiteDatabase, senderName, null, message, latitudeAndLongtitude);
-            } else {
-                myDatabase.addToTablePicture(sQLiteDatabase, senderName, null, message, null);
-            }
-            finish();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (LengthIncorrectLengthException e) {
+            e.printStackTrace();
         }
     }
 

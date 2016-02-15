@@ -134,6 +134,13 @@ public class ListenerPacket extends Thread {
                 }
 
             }
+            activity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    adapter.notifyDataSetChanged();
+
+                }
+            });
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (ImageChunkIncorrectLengthException e) {

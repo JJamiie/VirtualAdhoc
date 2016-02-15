@@ -189,6 +189,7 @@ public class ProfileFragment extends Fragment {
                 }
             }
         });
+
     }
 
     @Override
@@ -279,8 +280,6 @@ public class ProfileFragment extends Fragment {
             Glide.with(this).load(image).placeholder(new ColorDrawable(0xFFc5c4c4)).bitmapTransform(new BlurTransformation(getContext())).into(profile_picture_background);
 
         }
-
-
         return view;
     }
 

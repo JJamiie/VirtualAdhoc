@@ -13,11 +13,7 @@ import android.os.StrictMode;
 import android.support.annotation.NonNull;
 import android.util.Base64;
 import android.util.Log;
-import okhttp3.FormBody;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -29,6 +25,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 /**
  * Created by Administrator on 16/12/2558.
@@ -218,7 +220,7 @@ public class ConnectionManager extends Thread {
                 ApManager.configApState(contexts, true);
                 System.out.println("Stage: Sleep1");
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(60000);
                     ApManager.configApState(contexts, false);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -231,11 +233,11 @@ public class ConnectionManager extends Thread {
                 while (availableAP.size() > 0) {
                     System.out.println("Stage: AvailableApSize>0");
                     connectAP(contexts);
-
-                    sendData();
                     try {
+                        Thread.sleep(6000);
+                        sendData();
                         System.out.println("Going to sleep");
-                        Thread.sleep(15000);// change ? Dynamic?
+                        Thread.sleep(12000);// change ? Dynamic?
                         System.out.println("wake");
                     } catch (InterruptedException e) {
                         e.printStackTrace();
