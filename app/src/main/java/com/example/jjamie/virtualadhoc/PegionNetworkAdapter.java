@@ -23,7 +23,7 @@ import jp.wasabeef.glide.transformations.CropCircleTransformation;
  */
 public class PegionNetworkAdapter extends BaseAdapter {
     private final LayoutInflater mInflater;
-    private ArrayList<String> listNeighbor;
+    private static ArrayList<String> listNeighbor;
     private Activity activity;
     private Boolean enabled_network = false;
     private TextView txt_scanning_Network;
@@ -31,7 +31,7 @@ public class PegionNetworkAdapter extends BaseAdapter {
     private ListView list_people_nearby;
     private ListView list_pigeon_network;
     private TextView txt_manage_network;
-
+    public static Boolean leaveNetwork = false;
 
     public PegionNetworkAdapter(Activity activity, View view) {
         this.activity = activity;
@@ -105,13 +105,14 @@ public class PegionNetworkAdapter extends BaseAdapter {
                                     public void run() {
                                         super.run();
                                         try {
-                                            Thread.sleep(4000);
-                                            ReportNeighbor.clientReportInformation();
+                                            Thread.sleep(5000);
+                                            ReportNeighbor.clientReportJoin();
                                         } catch (InterruptedException e) {
                                             e.printStackTrace();
                                         }
                                     }
                                 }.start();
+                                leaveNetwork = true;
                             }
                         });
 
@@ -203,6 +204,12 @@ public class PegionNetworkAdapter extends BaseAdapter {
         Button btn_join_network;
 
     }
+
+    public static void clearlistNeighbor() {
+        listNeighbor.clear();
+        System.out.println("Clear: " + listNeighbor.size());
+    }
+
 
 }
 

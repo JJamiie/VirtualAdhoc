@@ -2,8 +2,6 @@ package com.example.jjamie.virtualadhoc;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -28,9 +26,7 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
     private FloatingActionButton fab_edit;
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
-    private MyDatabase myDatabase;
-    private SQLiteDatabase sqLiteDatabase;
-    private Cursor mCursor;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,7 +88,6 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
         if (username != null) {
             senderName = username;
         }
-
 
     }
 

@@ -40,12 +40,12 @@ public class EfficientAdapter extends BaseAdapter {
     private static final int TYPE_ITEM = 0;
     private static final int TYPE_FIRST = 1;
     private ConnectionManager connectionManager;
-    private boolean isStartpigeon = false;
+    public static boolean isStartpigeon = false;
     private SQLiteDatabase sqLiteDatabase;
     private MyDatabase myDatabase;
     private Cursor mCursor;
 
-    public EfficientAdapter(Activity activity) {
+    public EfficientAdapter(Activity activity, ConnectionManager connectionManager) {
         this.activity = activity;
         mInflater = LayoutInflater.from(activity);
 
@@ -54,6 +54,7 @@ public class EfficientAdapter extends BaseAdapter {
         sqLiteDatabase = myDatabase.getWritableDatabase();
         // Get all row in picture table in pigeon database
         updateTable();
+        this.connectionManager = connectionManager;
     }
 
     @Override
@@ -103,7 +104,7 @@ public class EfficientAdapter extends BaseAdapter {
                     holder = (ViewHolder) convertView.getTag();
                 }
 
-                mCursor.moveToPosition(position-1);
+                mCursor.moveToPosition(position - 1);
                 //Set sender's name
                 int columnIndex = mCursor.getColumnIndex(MyDatabase.COL_SENDER_NAME);
                 final String senderName = mCursor.getString(columnIndex);
@@ -155,10 +156,10 @@ public class EfficientAdapter extends BaseAdapter {
                                 buf.read(img, 0, img.length);
                                 buf.close();
                                 Image image = new Image(senderName, filename, message, location, img);
-                                Broadcaster.broadcast(image.getBytes(),ListenerPacket.PORT_PACKET);
+                                Broadcaster.broadcast(image.getBytes(), ListenerPacket.PORT_PACKET);
                             } else {
                                 Image image = new Image(senderName, filename, message, location, null);
-                                Broadcaster.broadcast(image.getBytes(),ListenerPacket.PORT_PACKET);
+                                Broadcaster.broadcast(image.getBytes(), ListenerPacket.PORT_PACKET);
                             }
 
                             activity.runOnUiThread(new Runnable() {
@@ -193,6 +194,7 @@ public class EfficientAdapter extends BaseAdapter {
                 });
                 break;
             case TYPE_FIRST:
+
                 if (convertView == null) {
                     convertView = mInflater.inflate(R.layout.item_touchtopegion, null);
                 }
@@ -225,54 +227,77 @@ public class EfficientAdapter extends BaseAdapter {
                     rotation2.setDuration(3000);
                     circleTurn2.startAnimation(rotation2);
                     textUnderLogo.setText("Flying Pigeon...");
+                    layoutTouchTopigeon.setBackgroundColor(Color.parseColor("#e91e63"));
                 }
 
                 final Button button = (Button) convertView.findViewById(R.id.startpigeon);
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if (!isStartpigeon) {
-                            logoPigeon.setImageResource(R.drawable.logopink);
-                            layoutTouchTopigeon.setBackgroundColor(Color.parseColor("#e91e63"));
-                            rotation.setDuration(2000);
-                            circleTurn1.startAnimation(rotation);
-                            rotation2.setDuration(3000);
-                            circleTurn2.startAnimation(rotation2);
-                            textUnderLogo.setText("Flying Pigeon...");
-                            isStartpigeon = true;
-                            connectionManager = new ConnectionManager(getActivity());
-                            connectionManager.start();
-                            connectionManager.wake();
 
-                            button.setEnabled(false);
-
-                            Timer buttonTimer = new Timer();
-                            buttonTimer.schedule(new TimerTask() {
-
+                        if (MateFragment.manageIsOn) {
+                            getActivity().runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    getActivity().runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            button.setEnabled(true);
-                                        }
-                                    });
+                                    Toast.makeText(getActivity(), "Please stop finding network before flying pigeon.", Toast.LENGTH_LONG).show();
                                 }
-                            }, 800);
-
-
+                            });
+                        } else if (MateFragment.createIsOn) {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(getActivity(), "Please destroy network before flying pigeon.", Toast.LENGTH_LONG).show();
+                                }
+                            });
                         } else {
-                            logoPigeon.setImageResource(R.drawable.logo4);
-                            layoutTouchTopigeon.setBackgroundColor(Color.parseColor("#303F9F"));
-                            rotation.setDuration(8000);
-                            circleTurn1.startAnimation(rotation);
-                            rotation2.setDuration(9000);
-                            circleTurn2.startAnimation(rotation2);
-                            textUnderLogo.setText("Touch to pigeon");
-                            isStartpigeon = false;
-                            connectionManager.sleep();
-                            connectionManager = null;
-                            System.out.println("Connection manager sleep");
+
+                            if (!isStartpigeon) {
+                                logoPigeon.setImageResource(R.drawable.logopink);
+                                layoutTouchTopigeon.setBackgroundColor(Color.parseColor("#e91e63"));
+                                rotation.setDuration(2000);
+                                circleTurn1.startAnimation(rotation);
+                                rotation2.setDuration(3000);
+                                circleTurn2.startAnimation(rotation2);
+                                textUnderLogo.setText("Flying Pigeon...");
+                                isStartpigeon = true;
+
+                                if (connectionManager.getState() == Thread.State.NEW) {
+                                    connectionManager.start();
+                                }
+                                synchronized (connectionManager) {
+                                    connectionManager.wake();
+                                }
+
+                                button.setEnabled(false);
+
+                                Timer buttonTimer = new Timer();
+                                buttonTimer.schedule(new TimerTask() {
+
+                                    @Override
+                                    public void run() {
+                                        getActivity().runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                button.setEnabled(true);
+                                            }
+                                        });
+                                    }
+                                }, 800);
+
+
+                            } else {
+                                logoPigeon.setImageResource(R.drawable.logo4);
+                                layoutTouchTopigeon.setBackgroundColor(Color.parseColor("#303F9F"));
+                                rotation.setDuration(8000);
+                                circleTurn1.startAnimation(rotation);
+                                rotation2.setDuration(9000);
+                                circleTurn2.startAnimation(rotation2);
+                                textUnderLogo.setText("Touch to pigeon");
+                                isStartpigeon = false;
+                                connectionManager.sleep();
+                                connectionManager.interrupt();
+                                System.out.println("Connection manager sleep");
+                            }
                         }
                     }
                 });
@@ -282,8 +307,8 @@ public class EfficientAdapter extends BaseAdapter {
 
     }
 
-    public void updateTable(){
-        mCursor = sqLiteDatabase.rawQuery("SELECT * FROM " + MyDatabase.TABLE_NAME_PICTURE+" ORDER BY _id DESC", null);
+    public void updateTable() {
+        mCursor = sqLiteDatabase.rawQuery("SELECT * FROM " + MyDatabase.TABLE_NAME_PICTURE + " ORDER BY _id DESC", null);
         mCursor.moveToFirst();
     }
 

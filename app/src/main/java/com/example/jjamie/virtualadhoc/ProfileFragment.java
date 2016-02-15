@@ -1,21 +1,27 @@
 package com.example.jjamie.virtualadhoc;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+
+import java.io.File;
 
 import jp.wasabeef.glide.transformations.BlurTransformation;
 import jp.wasabeef.glide.transformations.CropCircleTransformation;
@@ -34,7 +40,7 @@ public class ProfileFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-
+    public static final int PICK_PHOTO = 123;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
@@ -50,6 +56,9 @@ public class ProfileFragment extends Fragment {
     private TextView txt_sex;
     private TextView txt_birthday;
     private TextView txt_address;
+    private TextView txt_header_name;
+    private TextView txt_header_email;
+    private TextView txt_header_birthdate;
 
     private EditText edit_txt_email;
     private EditText edit_txt_username;
@@ -58,8 +67,11 @@ public class ProfileFragment extends Fragment {
     private EditText edit_txt_sex;
     private EditText edit_txt_birthday;
     private EditText edit_txt_address;
+    private Button btn_choose_photo_from_gallary;
 
     private Boolean edit = false;
+    private ImageView profile_picture;
+    private ImageView profile_picture_background;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -138,12 +150,14 @@ public class ProfileFragment extends Fragment {
                     txt_email.setVisibility(View.VISIBLE);
                     String email = edit_txt_email.getText().toString();
                     txt_email.setText(email);
+                    txt_header_email.setText(email);
 
                     edit_txt_username.setVisibility(View.GONE);
                     txt_username.setVisibility(View.VISIBLE);
                     String username = edit_txt_username.getText().toString();
                     txt_username.setText(username);
                     TabActivity.senderName = username;
+                    txt_header_name.setText(username);
 
                     edit_txt_name.setVisibility(View.GONE);
                     txt_name.setVisibility(View.VISIBLE);
@@ -164,13 +178,14 @@ public class ProfileFragment extends Fragment {
                     txt_birthday.setVisibility(View.VISIBLE);
                     String birthday = edit_txt_birthday.getText().toString();
                     txt_birthday.setText(birthday);
+                    txt_header_birthdate.setText(birthday);
 
                     edit_txt_address.setVisibility(View.GONE);
                     txt_address.setVisibility(View.VISIBLE);
                     String address = edit_txt_address.getText().toString();
                     txt_address.setText(address);
 
-                    myDatabase.updateToTableUser(sqLiteDatabase,username,email,name,surename,sex,birthday,"",address);
+                    myDatabase.updateToTableUser(sqLiteDatabase, username, email, name, surename, sex, birthday, address);
                 }
             }
         });
@@ -184,16 +199,20 @@ public class ProfileFragment extends Fragment {
 
 
         //bind object
+        btn_choose_photo_from_gallary = (Button) view.findViewById(R.id.btn_choose_photo_from_gallery);
+        btn_choose_photo_from_gallary.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                pickImage();
+            }
+        });
 
-        //Image
-        ImageView profile_picture = (ImageView) view.findViewById(R.id.profile_picture);
-        Glide.with(this).load(R.drawable.my_profile_picture).placeholder(new ColorDrawable(0xFFc5c4c4)).bitmapTransform(new CropCircleTransformation(getContext())).into(profile_picture);
-        ImageView profile_picture_background = (ImageView) view.findViewById(R.id.profile_picture_background);
-        Glide.with(this).load(R.drawable.my_profile_picture).placeholder(new ColorDrawable(0xFFc5c4c4)).bitmapTransform(new BlurTransformation(getContext())).into(profile_picture_background);
 
         txt_email = (TextView) view.findViewById(R.id.txt_email);
         int columnIndex = mCursor.getColumnIndex(MyDatabase.COL_EMAIL);
         txt_email.setText(mCursor.getString(columnIndex));
+        txt_header_email = (TextView) view.findViewById(R.id.txt_header_mail);
+        txt_header_email.setText(mCursor.getString(columnIndex));
 
         edit_txt_email = (EditText) view.findViewById(R.id.edit_txt_email);
         edit_txt_email.setText(mCursor.getString(columnIndex));
@@ -204,6 +223,8 @@ public class ProfileFragment extends Fragment {
 
         edit_txt_username = (EditText) view.findViewById(R.id.edit_txt_username);
         edit_txt_username.setText(mCursor.getString(columnIndex));
+        txt_header_name = (TextView) view.findViewById(R.id.txt_header_name);
+        txt_header_name.setText(mCursor.getString(columnIndex));
 
         txt_name = (TextView) view.findViewById(R.id.txt_name);
         columnIndex = mCursor.getColumnIndex(MyDatabase.COL_NAME);
@@ -232,6 +253,8 @@ public class ProfileFragment extends Fragment {
 
         edit_txt_birthday = (EditText) view.findViewById(R.id.edit_txt_birthdate);
         edit_txt_birthday.setText(mCursor.getString(columnIndex));
+        txt_header_birthdate = (TextView) view.findViewById(R.id.txt_header_birthdate);
+        txt_header_birthdate.setText(mCursor.getString(columnIndex));
 
         txt_address = (TextView) view.findViewById(R.id.txt_address);
         columnIndex = mCursor.getColumnIndex(MyDatabase.COL_ADDRESS);
@@ -239,6 +262,23 @@ public class ProfileFragment extends Fragment {
 
         edit_txt_address = (EditText) view.findViewById(R.id.edit_txt_address);
         edit_txt_address.setText(mCursor.getString(columnIndex));
+
+        //Image
+        columnIndex = mCursor.getColumnIndex(MyDatabase.COL_FILE_NAME);
+        String filename = mCursor.getString(columnIndex);
+        if(filename.equals("")){
+            profile_picture = (ImageView) view.findViewById(R.id.profile_picture);
+            Glide.with(this).load(R.drawable.profile).placeholder(new ColorDrawable(0xFFc5c4c4)).bitmapTransform(new CropCircleTransformation(getContext())).into(profile_picture);
+            profile_picture_background = (ImageView) view.findViewById(R.id.profile_picture_background);
+            Glide.with(this).load(R.drawable.profile).placeholder(new ColorDrawable(0xFFc5c4c4)).bitmapTransform(new BlurTransformation(getContext())).into(profile_picture_background);
+        }else{
+            File image = new File(filename);
+            profile_picture = (ImageView) view.findViewById(R.id.profile_picture);
+            Glide.with(this).load(image).placeholder(new ColorDrawable(0xFFc5c4c4)).bitmapTransform(new CropCircleTransformation(getContext())).into(profile_picture);
+            profile_picture_background = (ImageView) view.findViewById(R.id.profile_picture_background);
+            Glide.with(this).load(image).placeholder(new ColorDrawable(0xFFc5c4c4)).bitmapTransform(new BlurTransformation(getContext())).into(profile_picture_background);
+
+        }
 
 
         return view;
@@ -282,4 +322,44 @@ public class ProfileFragment extends Fragment {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
+
+    public void pickImage() {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("image/*");
+        startActivityForResult(intent, PICK_PHOTO);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PICK_PHOTO && resultCode == Activity.RESULT_OK) {
+            if (data == null) {
+                //Display an error
+                return;
+            }
+            Uri uri = data.getData();
+            File imageFile = new File(getRealPathFromURI(uri));
+            myDatabase.updateFilenameProfilePicture(sqLiteDatabase, TabActivity.senderName, imageFile.getAbsolutePath());
+            Glide.with(this).load(imageFile).placeholder(new ColorDrawable(0xFFc5c4c4)).bitmapTransform(new CropCircleTransformation(getContext())).into(profile_picture);
+            Glide.with(this).load(imageFile).placeholder(new ColorDrawable(0xFFc5c4c4)).bitmapTransform(new BlurTransformation(getContext())).into(profile_picture_background);
+
+            //Now you can do whatever you want with your inpustream, save it as file, upload to a server, decode a bitmap...
+        }
+    }
+
+    private String getRealPathFromURI(Uri contentURI) {
+        String result;
+        Cursor cursor = getActivity().getContentResolver().query(contentURI, null, null, null, null);
+        if (cursor == null) { // Source is Dropbox or other similar local file path
+            result = contentURI.getPath();
+        } else {
+            cursor.moveToFirst();
+            int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
+            result = cursor.getString(idx);
+            cursor.close();
+        }
+        return result;
+    }
+
+
 }

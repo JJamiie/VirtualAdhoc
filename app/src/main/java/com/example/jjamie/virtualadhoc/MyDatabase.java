@@ -69,7 +69,7 @@ public class MyDatabase extends SQLiteOpenHelper {
                 + "', '" + birthdate + "', '" + filename + "');");
     }
 
-    public void updateToTableUser(SQLiteDatabase db, String username, String email, String name, String surename, String sex, String birthdate, String filename, String address) {
+    public void updateToTableUser(SQLiteDatabase db, String username, String email, String name, String surename, String sex, String birthdate, String address) {
         ContentValues con = new ContentValues();
         con.put(COL_USERNAME, username);
         con.put(COL_EMAIL, email);
@@ -77,14 +77,14 @@ public class MyDatabase extends SQLiteOpenHelper {
         con.put(COL_SURENAME, surename);
         con.put(COL_BIRTHDATE, birthdate);
         con.put(COL_SEX,sex);
-        con.put(COL_FILE_NAME, filename);
         con.put(COL_ADDRESS, address);
         db.update(TABLE_NAME_USER, con, COL_USERNAME + "='" + username + "'",null);
+    }
 
-//        db.execSQL("UPDATE " + TABLE_NAME_USER + " SET " + COL_USERNAME + "=' " + username + "',"
-//                + COL_EMAIL + "=' " + email + "'," + COL_NAME + "=' " + name + "',"
-//                + COL_SURENAME + "=' " + surename + "'," + COL_SEX + "=' " + sex + "'," + COL_BIRTHDATE + "=' " + birthdate + "',"
-//                + COL_FILE_NAME + "=' " + filename + "'," + COL_ADDRESS + "=' " + address + "' WHERE " + COL_USERNAME + "='" + username + "'");
+    public void updateFilenameProfilePicture(SQLiteDatabase db, String username, String filename) {
+        ContentValues con = new ContentValues();
+        con.put(COL_FILE_NAME, filename);
+        db.update(TABLE_NAME_USER, con, COL_USERNAME + "='" + username + "'",null);
     }
 
 

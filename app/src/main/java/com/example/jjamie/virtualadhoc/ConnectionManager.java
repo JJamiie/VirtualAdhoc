@@ -45,10 +45,6 @@ public class ConnectionManager extends Thread {
         contexts = context;
         myDatabase = new MyDatabase(context);
         sqLiteDatabase = myDatabase.getWritableDatabase();
-    }
-
-    public void run() {
-        enableWifi(contexts);
         results = new List<ScanResult>() {
             @Override
             public void add(int location, ScanResult object) {
@@ -172,8 +168,24 @@ public class ConnectionManager extends Thread {
         };
         availableAP = new ArrayList<>();
 
-        while (true) {
+    }
 
+    public void run() {
+        enableWifi(contexts);
+        results.clear();
+        availableAP.clear();
+        while (true) {
+            synchronized (this) {
+                if (!active) {
+                    try {
+                        wait();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            System.out.println("Tesssssssssssst");
             enableWifi(contexts);
             System.out.println("Stage: Sleep0");
             try {
@@ -198,7 +210,7 @@ public class ConnectionManager extends Thread {
                 ApManager.configApState(contexts, true);
                 System.out.println("Stage: Sleep1");
                 try {
-                    Thread.sleep(60000);
+                    Thread.sleep(1000);
                     ApManager.configApState(contexts, false);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -299,8 +311,12 @@ public class ConnectionManager extends Thread {
         wifiManager.setWifiEnabled(true);
         wifiManager.startScan();
         results = wifiManager.getScanResults();
+        if(results == null){
+            size=0;
+        }else{
+            size = results.size();
 
-        size = results.size();
+        }
         int tsize = size - 1;
         System.out.println("tsize" + tsize);
         availableAP.clear();
@@ -340,9 +356,9 @@ public class ConnectionManager extends Thread {
         return true;
     }
 
-    public synchronized void wake() {
+    public void wake() {
         active = true;
-        notify();
+        notifyAll();
     }
 
     public void sleep() {
@@ -355,7 +371,8 @@ public class ConnectionManager extends Thread {
         mCursor = sqLiteDatabase.rawQuery("SELECT * FROM " + MyDatabase.TABLE_NAME_PICTURE + " ORDER BY _id DESC", null);
         mCursor.moveToFirst();
 
-        for (int position = 0; position < mCursor.getColumnCount(); ++position) {
+        for (int position = 0; position < mCursor.getColumnCount(); position++) {
+            mCursor.moveToPosition(position);
             //Set sendername
             int columnIndex = mCursor.getColumnIndex(MyDatabase.COL_SENDER_NAME);
             String senderName = mCursor.getString(columnIndex);

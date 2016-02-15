@@ -32,6 +32,7 @@ public class NewFeedFragment extends Fragment {
     private ListView listview;
     private EfficientAdapter efficientAdapter;
     private AppBarLayout appBar;
+    private ConnectionManager connectionManager;
     public NewFeedFragment() {
         // Required empty public constructor
     }
@@ -71,6 +72,7 @@ public class NewFeedFragment extends Fragment {
             mAlbumStorageDirFactory = new BaseAlbumDirFactory();
         }
         appBar = (AppBarLayout) getActivity().findViewById(R.id.appbar);
+        connectionManager = new ConnectionManager(getActivity());
     }
 
     @Override
@@ -79,7 +81,7 @@ public class NewFeedFragment extends Fragment {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_new_feed, container, false);
         listview = (ListView) v.findViewById(R.id.listview);
-        efficientAdapter = new EfficientAdapter(getActivity());
+        efficientAdapter = new EfficientAdapter(getActivity(),connectionManager);
         listview.setAdapter(efficientAdapter);
         //ListenerPacket start
         if (listenerPacket == null) {

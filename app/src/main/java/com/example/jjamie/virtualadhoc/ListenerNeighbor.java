@@ -25,6 +25,9 @@ public class ListenerNeighbor extends Thread {
     public static final int TYPE_LENGTH = 4;
     public static final int REPORT_NEIGHBOR_TYPE = 2;
     public static final int CLIENT_REPORT_TYPE = 3;
+    public static final int CLIENT_LEAVE_TYPE = 5;
+    public static final int REPORT_DESTROY_TYPE = 6;
+
 
 
     public ListenerNeighbor(Activity activity, PeopleNearByAdapter peopleNearByAdapter) {
@@ -79,7 +82,21 @@ public class ListenerNeighbor extends Thread {
                         InetAddress hotspotIP = InetAddress.getByName(getIPAddressItSelf());
                         _neighbors.add(new Neighbor(TabActivity.senderName, hotspotIP));
                         ReportNeighbor.hotspotBroadcastUpdateClient(_neighbors);
+                        break;
+                    case CLIENT_LEAVE_TYPE:
+                        String _senderName = ReportNeighbor.hotspotRecievedSenderNameFromClient(byte_packet);
+                        ArrayList<Neighbor> __neighbors = new ArrayList<Neighbor>();
+                        __neighbors.addAll(peopleNearByAdapter.removeNeighbors(new Neighbor(_senderName, receivedIP)));
+                        //add hotspot sendername and IP
+                        InetAddress _hotspotIP = InetAddress.getByName(getIPAddressItSelf());
+                        __neighbors.add(new Neighbor(TabActivity.senderName, _hotspotIP));
+                        ReportNeighbor.hotspotBroadcastUpdateClient(__neighbors);
 
+                        break;
+                    case REPORT_DESTROY_TYPE:
+                        peopleNearByAdapter.turnManangeNetworkOff();
+                        peopleNearByAdapter.clearNeighbor();
+                        System.out.println("DESTROYYYYYYYYYY`");
                         break;
                     default:
                         break;

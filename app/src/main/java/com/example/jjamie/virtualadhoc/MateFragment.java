@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 /**
@@ -30,20 +31,20 @@ public class MateFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-    private PegionNetworkAdapter pegionNetworkAdapter;
-    public  static PeopleNearByAdapter peopleNearByAdapter;
+    private static PegionNetworkAdapter pegionNetworkAdapter;
+    public static PeopleNearByAdapter peopleNearByAdapter;
     private ListenerNeighbor listenerNeighbor;
     private Boolean is_show_people_nearby = false;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
-    private ListView listViewPigeonNetwork;
-    private ListView listViewPeopleNearBy;
+    private static ListView listViewPigeonNetwork;
+    private static ListView listViewPeopleNearBy;
     private OnFragmentInteractionListener mListener;
 
     private Button btn_manage_network;
-    private Boolean is_btn_manage_network_click = false;
+    public static Boolean is_btn_manage_network_click = false;
     private Button btn_create_network;
     private Boolean is_btn_create_network_click = false;
     private TextView txt_manage_network;
@@ -51,6 +52,10 @@ public class MateFragment extends Fragment {
     private RelativeLayout tab_header_pigeon_network;
     private TextView txt_pigeon_network;
 
+    public static Boolean manageIsOn = false;
+    public static Boolean createIsOn = false;
+
+    private MateFragment mateFragment;
 
     public MateFragment() {
         // Required empty public constructor
@@ -104,10 +109,19 @@ public class MateFragment extends Fragment {
         btn_manage_network.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!is_btn_manage_network_click) {
-                    turnManageNetworkOn();
+                if (EfficientAdapter.isStartpigeon) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getActivity(), "Please stop flying pigeon before enable network.", Toast.LENGTH_LONG).show();
+                        }
+                    });
                 } else {
-                    turnManangeNetworkOff();
+                    if (!is_btn_manage_network_click) {
+                        turnManageNetworkOn();
+                    } else {
+                        turnManangeNetworkOff();
+                    }
                 }
             }
         });
@@ -115,20 +129,30 @@ public class MateFragment extends Fragment {
         btn_create_network.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!is_btn_create_network_click) {
-                    turnCreateNetworkOn();
+                if (EfficientAdapter.isStartpigeon) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getActivity(), "Please stop flying pigeon before create network.", Toast.LENGTH_LONG).show();
+                        }
+                    });
                 } else {
-                    turnCreateNetworkOff();
+                    if (!is_btn_create_network_click) {
+                        turnCreateNetworkOn();
+                    } else {
+                        turnCreateNetworkOff();
+                    }
                 }
             }
         });
 
         // Add people adapter
         listViewPeopleNearBy = (ListView) view.findViewById(R.id.list_people_nearby);
-        peopleNearByAdapter = new PeopleNearByAdapter(getActivity());
+        peopleNearByAdapter = new PeopleNearByAdapter(getActivity(), view);
         listViewPeopleNearBy.setAdapter(peopleNearByAdapter);
 
-        listenerNeighbor = new ListenerNeighbor(getActivity(),peopleNearByAdapter);
+        mateFragment = this;
+        listenerNeighbor = new ListenerNeighbor(getActivity(), peopleNearByAdapter);
         listenerNeighbor.start();
 
         if (!is_show_people_nearby) {
@@ -205,6 +229,7 @@ public class MateFragment extends Fragment {
                         tab_header_pigeon_network.setVisibility(View.VISIBLE);
                         listViewPeopleNearBy.setVisibility(View.VISIBLE);
                         listViewPigeonNetwork.setVisibility(View.GONE);
+                        createIsOn = true;
                     }
                 });
 
@@ -220,6 +245,12 @@ public class MateFragment extends Fragment {
 
 
     public void turnCreateNetworkOff() {
+        ReportNeighbor.hotspotBroadcastDestroyNetwork();
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         ApManager.configApState(getActivity(), false);
         tab_header_pigeon_network.setVisibility(View.GONE);
         listViewPeopleNearBy.setVisibility(View.GONE);
@@ -227,6 +258,8 @@ public class MateFragment extends Fragment {
         txt_manage_network.setTextColor(Color.parseColor("#71717D"));
         txt_create_network.setText("Create network");
         is_btn_create_network_click = false;
+        createIsOn = false;
+
     }
 
 
@@ -238,6 +271,8 @@ public class MateFragment extends Fragment {
         pegionNetworkAdapter.setEnabled_network(true);
         is_btn_manage_network_click = true;
         txt_pigeon_network.setText("Pigeon network");
+        manageIsOn = true;
+
     }
 
     public void turnManangeNetworkOff() {
@@ -247,6 +282,14 @@ public class MateFragment extends Fragment {
         txt_manage_network.setText("Find network");
         pegionNetworkAdapter.setEnabled_network(false);
         is_btn_manage_network_click = false;
+
+        // if client leave the room , client report to hotspot
+        if (PegionNetworkAdapter.leaveNetwork) {
+            PegionNetworkAdapter.leaveNetwork = false;
+            peopleNearByAdapter.clearNeighbor();
+            ReportNeighbor.clientReportLeave();
+        }
+        manageIsOn = false;
     }
 
     private ProgressDialog progressDialog;

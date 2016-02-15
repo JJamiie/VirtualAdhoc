@@ -1,4 +1,5 @@
 package com.example.jjamie.virtualadhoc;
+
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -7,6 +8,7 @@ import android.content.IntentSender;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
@@ -21,6 +23,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
+
 import com.bumptech.glide.Glide;
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
@@ -198,15 +201,19 @@ public class CaptionActivity extends AppCompatActivity implements GoogleApiClien
             e.printStackTrace();
         }
         Bitmap b = BitmapFactory.decodeFile(lastPhoto.getAbsolutePath());
-//        Bitmap out = Bitmap.createScaledBitmap(b, (int) (b.getWidth() * 0.8), (int) (b.getHeight() * 0.8), false);
 
+//        Bitmap out = Bitmap.createScaledBitmap(b, (int) (b.getWidth() * 0.8), (int) (b.getHeight() * 0.8), false);
+        Matrix matrix = new Matrix();
+        matrix.postRotate(90);
+        Bitmap rotatedBitmap = Bitmap.createBitmap(b , 0, 0, b.getWidth(), b.getHeight(), matrix, true);
         FileOutputStream fOut;
         try {
 
             fOut = new FileOutputStream(currentPhoto);
-            b.compress(Bitmap.CompressFormat.JPEG, 60, fOut);
+            rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 60, fOut);
             fOut.flush();
             fOut.close();
+            rotatedBitmap.recycle();
             b.recycle();
 //            out.recycle();
         } catch (Exception e) {

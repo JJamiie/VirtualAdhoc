@@ -56,6 +56,11 @@ public class ReportNeighbor {
         Broadcaster.broadcast(data, ListenerNeighbor.PORT_NEIGHBOR);
     }
 
+    public static void hotspotBroadcastDestroyNetwork() {
+        byte[] type = Image.intToBytes(ListenerNeighbor.REPORT_DESTROY_TYPE);
+        Broadcaster.broadcast(type, ListenerNeighbor.PORT_NEIGHBOR);
+    }
+
     public static ArrayList<Neighbor> clientRecieveUpdateClient(byte[] bytes) {
         int lengthArrayClient = bytes.length - (ListenerNeighbor.TYPE_LENGTH);
         byte[] arrayClient = new byte[lengthArrayClient];
@@ -65,9 +70,25 @@ public class ReportNeighbor {
         return neighbors;
     }
 
-    public static void clientReportInformation() {
+    public static void clientReportJoin() {
 
         byte[] type = Image.intToBytes(ListenerNeighbor.CLIENT_REPORT_TYPE);
+
+        byte[] senderNameByte = new byte[Image.SENDER_NAME_LENGTH];
+        byte[] senderNameBytesShorter = TabActivity.senderName.getBytes(Charset.forName("UTF-8"));
+        System.arraycopy(senderNameBytesShorter, 0, senderNameByte, 0, senderNameBytesShorter.length);
+
+        byte[] data = new byte[ListenerNeighbor.TYPE_LENGTH + Image.SENDER_NAME_LENGTH];
+        System.arraycopy(type, 0, data, 0, ListenerNeighbor.TYPE_LENGTH);
+        System.arraycopy(senderNameByte, 0, data, ListenerNeighbor.TYPE_LENGTH, Image.SENDER_NAME_LENGTH);
+
+        Broadcaster.broadcast(data, ListenerNeighbor.PORT_NEIGHBOR);
+
+    }
+
+    public static void clientReportLeave() {
+
+        byte[] type = Image.intToBytes(ListenerNeighbor.CLIENT_LEAVE_TYPE);
 
         byte[] senderNameByte = new byte[Image.SENDER_NAME_LENGTH];
         byte[] senderNameBytesShorter = TabActivity.senderName.getBytes(Charset.forName("UTF-8"));
