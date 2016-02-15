@@ -3,13 +3,21 @@ package com.example.jjamie.virtualadhoc;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
+import android.os.Environment;
+import android.os.StrictMode;
 import android.support.annotation.NonNull;
-import android.telephony.TelephonyManager;
+import android.util.Base64;
 import android.util.Log;
-
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -220,7 +228,6 @@ public class ConnectionManager extends Thread {
             } else {
                 System.out.println("Stage: else condition");
                 //connect AP
-                //apHistory.put(availableAP.get(0),3);////////////////////////////////////////////////////////////////////////////
                 while (availableAP.size() > 0) {
                     System.out.println("Stage: AvailableApSize>0");
                     connectAP(contexts);
@@ -233,15 +240,6 @@ public class ConnectionManager extends Thread {
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-
-                    /*
-                    try {
-                        System.out.println("Going to sleep");
-                        Thread.sleep(30000);// change ? Dynamic?
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    */
                 }
             }
         }
@@ -434,31 +432,54 @@ public class ConnectionManager extends Thread {
 
         return allAP;
     }
-    public String getNetworkClass(Context context) {
-        TelephonyManager mTelephonyManager = (TelephonyManager)
-                context.getSystemService(Context.TELEPHONY_SERVICE);
-        int networkType = mTelephonyManager.getNetworkType();
-        switch (networkType) {
-            case TelephonyManager.NETWORK_TYPE_GPRS:
-            case TelephonyManager.NETWORK_TYPE_EDGE:
-            case TelephonyManager.NETWORK_TYPE_CDMA:
-            case TelephonyManager.NETWORK_TYPE_1xRTT:
-            case TelephonyManager.NETWORK_TYPE_IDEN:
-                return "2G";
-            case TelephonyManager.NETWORK_TYPE_UMTS:
-            case TelephonyManager.NETWORK_TYPE_EVDO_0:
-            case TelephonyManager.NETWORK_TYPE_EVDO_A:
-            case TelephonyManager.NETWORK_TYPE_HSDPA:
-            case TelephonyManager.NETWORK_TYPE_HSUPA:
-            case TelephonyManager.NETWORK_TYPE_HSPA:
-            case TelephonyManager.NETWORK_TYPE_EVDO_B:
-            case TelephonyManager.NETWORK_TYPE_EHRPD:
-            case TelephonyManager.NETWORK_TYPE_HSPAP:
-                return "3G";
-            case TelephonyManager.NETWORK_TYPE_LTE:
-                return "4G";
-            default:
-                return "Unknown";
+    public boolean isOnline() {
+        ConnectivityManager cm = (ConnectivityManager) contexts.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
+    }
+    public static String encodeImage(byte[] imageByteArray) {
+        return Base64.encodeToString(imageByteArray, Base64.DEFAULT);
+    }
+
+    public static void sendMessageToInternet(){
+        OkHttpClient client = new OkHttpClient();
+        //Read image file
+        String imageDataString="";
+        File file = new File(Environment.getExternalStorageDirectory() + "/Pictures/Pigeon/Nightscape.jpg");
+        try {
+            // Reading a Image file from file system
+            FileInputStream imageInFile = new FileInputStream(file);
+            byte imageData[] = new byte[(int) file.length()];
+            imageInFile.read(imageData);
+            // Converting Image byte array into Base64 String
+            imageDataString = encodeImage(imageData);
+        } catch (FileNotFoundException e) {
+            System.out.println("Image not found" + e);
+        } catch (IOException ioe) {
+            System.out.println("Exception while reading the Image " + ioe);
+        }
+        RequestBody formBody = new FormBody.Builder()
+                .add("Time","xx:xx")
+                .add("Name", "name")
+                .add("Message", "message")
+                .add("image",imageDataString)
+                .add("GPS","GPS")
+                .build();
+        Request request = new Request.Builder()
+                .url("http://n2p.in.th/mith/toony.php")
+                .post(formBody)
+                .build();
+        try {
+            Response response = client.newCall(request).execute();
+            if (!response.isSuccessful())
+                throw new IOException("Unexpected code " + response);
+            System.out.println(response.body().string());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if (android.os.Build.VERSION.SDK_INT > 9) {
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.setThreadPolicy(policy);
         }
     }
 }
