@@ -337,10 +337,10 @@ public class ProfileFragment extends Fragment {
                 return;
             }
             Uri uri = data.getData();
-            File imageFile = new File(getRealPathFromURI(uri));
-            myDatabase.updateFilenameProfilePicture(sqLiteDatabase, TabActivity.senderName, imageFile.getAbsolutePath());
-            Glide.with(this).load(imageFile).placeholder(new ColorDrawable(0xFFc5c4c4)).bitmapTransform(new CropCircleTransformation(getContext())).into(profile_picture);
-            Glide.with(this).load(imageFile).placeholder(new ColorDrawable(0xFFc5c4c4)).bitmapTransform(new BlurTransformation(getContext())).into(profile_picture_background);
+//            File imageFile = new File(getRealPathFromURI(uri));
+//            myDatabase.updateFilenameProfilePicture(sqLiteDatabase, TabActivity.senderName, imageFile.getAbsolutePath());
+            Glide.with(this).load(uri).placeholder(new ColorDrawable(0xFFc5c4c4)).bitmapTransform(new CropCircleTransformation(getContext())).into(profile_picture);
+            Glide.with(this).load(uri).placeholder(new ColorDrawable(0xFFc5c4c4)).bitmapTransform(new BlurTransformation(getContext())).into(profile_picture_background);
 
             //Now you can do whatever you want with your inpustream, save it as file, upload to a server, decode a bitmap...
         }
