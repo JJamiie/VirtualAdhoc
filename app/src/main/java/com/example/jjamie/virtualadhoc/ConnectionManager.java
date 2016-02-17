@@ -371,8 +371,9 @@ public class ConnectionManager extends Thread {
         mCursor = sqLiteDatabase.rawQuery("SELECT * FROM " + MyDatabase.TABLE_NAME_PICTURE + " ORDER BY _id DESC", null);
         mCursor.moveToFirst();
 
-        for (int position = 0; position < mCursor.getColumnCount(); position++) {
+        for (int position = 0; position < mCursor.getCount(); position++) {
             mCursor.moveToPosition(position);
+            System.out.println("getcount: "+position);
             //Set sendername
             int columnIndex = mCursor.getColumnIndex(MyDatabase.COL_SENDER_NAME);
             String senderName = mCursor.getString(columnIndex);
