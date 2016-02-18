@@ -184,6 +184,7 @@ public class ConnectionManager extends Thread {
         enableWifi(contexts);
         results.clear();
         availableAP.clear();
+
         while (true) {
             synchronized (this) {
                 if (!active) {
@@ -196,20 +197,22 @@ public class ConnectionManager extends Thread {
             }
 
             System.out.println("Tesssssssssssst");
-            enableWifi(contexts);
+            //enableWifi(contexts);
             System.out.println("Stage: Sleep0");
-            try {
-                Thread.sleep(3000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            while(!isWifiOn(contexts)){
+                System.out.println("Wait for wifi");
+                 enableWifi(contexts);
             }
-            System.out.println("Stage: Awake0");
-            listAP(contexts);
-            if (availableAP.size() <= 0) {
+            for(int i=0;i<5;i++){
                 listAP(contexts);
-            }
-            if (availableAP.size() <= 0) {
-                listAP(contexts);
+                if (availableAP.size() > 0) {
+                    break;
+                }
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
             String r = availableAP.size() + "";
             Log.d("ConnectionManager", r);
@@ -287,7 +290,11 @@ public class ConnectionManager extends Thread {
 
     }
 
+    public boolean isWifiOn(Context context){
 
+        WifiManager wifiManager = (WifiManager) context.getSystemService(context.WIFI_SERVICE);
+        return wifiManager.isWifiEnabled();
+    }
     public static boolean enableWifi(Context context) {
         ApManager.configApState(contexts, false);
         WifiManager wifiManager = (WifiManager) context.getSystemService(context.WIFI_SERVICE);
