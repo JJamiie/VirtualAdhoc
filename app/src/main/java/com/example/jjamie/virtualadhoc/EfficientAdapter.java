@@ -40,6 +40,7 @@ public class EfficientAdapter extends BaseAdapter {
     private static final int TYPE_ITEM = 0;
     private static final int TYPE_FIRST = 1;
     private ConnectionManager connectionManager;
+    private SOSManager sosManager;
     public static boolean isStartpigeon = false;
     private SQLiteDatabase sqLiteDatabase;
     private MyDatabase myDatabase;
@@ -55,6 +56,7 @@ public class EfficientAdapter extends BaseAdapter {
         // Get all row in picture table in pigeon database
         updateTable();
         this.connectionManager = connectionManager;
+        this.sosManager = sosManager;
     }
 
     @Override
@@ -264,10 +266,17 @@ public class EfficientAdapter extends BaseAdapter {
                                 if (connectionManager.getState() == Thread.State.NEW) {
                                     connectionManager.start();
                                 }
+
                                 synchronized (connectionManager) {
                                     connectionManager.wake();
                                 }
                                 */
+                                if(sosManager.getState() == Thread.State.NEW){
+                                    sosManager.start();
+                                }
+                                synchronized (sosManager){
+                                    sosManager.wake();
+                                }
 
 
                                 button.setEnabled(false);
