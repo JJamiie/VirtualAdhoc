@@ -31,7 +31,14 @@ public class SOSManager extends Thread {
                     }
                 }
             }
+            addMessageToPicture();
+            try {
+                Thread.sleep(18000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
+
 
     }
     private void addMessageToPicture() {
