@@ -260,13 +260,15 @@ public class EfficientAdapter extends BaseAdapter {
                                 circleTurn2.startAnimation(rotation2);
                                 textUnderLogo.setText("Flying Pigeon...");
                                 isStartpigeon = true;
-
+                                /*
                                 if (connectionManager.getState() == Thread.State.NEW) {
                                     connectionManager.start();
                                 }
                                 synchronized (connectionManager) {
                                     connectionManager.wake();
                                 }
+                                */
+
 
                                 button.setEnabled(false);
 

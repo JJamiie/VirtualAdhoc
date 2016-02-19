@@ -34,6 +34,7 @@ public class ListenerPacket extends Thread {
     public static final int IMAGE_TYPE = 1;
 
 
+
     public ListenerPacket(Activity activity, AlbumStorageDirFactory mAlbumStorageDirFactory, EfficientAdapter adapter) {
         this.activity = activity;
         this.mAlbumStorageDirFactory = mAlbumStorageDirFactory;

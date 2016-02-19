@@ -26,6 +26,7 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
     private FloatingActionButton fab_edit;
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
+    private ConnectionManager connectionManager;
 
 
     @Override
@@ -88,6 +89,11 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
         if (username != null) {
             senderName = username;
         }
+
+
+        connectionManager = new ConnectionManager(getApplicationContext());
+        connectionManager.start();
+        connectionManager.wake();
 
     }
 
