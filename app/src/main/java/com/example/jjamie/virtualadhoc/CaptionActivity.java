@@ -18,6 +18,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
+
 import com.bumptech.glide.Glide;
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
@@ -28,6 +29,7 @@ import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -194,11 +196,14 @@ public class CaptionActivity extends AppCompatActivity implements GoogleApiClien
     private void addMessageToPicture() {
         String message = messageEditText.getText().toString();
         String latitudeAndLongtitude = latitude + "," + longitude;
-        byte[] img = new byte[(int) currentPhoto.length()];
         try {
-            BufferedInputStream buf = new BufferedInputStream(new FileInputStream(currentPhoto));
-            buf.read(img, 0, img.length);
-            buf.close();
+            byte[] img = null;
+            if (currentPhoto != null) {
+                img = new byte[(int) currentPhoto.length()];
+                BufferedInputStream buf = new BufferedInputStream(new FileInputStream(currentPhoto));
+                buf.read(img, 0, img.length);
+                buf.close();
+            }
             Image image = null;
             if (isCaptured) {
                 if (gps_button_isClicked) {

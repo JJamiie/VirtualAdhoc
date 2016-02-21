@@ -42,7 +42,6 @@ public class ConnectionManager extends Thread {
     public static boolean scannerStatus = true;
     public static Context contexts;
     private SQLiteDatabase sqLiteDatabase;
-    private MyDatabase myDatabase;
     private Cursor mCursor;
 
     // Active for start and stop thread
@@ -51,8 +50,7 @@ public class ConnectionManager extends Thread {
 
     public ConnectionManager(Context context,SQLiteDatabase sqLiteDatabase) {
         contexts = context;
-        myDatabase = new MyDatabase(context);
-        sqLiteDatabase = myDatabase.getWritableDatabase();
+        this.sqLiteDatabase = sqLiteDatabase;
         results = new List<ScanResult>() {
             @Override
             public void add(int location, ScanResult object) {
@@ -238,7 +236,7 @@ public class ConnectionManager extends Thread {
                         Thread.sleep(6000);
                         sendData();
                         System.out.println("Going to sleep");
-                        Thread.sleep(12000);// change ? Dynamic?
+                        Thread.sleep(20000);// change ? Dynamic?
                         System.out.println("wake");
                     } catch (InterruptedException e) {
                         e.printStackTrace();
