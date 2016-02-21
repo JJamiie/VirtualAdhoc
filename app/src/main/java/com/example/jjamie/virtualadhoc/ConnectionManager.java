@@ -186,17 +186,7 @@ public class ConnectionManager extends Thread {
         availableAP.clear();
 
         while (true) {
-            synchronized (this) {
-                if (!active) {
-                    try {
-                        wait();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
 
-            System.out.println("Tesssssssssssst");
             //enableWifi(contexts);
             System.out.println("Stage: Sleep0");
             while(!isWifiOn(contexts)){
@@ -368,9 +358,6 @@ public class ConnectionManager extends Thread {
         notifyAll();
     }
 
-    public void sleep() {
-        active = false;
-    }
 
 
     public void sendData() {

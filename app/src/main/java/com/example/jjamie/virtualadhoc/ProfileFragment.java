@@ -5,8 +5,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
@@ -22,6 +24,8 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 import jp.wasabeef.glide.transformations.BlurTransformation;
 import jp.wasabeef.glide.transformations.CropCircleTransformation;
@@ -73,6 +77,9 @@ public class ProfileFragment extends Fragment {
     private ImageView profile_picture;
     private ImageView profile_picture_background;
 
+    public AlbumStorageDirFactory mAlbumStorageDirFactory;
+
+
     public ProfileFragment() {
         // Required empty public constructor
     }
@@ -102,17 +109,6 @@ public class ProfileFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-        // create database
-        myDatabase = new MyDatabase(getActivity());
-        sqLiteDatabase = myDatabase.getWritableDatabase();
-
-        mCursor = sqLiteDatabase.rawQuery("SELECT * FROM " + MyDatabase.TABLE_NAME_USER + " WHERE username = '" + TabActivity.senderName + "'", null);
-        if (mCursor.getCount() == 0) {
-            System.out.println("Create new username row");
-            myDatabase.addToTableUser(sqLiteDatabase, TabActivity.senderName, "", "", "", "", "", "", "");
-            mCursor = sqLiteDatabase.rawQuery("SELECT * FROM " + MyDatabase.TABLE_NAME_USER + " WHERE username = '" + TabActivity.senderName + "'", null);
-        }
-        mCursor.moveToFirst();
 
         fab_edit = (FloatingActionButton) getActivity().findViewById(R.id.fab_edit);
         fab_edit.setOnClickListener(new View.OnClickListener() {
@@ -190,6 +186,13 @@ public class ProfileFragment extends Fragment {
             }
         });
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
+            mAlbumStorageDirFactory = new FroyoAlbumDirFactory();
+        } else {
+            mAlbumStorageDirFactory = new BaseAlbumDirFactory();
+        }
+
+
     }
 
     @Override
@@ -198,6 +201,16 @@ public class ProfileFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
 
+        myDatabase = new MyDatabase(getActivity());
+        sqLiteDatabase = myDatabase.getWritableDatabase();
+
+        mCursor = sqLiteDatabase.rawQuery("SELECT * FROM " + MyDatabase.TABLE_NAME_USER + " WHERE username = '" + TabActivity.senderName + "'", null);
+        if (mCursor.getCount() == 0) {
+            System.out.println("Create new username row");
+            myDatabase.addToTableUser(sqLiteDatabase, TabActivity.senderName, "", "", "", "", "", "", "");
+            mCursor = sqLiteDatabase.rawQuery("SELECT * FROM " + MyDatabase.TABLE_NAME_USER + " WHERE username = '" + TabActivity.senderName + "'", null);
+        }
+        mCursor.moveToFirst();
 
         //bind object
         btn_choose_photo_from_gallary = (Button) view.findViewById(R.id.btn_choose_photo_from_gallery);
@@ -267,12 +280,12 @@ public class ProfileFragment extends Fragment {
         //Image
         columnIndex = mCursor.getColumnIndex(MyDatabase.COL_FILE_NAME);
         String filename = mCursor.getString(columnIndex);
-        if(filename.equals("")){
+        if (filename.equals("")) {
             profile_picture = (ImageView) view.findViewById(R.id.profile_picture);
             Glide.with(this).load(R.drawable.profile).placeholder(new ColorDrawable(0xFFc5c4c4)).bitmapTransform(new CropCircleTransformation(getContext())).into(profile_picture);
             profile_picture_background = (ImageView) view.findViewById(R.id.profile_picture_background);
             Glide.with(this).load(R.drawable.profile).placeholder(new ColorDrawable(0xFFc5c4c4)).bitmapTransform(new BlurTransformation(getContext())).into(profile_picture_background);
-        }else{
+        } else {
             File image = new File(filename);
             profile_picture = (ImageView) view.findViewById(R.id.profile_picture);
             Glide.with(this).load(image).placeholder(new ColorDrawable(0xFFc5c4c4)).bitmapTransform(new CropCircleTransformation(getContext())).into(profile_picture);
@@ -337,28 +350,35 @@ public class ProfileFragment extends Fragment {
                 return;
             }
             Uri uri = data.getData();
-//            File imageFile = new File(getRealPathFromURI(uri));
-//            myDatabase.updateFilenameProfilePicture(sqLiteDatabase, TabActivity.senderName, imageFile.getAbsolutePath());
+            String filename = savePictureProfile(uri);
+            myDatabase.updateFilenameProfilePicture(sqLiteDatabase, TabActivity.senderName, filename);
             Glide.with(this).load(uri).placeholder(new ColorDrawable(0xFFc5c4c4)).bitmapTransform(new CropCircleTransformation(getContext())).into(profile_picture);
             Glide.with(this).load(uri).placeholder(new ColorDrawable(0xFFc5c4c4)).bitmapTransform(new BlurTransformation(getContext())).into(profile_picture_background);
 
-            //Now you can do whatever you want with your inpustream, save it as file, upload to a server, decode a bitmap...
         }
     }
 
-    private String getRealPathFromURI(Uri contentURI) {
-        String result;
-        Cursor cursor = getActivity().getContentResolver().query(contentURI, null, null, null, null);
-        if (cursor == null) { // Source is Dropbox or other similar local file path
-            result = contentURI.getPath();
-        } else {
-            cursor.moveToFirst();
-            int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
-            result = cursor.getString(idx);
-            cursor.close();
+    private String savePictureProfile(Uri imageUri) {
+        File currentPhoto = null;
+        try {
+            currentPhoto = ManageImage.setUpPhotoFile(mAlbumStorageDirFactory);
+            Bitmap b = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), imageUri);
+            FileOutputStream fOut = new FileOutputStream(currentPhoto);
+            b.compress(Bitmap.CompressFormat.JPEG, 60, fOut);
+            fOut.flush();
+            fOut.close();
+            b.recycle();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        return result;
+        return currentPhoto.getAbsolutePath();
+
     }
 
-
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        sqLiteDatabase.close();
+        myDatabase.close();
+    }
 }

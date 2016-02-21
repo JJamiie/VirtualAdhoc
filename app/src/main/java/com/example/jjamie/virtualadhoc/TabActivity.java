@@ -1,6 +1,5 @@
 package com.example.jjamie.virtualadhoc;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -20,7 +19,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.TextView;
 
-public class TabActivity extends AppCompatActivity implements NewFeedFragment.OnFragmentInteractionListener, MateFragment.OnFragmentInteractionListener, ProfileFragment.OnFragmentInteractionListener {
+public class TabActivity extends AppCompatActivity implements NewFeedFragment.OnFragmentInteractionListener, MateFragment.OnFragmentInteractionListener, ProfileFragment.OnFragmentInteractionListener  {
     public static String senderName;
     private FloatingActionButton fab_camera;
     private FloatingActionButton fab_edit;
@@ -93,7 +92,7 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
 
         connectionManager = new ConnectionManager(getApplicationContext());
         connectionManager.start();
-        connectionManager.wake();
+
 
     }
 
@@ -220,9 +219,6 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
         System.exit(0);
     }
 
-    public static Activity getActivity() {
-        return TabActivity.getActivity();
-    }
 
     private void animateFab(int position) {
         switch (position) {

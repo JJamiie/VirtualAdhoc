@@ -1,16 +1,19 @@
 package com.example.jjamie.virtualadhoc;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -39,24 +42,19 @@ public class EfficientAdapter extends BaseAdapter {
     private static final int TYPE_MAX_COUNT = 2;
     private static final int TYPE_ITEM = 0;
     private static final int TYPE_FIRST = 1;
-    private ConnectionManager connectionManager;
     private SOSManager sosManager;
     public static boolean isStartpigeon = false;
     private SQLiteDatabase sqLiteDatabase;
-    private MyDatabase myDatabase;
     private Cursor mCursor;
 
-    public EfficientAdapter(Activity activity, ConnectionManager connectionManager) {
+    public EfficientAdapter(Activity activity,SQLiteDatabase sqLiteDatabase) {
         this.activity = activity;
         mInflater = LayoutInflater.from(activity);
+        sosManager = new SOSManager(activity);
 
-        // Create database
-        myDatabase = new MyDatabase(getActivity());
-        sqLiteDatabase = myDatabase.getWritableDatabase();
+        this.sqLiteDatabase = sqLiteDatabase;
         // Get all row in picture table in pigeon database
         updateTable();
-        this.connectionManager = connectionManager;
-        this.sosManager = sosManager;
     }
 
     @Override
@@ -101,6 +99,7 @@ public class EfficientAdapter extends BaseAdapter {
                     holder.sent = (Button) convertView.findViewById(R.id.sent);
                     holder.gps_zone = (RelativeLayout) convertView.findViewById(R.id.gpsZone);
                     holder.gps_button = (Button) convertView.findViewById(R.id.gps_button);
+                    holder.layout_linear = (LinearLayout) convertView.findViewById(R.id.layout_listview);
                     convertView.setTag(holder); //deposit to tag
                 } else {
                     holder = (ViewHolder) convertView.getTag();
@@ -194,6 +193,16 @@ public class EfficientAdapter extends BaseAdapter {
                         });
                     }
                 });
+
+                columnIndex = mCursor.getColumnIndex("_id");
+                final String id = mCursor.getString(columnIndex);
+                holder.layout_linear.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        showdeleteDialog(id);
+                        return false;
+                    }
+                });
                 break;
             case TYPE_FIRST:
 
@@ -262,19 +271,11 @@ public class EfficientAdapter extends BaseAdapter {
                                 circleTurn2.startAnimation(rotation2);
                                 textUnderLogo.setText("Flying Pigeon...");
                                 isStartpigeon = true;
-                                /*
-                                if (connectionManager.getState() == Thread.State.NEW) {
-                                    connectionManager.start();
-                                }
 
-                                synchronized (connectionManager) {
-                                    connectionManager.wake();
-                                }
-                                */
-                                if(sosManager.getState() == Thread.State.NEW){
+                                if (sosManager.getState() == Thread.State.NEW) {
                                     sosManager.start();
                                 }
-                                synchronized (sosManager){
+                                synchronized (sosManager) {
                                     sosManager.wake();
                                 }
 
@@ -305,9 +306,9 @@ public class EfficientAdapter extends BaseAdapter {
                                 circleTurn2.startAnimation(rotation2);
                                 textUnderLogo.setText("Touch to pigeon");
                                 isStartpigeon = false;
-                                connectionManager.sleep();
-                                connectionManager.interrupt();
-                                System.out.println("Connection manager sleep");
+                                sosManager.sleep();
+                                sosManager.interrupt();
+                                System.out.println("sos manager sleep");
                             }
                         }
                     }
@@ -321,6 +322,7 @@ public class EfficientAdapter extends BaseAdapter {
     public void updateTable() {
         mCursor = sqLiteDatabase.rawQuery("SELECT * FROM " + MyDatabase.TABLE_NAME_PICTURE + " ORDER BY _id DESC", null);
         mCursor.moveToFirst();
+        notifyDataSetChanged();
     }
 
     public Activity getActivity() {
@@ -335,7 +337,42 @@ public class EfficientAdapter extends BaseAdapter {
         Button sent;
         RelativeLayout gps_zone;
         Button gps_button;
+        LinearLayout layout_linear;
+    }
 
+
+    public void showdeleteDialog(final String id) {
+        AlertDialog.Builder builderSingle = new AlertDialog.Builder(activity);
+
+        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(activity, android.R.layout.select_dialog_singlechoice);
+        arrayAdapter.add("Delete this message.");
+        arrayAdapter.add("Delete all messages.");
+
+
+        builderSingle.setNegativeButton(
+                "cancel",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
+        builderSingle.setAdapter(
+                arrayAdapter,
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String strName = arrayAdapter.getItem(which);
+                        if (strName.equals("Delete this message.")) {
+                            sqLiteDatabase.delete(MyDatabase.TABLE_NAME_PICTURE, "_id = " + id, null);
+                        } else {
+                            sqLiteDatabase.delete(MyDatabase.TABLE_NAME_PICTURE, null, null);
+                        }
+                        updateTable();
+                    }
+                });
+        builderSingle.show();
     }
 
 

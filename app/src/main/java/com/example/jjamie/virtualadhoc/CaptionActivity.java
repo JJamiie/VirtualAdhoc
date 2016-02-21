@@ -1,14 +1,11 @@
 package com.example.jjamie.virtualadhoc;
 
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentSender;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
-import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -21,22 +18,16 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
-
 import com.bumptech.glide.Glide;
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.LocationSettingsRequest;
-import com.google.android.gms.location.LocationSettingsResult;
-import com.google.android.gms.location.LocationSettingsStates;
-import com.google.android.gms.location.LocationSettingsStatusCodes;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -60,13 +51,14 @@ public class CaptionActivity extends AppCompatActivity implements GoogleApiClien
     private GoogleApiClient googleApiClient;
     private Double latitude;
     private Double longitude;
-    protected static final int REQUEST_CHECK_SETTINGS = 111111;
     public static final int ACTION_TAKE_PHOTO = 22222;
     public AlbumStorageDirFactory mAlbumStorageDirFactory;
     private Boolean isCaptured = false;
     private ImageView currentPhotoImageView;
-    SQLiteDatabase sQLiteDatabase;
-    MyDatabase myDatabase;
+    private SQLiteDatabase sQLiteDatabase;
+    private MyDatabase myDatabase;
+    private File currentPhoto = null;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,24 +92,14 @@ public class CaptionActivity extends AppCompatActivity implements GoogleApiClien
         gps_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                boolean gps_enabled;
-                LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-                gps_enabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-                if (!gps_enabled) {
-                    settingsrequest();
-                } else {
-                    if (!gps_button_isClicked) {
-                        if (!isSettingRequest) {
-                            settingsrequest();
-                        }
-                        gps_button_picture.setImageResource(R.drawable.gps_button_click);
-                        gps_button_isClicked = true;
-                    } else if (gps_button_isClicked) {
-                        gps_button_picture.setImageResource(R.drawable.gps_button);
-                        gps_button_isClicked = false;
-                    }
-
+                if (!gps_button_isClicked) {
+                    gps_button_picture.setImageResource(R.drawable.gps_button_click);
+                    gps_button_isClicked = true;
+                } else if (gps_button_isClicked) {
+                    gps_button_picture.setImageResource(R.drawable.gps_button);
+                    gps_button_isClicked = false;
                 }
+
             }
         });
 
@@ -125,7 +107,7 @@ public class CaptionActivity extends AppCompatActivity implements GoogleApiClien
             @Override
             public void onClick(View v) {
                 if (isCaptured) {
-                    ManageImage.getFile()[0].delete();
+                    currentPhoto.delete();
                 }
                 dispatchTakePictureIntent(ACTION_TAKE_PHOTO);
             }
@@ -155,7 +137,7 @@ public class CaptionActivity extends AppCompatActivity implements GoogleApiClien
     private void dispatchTakePictureIntent(int actionCode) {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         try {
-            File currentPhoto = ManageImage.setUpPhotoFile(mAlbumStorageDirFactory);
+            currentPhoto = ManageImage.setUpPhotoFile(mAlbumStorageDirFactory);
             takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(currentPhoto));
         } catch (IOException e) {
             e.printStackTrace();
@@ -166,27 +148,17 @@ public class CaptionActivity extends AppCompatActivity implements GoogleApiClien
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
-//            case REQUEST_CHECK_SETTINGS:
-//                switch (resultCode) {
-//                    case Activity.RESULT_OK:
-//                        startLocationUpdates();
-//                        break;
-//                    case Activity.RESULT_CANCELED:
-//                        break;
-//                }
-//                break;
             case ACTION_TAKE_PHOTO:
                 if (resultCode == RESULT_OK) {
                     System.out.println("Set image to currentPhotoImageView");
-                    File lastPhoto = ManageImage.getFile()[0];
-                    File currentPhoto = resizePhoto(lastPhoto);
+                    currentPhoto = resizePhoto(currentPhoto);
                     Glide.with(getApplicationContext()).load(currentPhoto).centerCrop().into(currentPhotoImageView);
                     isCaptured = true;
                     plusImage.setVisibility(View.INVISIBLE);
                     System.out.println(currentPhoto.getName());
                 } else {
                     System.out.println("Delete photo");
-                    ManageImage.getFile()[0].delete();
+                    currentPhoto.delete();
                 }
                 break;
         }
@@ -223,7 +195,6 @@ public class CaptionActivity extends AppCompatActivity implements GoogleApiClien
     private void addMessageToPicture() {
         String message = messageEditText.getText().toString();
         String latitudeAndLongtitude = latitude + "," + longitude;
-        File currentPhoto = new File(ManageImage.getFile()[0].getAbsolutePath());
         byte[] img = new byte[(int) currentPhoto.length()];
         try {
             BufferedInputStream buf = new BufferedInputStream(new FileInputStream(currentPhoto));
@@ -280,6 +251,7 @@ public class CaptionActivity extends AppCompatActivity implements GoogleApiClien
                 Uri.parse("android-app://com.example.jjamie.virtualadhoc/http/host/path")
         );
         AppIndex.AppIndexApi.start(googleApiClient, viewAction);
+        settingsRequest();
     }
 
     @Override
@@ -342,44 +314,10 @@ public class CaptionActivity extends AppCompatActivity implements GoogleApiClien
 
     private boolean isSettingRequest;
 
-    public void settingsrequest() {
+    public void settingsRequest() {
         isSettingRequest = true;
         locationRequest = LocationRequest.create();
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        locationRequest.setInterval(30 * 1000);
-        locationRequest.setFastestInterval(5 * 1000);
-        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder().addLocationRequest(locationRequest);
-        builder.setAlwaysShow(true);
-        PendingResult<LocationSettingsResult> result = LocationServices.SettingsApi.checkLocationSettings(googleApiClient, builder.build());
-        result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
-            @Override
-            public void onResult(LocationSettingsResult result) {
-                final Status status = result.getStatus();
-                final LocationSettingsStates state = result.getLocationSettingsStates();
-                switch (status.getStatusCode()) {
-                    case LocationSettingsStatusCodes.SUCCESS:
-                        // All location settings are satisfied. The client can initialize location
-                        // requests here.
-                        break;
-                    case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
-                        // Location settings are not satisfied. But could be fixed by showing the user
-                        // a dialog.
-                        try {
-                            // Show the dialog by calling startResolutionForResult(),
-                            // and check the result in onActivityResult().
-                            status.startResolutionForResult(CaptionActivity.this, REQUEST_CHECK_SETTINGS);
-                        } catch (IntentSender.SendIntentException e) {
-                            // Ignore the error.
-                        }
-                        break;
-                    case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
-                        // Location settings are not satisfied. However, we have no way to fix the
-                        // settings so we won't show the dialog.
-                        break;
-                }
-            }
-        });
-
     }
 
 
@@ -397,7 +335,6 @@ public class CaptionActivity extends AppCompatActivity implements GoogleApiClien
                 while (true) {
                     if (gotLocation) {
                         progressDialog.dismiss();
-//                        handler.sendEmptyMessage(0);
                         addMessageToPicture();
                         finish();
                         break;
@@ -421,7 +358,7 @@ public class CaptionActivity extends AppCompatActivity implements GoogleApiClien
             case android.R.id.home:
                 // app icon in action bar clicked; go home
                 if (isCaptured) {
-                    ManageImage.getFile()[0].delete();
+                    currentPhoto.delete();
                 }
                 finish();
             default:

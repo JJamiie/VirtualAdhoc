@@ -27,22 +27,20 @@ public class ListenerPacket extends Thread {
     private Activity activity;
     private AlbumStorageDirFactory mAlbumStorageDirFactory;
     private EfficientAdapter adapter;
+    private Cursor mCursor;
     private SQLiteDatabase sqLiteDatabase;
     private MyDatabase myDatabase;
-    private Cursor mCursor;
     public static final int TYPE_LENGTH = 4;
     public static final int IMAGE_TYPE = 1;
 
 
-
-    public ListenerPacket(Activity activity, AlbumStorageDirFactory mAlbumStorageDirFactory, EfficientAdapter adapter) {
+    public ListenerPacket(Activity activity, AlbumStorageDirFactory mAlbumStorageDirFactory, EfficientAdapter adapter, SQLiteDatabase sqLiteDatabase, MyDatabase myDatabase) {
         this.activity = activity;
         this.mAlbumStorageDirFactory = mAlbumStorageDirFactory;
         this.mWifi = (WifiManager) activity.getSystemService(Context.WIFI_SERVICE);
         this.adapter = adapter;
-
-        myDatabase = new MyDatabase(activity);
-        sqLiteDatabase = myDatabase.getWritableDatabase();
+        this.sqLiteDatabase = sqLiteDatabase;
+        this.myDatabase = myDatabase;
     }
 
     public void run() {
@@ -98,6 +96,10 @@ public class ListenerPacket extends Thread {
             Image image = new Image(img);
             System.out.println("SenderName: " + image.senderName + " Filename: " + image.filename + " Message: " + image.message + " Location: " + image.location);
 
+            if (image.senderName.equals(TabActivity.senderName)) {
+                return;
+            }
+
             // checking image is exist in database?
             mCursor = sqLiteDatabase.rawQuery("SELECT * FROM " + MyDatabase.TABLE_NAME_PICTURE +
                     " WHERE " + MyDatabase.COL_SENDER_NAME + " = '" + image.senderName + "' AND " +
@@ -124,14 +126,13 @@ public class ListenerPacket extends Thread {
                     @Override
                     public void run() {
                         adapter.updateTable();
-                        adapter.notifyDataSetChanged();
                         Toast.makeText(activity, sentMsg, Toast.LENGTH_LONG).show();
                     }
                 });
 
                 //Sent to other node
                 if (getIPAddressItSelf().equals("0.0.0.0")) {
-                    Broadcaster.broadcast(image.getBytes(),ListenerPacket.PORT_PACKET);
+                    Broadcaster.broadcast(image.getBytes(), ListenerPacket.PORT_PACKET);
                 }
 
             }

@@ -1,6 +1,7 @@
 package com.example.jjamie.virtualadhoc;
 
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -32,7 +33,9 @@ public class NewFeedFragment extends Fragment {
     private ListView listview;
     private EfficientAdapter efficientAdapter;
     private AppBarLayout appBar;
-    private ConnectionManager connectionManager;
+    private MyDatabase myDatabase;
+    private SQLiteDatabase sqLiteDatabase;
+
     public NewFeedFragment() {
         // Required empty public constructor
     }
@@ -72,7 +75,8 @@ public class NewFeedFragment extends Fragment {
             mAlbumStorageDirFactory = new BaseAlbumDirFactory();
         }
         appBar = (AppBarLayout) getActivity().findViewById(R.id.appbar);
-        connectionManager = new ConnectionManager(getActivity());
+        myDatabase = new MyDatabase(getActivity());
+        sqLiteDatabase = myDatabase.getWritableDatabase();
     }
 
     @Override
@@ -81,11 +85,11 @@ public class NewFeedFragment extends Fragment {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_new_feed, container, false);
         listview = (ListView) v.findViewById(R.id.listview);
-        efficientAdapter = new EfficientAdapter(getActivity(),connectionManager);
+        efficientAdapter = new EfficientAdapter(getActivity(),sqLiteDatabase);
         listview.setAdapter(efficientAdapter);
         //ListenerPacket start
         if (listenerPacket == null) {
-            listenerPacket = new ListenerPacket(getActivity(), mAlbumStorageDirFactory, efficientAdapter);
+            listenerPacket = new ListenerPacket(getActivity(), mAlbumStorageDirFactory, efficientAdapter,sqLiteDatabase,myDatabase);
             listenerPacket.start();
         }
         return v;
@@ -118,7 +122,6 @@ public class NewFeedFragment extends Fragment {
         super.onResume();
         if (efficientAdapter != null) {
             efficientAdapter.updateTable();
-            efficientAdapter.notifyDataSetChanged();
         }
     }
 
@@ -141,6 +144,12 @@ public class NewFeedFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    public void onDestroy(){
+        super.onDestroy();
+        sqLiteDatabase.close();
+        myDatabase.close();
     }
 
 
