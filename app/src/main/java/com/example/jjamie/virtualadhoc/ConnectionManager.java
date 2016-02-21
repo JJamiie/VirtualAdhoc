@@ -49,7 +49,7 @@ public class ConnectionManager extends Thread {
     private boolean active = false;
 
 
-    public ConnectionManager(Context context,sq) {
+    public ConnectionManager(Context context,SQLiteDatabase sqLiteDatabase) {
         contexts = context;
         myDatabase = new MyDatabase(context);
         sqLiteDatabase = myDatabase.getWritableDatabase();
