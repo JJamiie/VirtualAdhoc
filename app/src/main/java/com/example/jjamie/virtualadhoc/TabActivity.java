@@ -232,7 +232,9 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
         connectionManager.sleep();
     }
     public static void unFreezeConnectionManager(){
-        connectionManager.wake();
+        synchronized (connectionManager) {
+            connectionManager.wake();
+        }
     }
 
 
