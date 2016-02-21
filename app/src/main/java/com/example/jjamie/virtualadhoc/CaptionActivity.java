@@ -1,6 +1,5 @@
 package com.example.jjamie.virtualadhoc;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -167,15 +166,15 @@ public class CaptionActivity extends AppCompatActivity implements GoogleApiClien
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
-            case REQUEST_CHECK_SETTINGS:
-                switch (resultCode) {
-                    case Activity.RESULT_OK:
-                        startLocationUpdates();
-                        break;
-                    case Activity.RESULT_CANCELED:
-                        break;
-                }
-                break;
+//            case REQUEST_CHECK_SETTINGS:
+//                switch (resultCode) {
+//                    case Activity.RESULT_OK:
+//                        startLocationUpdates();
+//                        break;
+//                    case Activity.RESULT_CANCELED:
+//                        break;
+//                }
+//                break;
             case ACTION_TAKE_PHOTO:
                 if (resultCode == RESULT_OK) {
                     System.out.println("Set image to currentPhotoImageView");
