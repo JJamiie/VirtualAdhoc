@@ -25,7 +25,6 @@ public class SOSManager extends Thread implements GoogleApiClient.ConnectionCall
     public SOSManager(Activity activity) {
         googleApiClient = new GoogleApiClient.Builder(activity).addApi(LocationServices.API).addConnectionCallbacks(this).addOnConnectionFailedListener(this).addApi(AppIndex.API).build();
         googleApiClient.connect();
-        settingsRequest();
     }
 
     public void run() {
@@ -73,7 +72,11 @@ public class SOSManager extends Thread implements GoogleApiClient.ConnectionCall
 
     @Override
     public void onConnected(Bundle bundle) {
-
+        locationRequest = LocationRequest.create();
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        locationRequest.setInterval(10000);
+        locationRequest.setFastestInterval(5000);
+        LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
     }
 
     @Override
@@ -93,10 +96,4 @@ public class SOSManager extends Thread implements GoogleApiClient.ConnectionCall
 
     }
 
-    public void settingsRequest() {
-        locationRequest = LocationRequest.create();
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        locationRequest.setInterval(10000);
-        locationRequest.setFastestInterval(5000);
-    }
 }

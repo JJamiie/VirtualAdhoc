@@ -1,6 +1,8 @@
 package com.example.jjamie.virtualadhoc;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -19,13 +21,15 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.TextView;
 
-public class TabActivity extends AppCompatActivity implements NewFeedFragment.OnFragmentInteractionListener, MateFragment.OnFragmentInteractionListener, ProfileFragment.OnFragmentInteractionListener  {
+public class TabActivity extends AppCompatActivity implements NewFeedFragment.OnFragmentInteractionListener, MateFragment.OnFragmentInteractionListener, ProfileFragment.OnFragmentInteractionListener {
     public static String senderName;
     private FloatingActionButton fab_camera;
     private FloatingActionButton fab_edit;
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
     public static ConnectionManager connectionManager;
+    private MyDatabase myDatabase;
+    private SQLiteDatabase sqLiteDatabase;
 
 
     @Override
@@ -76,7 +80,6 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
         fab_edit = (FloatingActionButton) findViewById(R.id.fab_edit);
 
 
-
         if (android.os.Build.VERSION.SDK_INT > 9) {
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
@@ -89,16 +92,22 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
             senderName = username;
         }
 
+        myDatabase = new MyDatabase(getActivity());
+        sqLiteDatabase = myDatabase.getWritableDatabase();
 
-        connectionManager = new ConnectionManager(getApplicationContext());
+        connectionManager = new ConnectionManager(getApplicationContext(), sqLiteDatabase);
         connectionManager.start();
 
-        synchronized (connectionManager){
+        synchronized (connectionManager) {
             connectionManager.wake();
         }
 
     }
 
+
+    public Activity getActivity() {
+        return this;
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -225,10 +234,11 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
     }
 
 
-    public static void freezeConnectionManager(){
+    public static void freezeConnectionManager() {
         connectionManager.sleep();
     }
-    public static void unFreezeConnectionManager(){
+
+    public static void unFreezeConnectionManager() {
         connectionManager.wake();
     }
 
@@ -253,6 +263,13 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
                 fab_edit.hide();
                 break;
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        sqLiteDatabase.close();
+        myDatabase.close();
     }
 
 

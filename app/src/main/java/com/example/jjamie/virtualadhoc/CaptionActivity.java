@@ -28,7 +28,6 @@ import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -364,6 +363,12 @@ public class CaptionActivity extends AppCompatActivity implements GoogleApiClien
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    public void onDestroy() {
+        super.onDestroy();
+        sQLiteDatabase.close();
+        myDatabase.close();
     }
 
 

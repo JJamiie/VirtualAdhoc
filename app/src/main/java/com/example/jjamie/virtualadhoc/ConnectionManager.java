@@ -24,7 +24,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Map;
 
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
@@ -40,21 +39,18 @@ public class ConnectionManager extends Thread {
     public static int size = 0;
     public static List<String> availableAP;
     static ArrayList<String> allAP;
-    public static Map<String, Integer> apHistory;
     public static boolean scannerStatus = true;
     public static Context contexts;
     private SQLiteDatabase sqLiteDatabase;
-    private MyDatabase myDatabase;
     private Cursor mCursor;
 
     // Active for start and stop thread
     private boolean active = false;
 
 
-    public ConnectionManager(Context context) {
+    public ConnectionManager(Context context, SQLiteDatabase sqLiteDatabase) {
         contexts = context;
-        myDatabase = new MyDatabase(context);
-        sqLiteDatabase = myDatabase.getWritableDatabase();
+        this.sqLiteDatabase = sqLiteDatabase;
         results = new List<ScanResult>() {
             @Override
             public void add(int location, ScanResult object) {
@@ -186,7 +182,7 @@ public class ConnectionManager extends Thread {
         availableAP.clear();
         System.out.println("wtf");
         while (true) {
-            if (active) {
+            if (!active) {
                 synchronized (this) {
                     try {
                         wait();
