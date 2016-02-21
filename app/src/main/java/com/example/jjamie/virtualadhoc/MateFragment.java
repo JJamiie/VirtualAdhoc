@@ -119,8 +119,10 @@ public class MateFragment extends Fragment {
                 } else {
                     if (!is_btn_manage_network_click) {
                         turnManageNetworkOn();
+                        TabActivity.freezeConnectionManager();
                     } else {
                         turnManangeNetworkOff();
+                        TabActivity.unFreezeConnectionManager();
                     }
                 }
             }
@@ -139,8 +141,10 @@ public class MateFragment extends Fragment {
                 } else {
                     if (!is_btn_create_network_click) {
                         turnCreateNetworkOn();
+                        TabActivity.freezeConnectionManager();
                     } else {
                         turnCreateNetworkOff();
+                        TabActivity.unFreezeConnectionManager();
                     }
                 }
             }

@@ -20,7 +20,7 @@ public class LoginActivity extends AppCompatActivity  {
     private CheckBox rememberCheckBox;
     private Button logInButton;
     private Activity th = this;
-    private ConnectionManager connectionManager;
+
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -49,7 +49,6 @@ public class LoginActivity extends AppCompatActivity  {
                     Intent intent = new Intent(getApplicationContext(), TabActivity.class);
                     intent.putExtra("username", usernameEditText.getText().toString());
                     startActivity(intent);
-                    connectionManager.start();
                 }
             }
         });

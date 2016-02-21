@@ -184,7 +184,7 @@ public class ConnectionManager extends Thread {
         enableWifi(contexts);
         results.clear();
         availableAP.clear();
-
+        System.out.println("wtf");
         while (true) {
             synchronized (this) {
                 if (!active) {

@@ -40,7 +40,7 @@ public class EfficientAdapter extends BaseAdapter {
     private static final int TYPE_ITEM = 0;
     private static final int TYPE_FIRST = 1;
     private ConnectionManager connectionManager;
-    private SOSManager sosManager;
+    private SOSManager sosManager = new SOSManager();
     public static boolean isStartpigeon = false;
     private SQLiteDatabase sqLiteDatabase;
     private MyDatabase myDatabase;
