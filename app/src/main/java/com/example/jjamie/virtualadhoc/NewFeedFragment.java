@@ -77,6 +77,7 @@ public class NewFeedFragment extends Fragment {
         appBar = (AppBarLayout) getActivity().findViewById(R.id.appbar);
         myDatabase = new MyDatabase(getActivity());
         sqLiteDatabase = myDatabase.getWritableDatabase();
+
     }
 
     @Override
@@ -86,6 +87,7 @@ public class NewFeedFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_new_feed, container, false);
         listview = (ListView) v.findViewById(R.id.listview);
         efficientAdapter = new EfficientAdapter(getActivity(),sqLiteDatabase);
+
         listview.setAdapter(efficientAdapter);
         //ListenerPacket start
         if (listenerPacket == null) {

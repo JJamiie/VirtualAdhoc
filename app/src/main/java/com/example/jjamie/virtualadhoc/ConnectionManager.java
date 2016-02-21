@@ -184,16 +184,24 @@ public class ConnectionManager extends Thread {
         enableWifi(contexts);
         results.clear();
         availableAP.clear();
-
+        System.out.println("wtf");
         while (true) {
-
+            if (active) {
+                synchronized (this) {
+                    try {
+                        wait();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
             //enableWifi(contexts);
             System.out.println("Stage: Sleep0");
-            while(!isWifiOn(contexts)){
+            while (!isWifiOn(contexts)) {
                 System.out.println("Wait for wifi");
-                 enableWifi(contexts);
+                enableWifi(contexts);
             }
-            for(int i=0;i<5;i++){
+            for (int i = 0; i < 5; i++) {
                 listAP(contexts);
                 if (availableAP.size() > 0) {
                     break;
@@ -261,7 +269,7 @@ public class ConnectionManager extends Thread {
         return true;
     }
 
-    public static void clientJoinAp(String SSID, Context context){
+    public static void clientJoinAp(String SSID, Context context) {
         WifiConfiguration conf = new WifiConfiguration();
         conf.SSID = "\"" + SSID + "\"";
         conf.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
@@ -280,11 +288,12 @@ public class ConnectionManager extends Thread {
 
     }
 
-    public boolean isWifiOn(Context context){
+    public boolean isWifiOn(Context context) {
 
         WifiManager wifiManager = (WifiManager) context.getSystemService(context.WIFI_SERVICE);
         return wifiManager.isWifiEnabled();
     }
+
     public static boolean enableWifi(Context context) {
         ApManager.configApState(contexts, false);
         WifiManager wifiManager = (WifiManager) context.getSystemService(context.WIFI_SERVICE);
@@ -308,9 +317,9 @@ public class ConnectionManager extends Thread {
         wifiManager.setWifiEnabled(true);
         wifiManager.startScan();
         results = wifiManager.getScanResults();
-        if(results == null){
-            size=0;
-        }else{
+        if (results == null) {
+            size = 0;
+        } else {
             size = results.size();
 
         }
@@ -358,6 +367,9 @@ public class ConnectionManager extends Thread {
         notifyAll();
     }
 
+    public void sleep() {
+        active = false;
+    }
 
 
     public void sendData() {
@@ -367,7 +379,7 @@ public class ConnectionManager extends Thread {
 
         for (int position = 0; position < mCursor.getCount(); position++) {
             mCursor.moveToPosition(position);
-            System.out.println("getcount: "+position);
+            System.out.println("getcount: " + position);
             //Set sendername
             int columnIndex = mCursor.getColumnIndex(MyDatabase.COL_SENDER_NAME);
             String senderName = mCursor.getString(columnIndex);
@@ -390,11 +402,11 @@ public class ConnectionManager extends Thread {
                     BufferedInputStream buf = new BufferedInputStream(new FileInputStream(fileImage));
                     buf.read(img, 0, img.length);
                     buf.close();
-                    Image image = new Image( senderName, filename, message, location, img);
-                    Broadcaster.broadcast(image.getBytes(),ListenerPacket.PORT_PACKET);
+                    Image image = new Image(senderName, filename, message, location, img);
+                    Broadcaster.broadcast(image.getBytes(), ListenerPacket.PORT_PACKET);
                 } else {
-                    Image image = new Image( senderName, filename, message, location, null);
-                    Broadcaster.broadcast(image.getBytes(),ListenerPacket.PORT_PACKET);
+                    Image image = new Image(senderName, filename, message, location, null);
+                    Broadcaster.broadcast(image.getBytes(), ListenerPacket.PORT_PACKET);
                 }
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -429,19 +441,21 @@ public class ConnectionManager extends Thread {
 
         return allAP;
     }
+
     public boolean isOnline() {
         ConnectivityManager cm = (ConnectivityManager) contexts.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = cm.getActiveNetworkInfo();
         return netInfo != null && netInfo.isConnectedOrConnecting();
     }
+
     public static String encodeImage(byte[] imageByteArray) {
         return Base64.encodeToString(imageByteArray, Base64.DEFAULT);
     }
 
-    public static void sendMessageToInternet(){
+    public static void sendMessageToInternet() {
         OkHttpClient client = new OkHttpClient();
         //Read image file
-        String imageDataString="";
+        String imageDataString = "";
         File file = new File(Environment.getExternalStorageDirectory() + "/Pictures/Pigeon/Nightscape.jpg");
         try {
             // Reading a Image file from file system
@@ -456,11 +470,11 @@ public class ConnectionManager extends Thread {
             System.out.println("Exception while reading the Image " + ioe);
         }
         RequestBody formBody = new FormBody.Builder()
-                .add("Time","xx:xx")
+                .add("Time", "xx:xx")
                 .add("Name", "name")
                 .add("Message", "message")
-                .add("image",imageDataString)
-                .add("GPS","GPS")
+                .add("image", imageDataString)
+                .add("GPS", "GPS")
                 .build();
         Request request = new Request.Builder()
                 .url("http://n2p.in.th/mith/toony.php")

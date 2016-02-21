@@ -48,6 +48,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
      */
 
     @Override
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
@@ -66,14 +67,11 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                     });
                 } else {
                     LocationAvailability locationAvailability = LocationServices.FusedLocationApi.getLocationAvailability(googleApiClient);
-                    if(!locationAvailability.isLocationAvailable()) {
+                    if (!locationAvailability.isLocationAvailable()) {
                         settingsRequest();
-                    } else{
+                    } else {
                         startTabActivity();
                     }
-
-
-
                 }
             }
         });

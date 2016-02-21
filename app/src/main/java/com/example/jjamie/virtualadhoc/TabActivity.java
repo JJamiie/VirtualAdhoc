@@ -25,7 +25,7 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
     private FloatingActionButton fab_edit;
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
-    private ConnectionManager connectionManager;
+    public static ConnectionManager connectionManager;
 
 
     @Override
@@ -93,6 +93,9 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
         connectionManager = new ConnectionManager(getApplicationContext());
         connectionManager.start();
 
+        synchronized (connectionManager){
+            connectionManager.wake();
+        }
 
     }
 
@@ -101,6 +104,7 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
 //        getMenuInflater().inflate(R.menu.menu_tab, menu);
+
         return true;
     }
 
@@ -217,6 +221,15 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
     public void onBackPressed() {
         finish();
         System.exit(0);
+
+    }
+
+
+    public static void freezeConnectionManager(){
+        connectionManager.sleep();
+    }
+    public static void unFreezeConnectionManager(){
+        connectionManager.wake();
     }
 
 
