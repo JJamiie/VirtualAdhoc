@@ -238,8 +238,10 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
         connectionManager.sleep();
     }
 
-    public static void unFreezeConnectionManager() {
-        connectionManager.wake();
+    public static void unFreezeConnectionManager(){
+        synchronized (connectionManager) {
+            connectionManager.wake();
+        }
     }
 
 

@@ -42,15 +42,17 @@ public class ConnectionManager extends Thread {
     public static boolean scannerStatus = true;
     public static Context contexts;
     private SQLiteDatabase sqLiteDatabase;
+    private MyDatabase myDatabase;
     private Cursor mCursor;
 
     // Active for start and stop thread
     private boolean active = false;
 
 
-    public ConnectionManager(Context context, SQLiteDatabase sqLiteDatabase) {
+    public ConnectionManager(Context context,sq) {
         contexts = context;
-        this.sqLiteDatabase = sqLiteDatabase;
+        myDatabase = new MyDatabase(context);
+        sqLiteDatabase = myDatabase.getWritableDatabase();
         results = new List<ScanResult>() {
             @Override
             public void add(int location, ScanResult object) {
@@ -191,11 +193,13 @@ public class ConnectionManager extends Thread {
                     }
                 }
             }
-            //enableWifi(contexts);
+
+
+            System.out.println("Tesssssssssssst");
+            enableWifi(contexts);
             System.out.println("Stage: Sleep0");
             while (!isWifiOn(contexts)) {
                 System.out.println("Wait for wifi");
-                enableWifi(contexts);
             }
             for (int i = 0; i < 5; i++) {
                 listAP(contexts);
@@ -416,6 +420,7 @@ public class ConnectionManager extends Thread {
 
     public static ArrayList<String> listNeighbourAp(Context context) {
         String tokens[] = null;
+        int size;
         //Todo add if this node is hotspot
         allAP = new ArrayList<>();
         //below is normal case
@@ -424,7 +429,12 @@ public class ConnectionManager extends Thread {
         wifiManager.setWifiEnabled(true);
         wifiManager.startScan();
         List<ScanResult> results = wifiManager.getScanResults();
-        int size = results.size();
+        if(results==null){
+            size = 0;
+        }else {
+            size = results.size();
+        }
+
         int tsize = size - 1;
         for (int i = 0; i <= tsize; i++) {
             Log.d("ConnectionManager", results.get(i).SSID);
