@@ -196,10 +196,10 @@ public class ConnectionManager extends Thread {
 
 
             System.out.println("Tesssssssssssst");
-            enableWifi(contexts);
             System.out.println("Stage: Sleep0");
             while (!isWifiOn(contexts)) {
                 System.out.println("Wait for wifi");
+                enableWifi(contexts);
             }
             for (int i = 0; i < 5; i++) {
                 listAP(contexts);
