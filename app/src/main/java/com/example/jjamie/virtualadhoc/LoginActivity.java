@@ -67,7 +67,8 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                     });
                 } else {
                     LocationAvailability locationAvailability = LocationServices.FusedLocationApi.getLocationAvailability(googleApiClient);
-                    if (!locationAvailability.isLocationAvailable()) {
+
+                    if (!locationAvailability.isLocationAvailable() ) {
                         settingsRequest();
                     } else {
                         startTabActivity();

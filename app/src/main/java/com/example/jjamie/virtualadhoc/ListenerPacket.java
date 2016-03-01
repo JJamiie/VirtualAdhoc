@@ -139,7 +139,7 @@ public class ListenerPacket extends Thread {
             activity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    adapter.notifyDataSetChanged();
+                    adapter.updateTable();
 
                 }
             });

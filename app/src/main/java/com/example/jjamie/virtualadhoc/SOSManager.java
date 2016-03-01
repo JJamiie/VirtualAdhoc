@@ -25,8 +25,8 @@ public class SOSManager extends Thread implements GoogleApiClient.ConnectionCall
     public SOSManager(Activity activity) {
         googleApiClient = new GoogleApiClient.Builder(activity).addApi(LocationServices.API).addConnectionCallbacks(this).addOnConnectionFailedListener(this).addApi(AppIndex.API).build();
         googleApiClient.connect();
-        latitude = 0.0;
-        longitude = 0.0;
+        latitude = 13.962536;
+        longitude = 100.624133;
     }
 
     public void run() {
@@ -54,9 +54,9 @@ public class SOSManager extends Thread implements GoogleApiClient.ConnectionCall
 
     private void sendMessage() {
         String message = "Help me!";
-        if(latitude == 0.0 && longitude ==0.0){
-            return;
-        }
+//        if(latitude == 0.0 && longitude ==0.0){
+//            return;
+//        }
         String latitudeAndLongtitude = latitude + "," + longitude;
         try {
             Image image = new Image(TabActivity.senderName, "null", message, latitudeAndLongtitude, null);

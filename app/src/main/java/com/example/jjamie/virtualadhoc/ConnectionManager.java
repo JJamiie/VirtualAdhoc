@@ -224,11 +224,23 @@ public class ConnectionManager extends Thread {
                 ApManager.configApState(contexts, true);
                 System.out.println("Stage: Sleep1");
                 try {
-                    Thread.sleep(60000);
-                    ApManager.configApState(contexts, false);
+                    Thread.sleep(6000);
+
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+                for(int i=0;i<30;i++){
+                    sendData();
+                    try {
+                        Thread.sleep(10000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+
+                }
+
+                ApManager.configApState(contexts, false);
                 System.out.println("Stage: Awake1");
 
             } else {
@@ -241,7 +253,7 @@ public class ConnectionManager extends Thread {
                         Thread.sleep(6000);
                         sendData();
                         System.out.println("Going to sleep");
-                        Thread.sleep(20000);// change ? Dynamic?
+                        Thread.sleep(150000);// change ? Dynamic?
                         System.out.println("wake");
                     } catch (InterruptedException e) {
                         e.printStackTrace();
