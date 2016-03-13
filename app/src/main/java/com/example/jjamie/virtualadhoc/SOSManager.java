@@ -43,7 +43,7 @@ public class SOSManager extends Thread implements GoogleApiClient.ConnectionCall
             try {
                 Thread.sleep(3000);
                 sendMessage();
-                Thread.sleep(18000);
+                Thread.sleep(60000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

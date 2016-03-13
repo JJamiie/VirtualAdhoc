@@ -52,14 +52,18 @@ public class ListenerPacket extends Thread {
             while (true) {
                 Log.d(TAG, "Waiting...");
                 socket = serverSocket.accept();
+                long startTime = System.currentTimeMillis();
 
                 //Receive file
                 Log.d(TAG, "Receive from " + socket.getInetAddress());
 
-
                 ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
                 byte[] byte_packet = (byte[]) objectInputStream.readObject();
+                long estimatedTime1 = System.currentTimeMillis() - startTime;
+
                 socket.close();
+                long estimatedTime2 = System.currentTimeMillis() - startTime;
+                System.out.println("Endtime: " + System.nanoTime());
 
                 //if type is IMAGE_TYPE, packet is image.
                 byte[] type_packet_byte = new byte[TYPE_LENGTH];
@@ -68,6 +72,9 @@ public class ListenerPacket extends Thread {
 
                 switch (type_packet) {
                     case IMAGE_TYPE:
+                        System.out.println("Start time: " + startTime);
+                        System.out.println("Estimated Time: " + estimatedTime1);
+                        System.out.println("Estimated Time: " + estimatedTime2);
                         saveImage(byte_packet);
                         break;
                     default:

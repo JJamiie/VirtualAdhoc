@@ -5,10 +5,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -67,12 +69,14 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                     });
                 } else {
 
-                    final LocationManager manager = (LocationManager) getSystemService( Context.LOCATION_SERVICE );
-
-                    if ( !manager.isProviderEnabled( LocationManager.GPS_PROVIDER ) ) {
-                        settingsRequest();
-                    }else{
+                    LocationManager locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE );
+                    boolean gps_enabled = locationManager.isProviderEnabled( LocationManager.GPS_PROVIDER);
+                    boolean network_enabled = locationManager.isProviderEnabled( LocationManager.NETWORK_PROVIDER);
+                    
+                    if(gps_enabled || network_enabled){
                         startTabActivity();
+                    }else{
+                        settingsRequest();
                     }
 
                 }
