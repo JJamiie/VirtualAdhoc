@@ -28,12 +28,15 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
     public static ConnectionManager connectionManager;
+    public static ScoreListener scoreListener;
     private MyDatabase myDatabase;
     private SQLiteDatabase sqLiteDatabase;
-
+    private MessageListener messageListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        messageListener = new MessageListener();
+
         requestWindowFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tab);
@@ -97,6 +100,8 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
 
         connectionManager = new ConnectionManager(getApplicationContext(), sqLiteDatabase);
         connectionManager.start();
+        scoreListener =new ScoreListener(connectionManager);
+        scoreListener.start();
 
         synchronized (connectionManager) {
             connectionManager.wake();
@@ -244,6 +249,18 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
         }
     }
 
+
+    public static void changeConnectionManagerStateToAP(){
+
+    }
+    public static void changeConfirmFlag(boolean var){
+
+    }
+
+    public static void sendConfirmationMessage(){
+        byte[] con = Image.intToBytes(6);
+        Broadcaster.broadcast(con,3333);
+    }
 
     private void animateFab(int position) {
         switch (position) {
