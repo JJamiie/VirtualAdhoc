@@ -38,7 +38,7 @@ public class ConnectionManager extends Thread {
     private static List<ScanResult> results;
     public static int size = 0;
     public static List<String> availableAP;
-    static List<String> allAP;
+    static ArrayList<String> allAP;
     public static boolean scannerStatus = true;
     public static Context contexts;
     private SQLiteDatabase sqLiteDatabase;
@@ -191,6 +191,8 @@ public class ConnectionManager extends Thread {
         availableAP.clear();
         while (true){
             while(mode==1){
+                accTime=0;
+                System.out.println("mode 1");
                 timeState=0;
                 while (!isWifiOn(contexts)) {
                     System.out.println("Wait for wifi");
@@ -260,6 +262,7 @@ public class ConnectionManager extends Thread {
             while(mode==2){
                 while(accTime<=timeout){
                     timeState=0;
+                    System.out.println("mode 2");
                     while (timeState<=100){
                         ApManager.configApState(contexts, true);
                         tempState=2;
@@ -281,6 +284,7 @@ public class ConnectionManager extends Thread {
                             e.printStackTrace();
                         }
                         timeState=timeState+100;
+                        accTime=accTime+100;
 
                     }
                     while (!isWifiOn(contexts)) {
@@ -302,6 +306,7 @@ public class ConnectionManager extends Thread {
                             try {
                                 Thread.sleep(2000);
                                 timeState = timeState+2;
+                                accTime = accTime+2;
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
@@ -313,6 +318,7 @@ public class ConnectionManager extends Thread {
                             try {
                                 Thread.sleep(3000);
                                 timeState=timeState+3;
+                                accTime=accTime+3;
                                 sendScore();
                                 sendData();
                                 System.out.println("Going to sleep");
@@ -327,10 +333,12 @@ public class ConnectionManager extends Thread {
 
 
                 }
+                mode=1;
             }
             while(mode==3){
                 while(accTime<=timeout){
                     timeState=0;
+                    System.out.println("mode 3");
                     while (!isWifiOn(contexts)) {
                         System.out.println("Wait for wifi");
                         enableWifi(contexts);
@@ -350,6 +358,7 @@ public class ConnectionManager extends Thread {
                             try {
                                 Thread.sleep(2000);
                                 timeState = timeState+2;
+                                accTime = accTime+2;
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
@@ -361,6 +370,7 @@ public class ConnectionManager extends Thread {
                             try {
                                 Thread.sleep(3000);
                                 timeState=timeState+3;
+                                accTime=accTime+3;
                                 sendScore();
                                 sendData();
                                 System.out.println("Going to sleep");
@@ -392,9 +402,11 @@ public class ConnectionManager extends Thread {
                                 e.printStackTrace();
                             }
                             timeState=timeState+35;
+                            accTime=accTime+35;
                         }
                     }
                 }
+                mode=1;
             }
         }
 
@@ -668,7 +680,7 @@ public class ConnectionManager extends Thread {
         }
     }
 
-    public static List<String> listNeighbourAp(Context context) {
+    public static ArrayList<String> listNeighbourAp(Context context) {
         String tokens[] = null;
         int size;
         //Todo add if this node is hotspot
