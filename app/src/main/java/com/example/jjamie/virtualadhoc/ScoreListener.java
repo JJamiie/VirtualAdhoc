@@ -47,6 +47,7 @@ public class ScoreListener extends Thread {
                 if (connectionManager.getTempState()==2){
                     connectionManager.sendData();
                     connectionManager.sendScore();
+                    connectionManager.updateCount();
                 }
                 if (parts.length==4){
                     connectionManager.setCompareMode(Integer.parseInt(parts[1]));

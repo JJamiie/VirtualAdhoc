@@ -226,6 +226,7 @@ public class ConnectionManager extends Thread {
                             timeState=timeState+3;
                             sendScore();
                             sendData();
+                            count++;
                             System.out.println("Going to sleep");
                             //Thread.sleep(2000);
                             System.out.println("wake");
@@ -321,6 +322,7 @@ public class ConnectionManager extends Thread {
                                 accTime=accTime+3;
                                 sendScore();
                                 sendData();
+                                count++;
                                 System.out.println("Going to sleep");
                                 //Thread.sleep(2000);
                                 System.out.println("wake");
@@ -373,6 +375,7 @@ public class ConnectionManager extends Thread {
                                 accTime=accTime+3;
                                 sendScore();
                                 sendData();
+                                count++;
                                 System.out.println("Going to sleep");
                                 //Thread.sleep(2000);
                                 System.out.println("wake");
@@ -753,12 +756,16 @@ public class ConnectionManager extends Thread {
     public static int getTempState(){
         return tempState;
     }
+    public static void updateCount(){
+        count=count+1;
+    }
     public static void updateTime(){
-        if (compareCount>count&&compareMode!=mode){
-            timeState=compareTime;
-        }
         if (compareCount==count&&compareMode!=mode&&tempState==1){
             timeState=compareTime;
+        }
+        if (compareCount>count&&compareMode!=mode){
+            timeState=compareTime;
+            count=compareCount;
         }
     }
     public static void sendMessageToInternet() {
