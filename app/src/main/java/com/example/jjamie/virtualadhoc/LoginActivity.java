@@ -72,7 +72,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                     LocationManager locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE );
                     boolean gps_enabled = locationManager.isProviderEnabled( LocationManager.GPS_PROVIDER);
                     boolean network_enabled = locationManager.isProviderEnabled( LocationManager.NETWORK_PROVIDER);
-                    
+
                     if(gps_enabled || network_enabled){
                         startTabActivity();
                     }else{
