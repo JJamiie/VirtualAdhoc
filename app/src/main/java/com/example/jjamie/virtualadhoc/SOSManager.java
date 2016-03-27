@@ -43,7 +43,7 @@ public class SOSManager extends Thread implements GoogleApiClient.ConnectionCall
             try {
                 Thread.sleep(3000);
                 sendMessage();
-                Thread.sleep(60000);
+                Thread.sleep(10000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -57,7 +57,11 @@ public class SOSManager extends Thread implements GoogleApiClient.ConnectionCall
 //        if(latitude == 0.0 && longitude ==0.0){
 //            return;
 //        }
+        System.out.println("Send emergency message!!!!!!");
         String latitudeAndLongtitude = latitude + "," + longitude;
+        latitude = latitude+1.0;
+        longitude = longitude+1.0;
+
         try {
             Image image = new Image(TabActivity.senderName, "null", message, latitudeAndLongtitude, null);
             Broadcaster.broadcast(image.getBytes(), ListenerPacket.PORT_PACKET);

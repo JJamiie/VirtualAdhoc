@@ -199,6 +199,7 @@ public class ConnectionManager extends Thread {
                     enableWifi(contexts);
                     try {
                         Thread.sleep(1000);
+                        timeState=timeState+1;
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -207,7 +208,6 @@ public class ConnectionManager extends Thread {
                     for (int i = 0; i < 5; i++) {
                         listAP(contexts);
                         if (availableAP.size() > 0) {
-                            score = availableAP.size();
                             break;
                         }
                         try {
@@ -222,8 +222,8 @@ public class ConnectionManager extends Thread {
                         System.out.println("Stage: AvailableApSize>0");
                         connectAP(contexts);
                         try {
-                            Thread.sleep(3000);
-                            timeState=timeState+3;
+                            Thread.sleep(5000);
+                            timeState=timeState+5;
                             sendScore();
                             sendData();
                             count++;
@@ -264,19 +264,20 @@ public class ConnectionManager extends Thread {
                 while(accTime<=timeout){
                     timeState=0;
                     System.out.println("mode 2");
-                    while (timeState<=100){
+                    while (timeState<100){
                         ApManager.configApState(contexts, true);
                         tempState=2;
                         System.out.println("Stage: Sleep1");
                         try {
+                            System.out.println("abc");
                             Thread.sleep(97000);
+                            System.out.println("xyz");
                             //add send data
 
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
                         ApManager.configApState(contexts, false);
-                        updateMode();
                         try {
                             Thread.sleep(3000);
                             //add send data
@@ -284,8 +285,8 @@ public class ConnectionManager extends Thread {
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
-                        timeState=timeState+100;
                         accTime=accTime+100;
+                        timeState=timeState+100;
 
                     }
                     while (!isWifiOn(contexts)) {
@@ -293,15 +294,15 @@ public class ConnectionManager extends Thread {
                         enableWifi(contexts);
                         try {
                             Thread.sleep(1000);
+                            timeState=timeState+1;
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
                     }
-                    while (timeState>100&&timeState<=140){
+                    while (timeState>=100&&timeState<=140){
                         for (int i = 0; i < 5; i++) {
                             listAP(contexts);
                             if (availableAP.size() > 0) {
-                                score = availableAP.size();
                                 break;
                             }
                             try {
@@ -317,15 +318,14 @@ public class ConnectionManager extends Thread {
                             System.out.println("Stage: AvailableApSize>0");
                             connectAP(contexts);
                             try {
-                                Thread.sleep(3000);
-                                timeState=timeState+3;
+                                Thread.sleep(10000);
+                                timeState=timeState+10;
+                                System.out.println("Mode2:Timestate"+timeState);
                                 accTime=accTime+3;
                                 sendScore();
                                 sendData();
                                 count++;
-                                System.out.println("Going to sleep");
                                 //Thread.sleep(2000);
-                                System.out.println("wake");
 
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
@@ -346,21 +346,21 @@ public class ConnectionManager extends Thread {
                         enableWifi(contexts);
                         try {
                             Thread.sleep(1000);
+                            timeState=timeState+1;
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
                     }
-                    while (timeState<=100){
+                    while (timeState<100) {
                         for (int i = 0; i < 5; i++) {
                             listAP(contexts);
                             if (availableAP.size() > 0) {
-                                score = availableAP.size();
                                 break;
                             }
                             try {
                                 Thread.sleep(2000);
-                                timeState = timeState+2;
-                                accTime = accTime+2;
+                                timeState = timeState + 2;
+                                accTime = accTime + 2;
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
@@ -370,142 +370,49 @@ public class ConnectionManager extends Thread {
                             System.out.println("Stage: AvailableApSize>0");
                             connectAP(contexts);
                             try {
-                                Thread.sleep(3000);
-                                timeState=timeState+3;
-                                accTime=accTime+3;
+                                Thread.sleep(10000);
+                                accTime = accTime + 10;
+                                timeState = timeState + 10;
                                 sendScore();
                                 sendData();
                                 count++;
                                 System.out.println("Going to sleep");
                                 //Thread.sleep(2000);
-                                System.out.println("wake");
+                                System.out.println("Mode3:timestate"+timeState);
 
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
-                        }
-                        while (timeState>100&&timeState<=140){
-                            ApManager.configApState(contexts, true);
-                            System.out.println("Stage: Sleep1");
-                            tempState=2;
-                            try {
-                                Thread.sleep(32000);
-                                //add send data
-
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                            ApManager.configApState(contexts, false);
-                            updateMode();
-                            try {
-                                Thread.sleep(3000);
-                                //add send data
-
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                            timeState=timeState+35;
-                            accTime=accTime+35;
                         }
                     }
+                    while (timeState>=100&&timeState<140){
+                        ApManager.configApState(contexts, true);
+                        System.out.println("Stage: Sleep1");
+                        tempState=2;
+                        try {
+                            System.out.println("Mode3TimeState="+timeState);
+                            Thread.sleep(36000);
+                            //add send data
+
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        ApManager.configApState(contexts, false);
+                        try {
+                            Thread.sleep(3000);
+                            //add send data
+
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        accTime=accTime+35;
+                        timeState=timeState+40;
+                    }
+
                 }
                 mode=1;
             }
         }
-
-
-
-        ///////////////////////////////////////////////////////////////////////////////////////////
-        /*
-        //Todo add neighbornode check phase by use add node method from this class in listener
-        enableWifi(contexts);
-        results.clear();
-        availableAP.clear();
-        System.out.println("wtf");
-        while (true) {
-            if (!active) {
-                synchronized (this) {
-                    try {
-                        wait();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-
-
-            System.out.println("Tesssssssssssst");
-            System.out.println("Stage: Sleep0");
-            while (!isWifiOn(contexts)) {
-                System.out.println("Wait for wifi");
-                enableWifi(contexts);
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-            for (int i = 0; i < 5; i++) {
-                listAP(contexts);
-                if (availableAP.size() > 0) {
-                    score = availableAP.size();
-                    break;
-                }
-                try {
-                    Thread.sleep(2000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-            String r = availableAP.size() + "";
-            Log.d("ConnectionManager", r);
-            if (availableAP.size() <= 0) {
-                System.out.println("No AP around ");
-                //Noone around here use this App so turn on AP.
-                //
-                ApManager.configApState(contexts, true);
-                System.out.println("Stage: Sleep1");
-                try {
-                    Thread.sleep(6000);
-
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                for(int i=0;i<30;i++){
-                    sendData();
-                    try {
-                        Thread.sleep(10000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-
-
-                }
-
-                ApManager.configApState(contexts, false);
-                System.out.println("Stage: Awake1");
-
-            } else {
-                System.out.println("Stage: else condition");
-                //connect AP
-                while (availableAP.size() > 0) {
-                    System.out.println("Stage: AvailableApSize>0");
-                    connectAP(contexts);
-                    try {
-                        Thread.sleep(4000);
-                        sendScore();
-                        sendData();
-                        System.out.println("Going to sleep");
-                        Thread.sleep(16000);// change ? Dynamic?
-                        System.out.println("wake");
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }
-        //////////////////////////////////////////////////////////////////////////////////////////
-    */
     }
 
     public static boolean joinAp(String SSID, Context context) {
@@ -639,6 +546,7 @@ public class ConnectionManager extends Thread {
     }
     public void sendData() {
         // Query data from TABLE_NAME_PICTURE
+        System.out.println("TestSendData: "+System.currentTimeMillis());
         mCursor = sqLiteDatabase.rawQuery("SELECT * FROM " + MyDatabase.TABLE_NAME_PICTURE + " ORDER BY _id DESC", null);
         mCursor.moveToFirst();
 
@@ -762,10 +670,12 @@ public class ConnectionManager extends Thread {
     public static void updateTime(){
         if (compareCount==count&&compareMode!=mode&&tempState==1){
             timeState=compareTime;
+            Log.d("ConnectionManager", "updateTime: ");
         }
         if (compareCount>count&&compareMode!=mode){
             timeState=compareTime;
             count=compareCount;
+            Log.d("ConnectionManager", "updateTime: ");
         }
     }
     public static void sendMessageToInternet() {

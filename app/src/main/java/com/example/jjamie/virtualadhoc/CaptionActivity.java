@@ -195,7 +195,9 @@ public class CaptionActivity extends AppCompatActivity implements GoogleApiClien
 
     private void addMessageToPicture() {
         String message = messageEditText.getText().toString();
-        String latitudeAndLongtitude = latitude + "," + longitude;
+       // String latitudeAndLongtitude = latitude + "," + longitude;
+        String latitudeAndLongtitude = 0.0 + "," + 0.0;
+
         try {
             byte[] img = null;
             if (currentPhoto != null) {
