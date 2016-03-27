@@ -546,10 +546,12 @@ public class ConnectionManager extends Thread {
     }
     public void sendData() {
         // Query data from TABLE_NAME_PICTURE
-        System.out.println("TestSendData: "+System.currentTimeMillis());
+
         mCursor = sqLiteDatabase.rawQuery("SELECT * FROM " + MyDatabase.TABLE_NAME_PICTURE + " ORDER BY _id DESC", null);
         mCursor.moveToFirst();
-
+        if(mCursor.getCount()>0){
+            System.out.println("TestSendData: "+System.currentTimeMillis());
+        }
         for (int position = 0; position < mCursor.getCount(); position++) {
             mCursor.moveToPosition(position);
             System.out.println("getcount: " + position);
