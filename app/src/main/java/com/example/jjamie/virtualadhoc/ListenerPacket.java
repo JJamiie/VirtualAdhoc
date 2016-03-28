@@ -17,7 +17,9 @@ import java.io.ObjectInputStream;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 public class ListenerPacket extends Thread {
 
@@ -125,14 +127,8 @@ public class ListenerPacket extends Thread {
                 myDatabase.addToTablePicture(sqLiteDatabase, image.senderName, image.filename, image.message, image.location);
 
                 Log.d(TAG, "Finished...");
-                Calendar rightNow = Calendar.getInstance();
-
-                long offset = rightNow.get(Calendar.ZONE_OFFSET) +
-                        rightNow.get(Calendar.DST_OFFSET);
-
-                long time = (rightNow.getTimeInMillis() + offset) %
-                        (24 * 60 * 60 * 1000);
-                LogFragment.print("Time recieve: " + time + " | From: " + image.senderName + " | Message:  " + image.message);
+                
+                LogFragment.print("Time recieve: " + getCurrentTimeStamp() + " | From: " + image.senderName + " | Message:  " + image.message);
 
 //                LogFragment.print("Time recieve: " + System.currentTimeMillis() + " | From: " + image.senderName + " | Message:  " + image.message);
 
@@ -169,5 +165,18 @@ public class ListenerPacket extends Thread {
         return Formatter.formatIpAddress(mWifi.getConnectionInfo().getIpAddress());
     }
 
+    public static String getCurrentTimeStamp(){
+        try {
+
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String currentTimeStamp = dateFormat.format(new Date()); // Find todays date
+
+            return currentTimeStamp;
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            return null;
+        }
+    }
 
 }
