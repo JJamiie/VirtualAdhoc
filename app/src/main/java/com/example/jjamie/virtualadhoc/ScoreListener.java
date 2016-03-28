@@ -14,7 +14,7 @@ import java.net.Socket;
 public class ScoreListener extends Thread {
     private ServerSocket serverSocket;
     private static final String TAG = "scoreListener";
-    public static final int PORT_SCORE = 7979;
+    public static final int PORT_SCORE = 15243;
     public static final int TYPE_LENGTH = 4;
     public ConnectionManager connectionManager;
     public ScoreListener(ConnectionManager connectionManager){
@@ -31,8 +31,8 @@ public class ScoreListener extends Thread {
                 socket = serverSocket.accept();
 
                 //Receive file
-                Log.d(TAG, "Receive from " + socket.getInetAddress());
-
+                Log.d(TAG, "Receives from " + socket.getInetAddress());
+                LogFragment.print("Receive score from " + socket.getInetAddress());
 
                 ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
                 byte[] byte_packet = (byte[]) objectInputStream.readObject();
@@ -57,10 +57,6 @@ public class ScoreListener extends Thread {
                     connectionManager.updateTime();
                     connectionManager.updateMode();
                 }
-
-
-
-
 
             }
         } catch (IOException e) {

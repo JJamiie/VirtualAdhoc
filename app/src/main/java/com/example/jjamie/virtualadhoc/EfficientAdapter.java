@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Adapter;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
@@ -46,6 +47,7 @@ public class EfficientAdapter extends BaseAdapter {
     public static boolean isStartpigeon = false;
     private SQLiteDatabase sqLiteDatabase;
     private Cursor mCursor;
+    public static BaseAdapter adapter;
 
     public EfficientAdapter(Activity activity,SQLiteDatabase sqLiteDatabase) {
         this.activity = activity;
@@ -55,6 +57,7 @@ public class EfficientAdapter extends BaseAdapter {
         this.sqLiteDatabase = sqLiteDatabase;
         // Get all row in picture table in pigeon database
         updateTable();
+
     }
 
     @Override
@@ -322,7 +325,7 @@ public class EfficientAdapter extends BaseAdapter {
     public void updateTable() {
         mCursor = sqLiteDatabase.rawQuery("SELECT * FROM " + MyDatabase.TABLE_NAME_PICTURE + " ORDER BY _id DESC", null);
         mCursor.moveToFirst();
-        this.notifyDataSetChanged();
+        notifyDataSetChanged();
     }
 
     public Activity getActivity() {

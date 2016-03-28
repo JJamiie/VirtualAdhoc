@@ -228,6 +228,7 @@ public class CaptionActivity extends AppCompatActivity implements GoogleApiClien
                     myDatabase.addToTablePicture(sQLiteDatabase, senderName, null, message, null);
                     image = new Image(senderName, "null", message, "null", img);
                 }
+
                 Broadcaster.broadcast(image.getBytes(), ListenerPacket.PORT_PACKET);
 
                 finish();

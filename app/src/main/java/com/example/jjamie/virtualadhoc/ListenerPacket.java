@@ -26,7 +26,6 @@ public class ListenerPacket extends Thread {
     private ServerSocket serverSocket;
     private Activity activity;
     private AlbumStorageDirFactory mAlbumStorageDirFactory;
-    private EfficientAdapter adapter;
     private Cursor mCursor;
     private SQLiteDatabase sqLiteDatabase;
     private MyDatabase myDatabase;
@@ -34,11 +33,10 @@ public class ListenerPacket extends Thread {
     public static final int IMAGE_TYPE = 1;
 
 
-    public ListenerPacket(Activity activity, AlbumStorageDirFactory mAlbumStorageDirFactory, EfficientAdapter adapter, SQLiteDatabase sqLiteDatabase, MyDatabase myDatabase) {
+    public ListenerPacket(Activity activity, AlbumStorageDirFactory mAlbumStorageDirFactory, SQLiteDatabase sqLiteDatabase, MyDatabase myDatabase) {
         this.activity = activity;
         this.mAlbumStorageDirFactory = mAlbumStorageDirFactory;
         this.mWifi = (WifiManager) activity.getSystemService(Context.WIFI_SERVICE);
-        this.adapter = adapter;
         this.sqLiteDatabase = sqLiteDatabase;
         this.myDatabase = myDatabase;
     }
@@ -126,13 +124,16 @@ public class ListenerPacket extends Thread {
                 myDatabase.addToTablePicture(sqLiteDatabase, image.senderName, image.filename, image.message, image.location);
 
                 Log.d(TAG, "Finished...");
+                LogFragment.print("Time recieve: " + System.currentTimeMillis() + " | From: " + image.senderName + " | Message:  " + image.message);
+
                 System.out.println("TestRecieveData: " + System.currentTimeMillis());
+
 
                 final String sentMsg = "Received";
                 activity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        adapter.updateTable();
+                        NewFeedFragment.updateTable();
                         Toast.makeText(activity, sentMsg, Toast.LENGTH_LONG).show();
                     }
                 });
