@@ -227,8 +227,8 @@ public class ConnectionManager extends Thread {
                             sendData();
                             count++;
                             System.out.println("Mode1 Timestate"+timeState);
-                            Thread.sleep(5000);
-                            timeState=timeState+5;
+                            Thread.sleep(4000);
+                            timeState=timeState+4;
                             System.out.println("wake");
 
                         } catch (InterruptedException e) {
@@ -270,13 +270,13 @@ public class ConnectionManager extends Thread {
                         ApManager.configApState(contexts, true);
                         tempState=2;
                         System.out.println("Stage: Sleep1");
-                        for(int i=0;i<8;i++){
+                        for(int i=0;i<16;i++){
                             try {
                                 //System.out.println("abc");
 
-                                Thread.sleep(12000);
-                                timeState=timeState+12;
-                                accTime=accTime+12;
+                                Thread.sleep(6000);
+                                timeState=timeState+6;
+                                accTime=accTime+6;
                                 System.out.println("mode 2"+timeState);
                                 //System.out.println("xyz");
                                 //add send data
@@ -334,8 +334,8 @@ public class ConnectionManager extends Thread {
                                 sendScore();
                                 sendData();
                                 count++;
-                                Thread.sleep(5000);
-                                timeState=timeState+5;
+                                Thread.sleep(4000);
+                                timeState=timeState+4;
                                 System.out.println("mode 2"+timeState);
                                 //Thread.sleep(2000);
 
@@ -387,8 +387,8 @@ public class ConnectionManager extends Thread {
                                 sendScore();
                                 sendData();
                                 count++;
-                                Thread.sleep(5000);
-                                accTime = accTime + 5;
+                                Thread.sleep(4000);
+                                accTime = accTime + 4;
                                 System.out.println("Going to sleep");
                                 //Thread.sleep(2000);
                                 System.out.println("Mode3:timestate"+timeState);
@@ -402,12 +402,12 @@ public class ConnectionManager extends Thread {
                         ApManager.configApState(contexts, true);
                         System.out.println("Stage: Sleep1");
                         tempState=2;
-                        for(int i =0;i<3;i++) {
+                        for(int i =0;i<6;i++) {
                             try {
                                 System.out.println("Mode3TimeState=" + timeState);
-                                Thread.sleep(12000);
-                                timeState=timeState+12;
-                                accTime=accTime+12;
+                                Thread.sleep(6000);
+                                timeState=timeState+6;
+                                accTime=accTime+6;
                                 //add send data
 
                             } catch (InterruptedException e) {
