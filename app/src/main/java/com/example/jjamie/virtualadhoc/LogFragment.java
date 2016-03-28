@@ -1,43 +1,42 @@
 package com.example.jjamie.virtualadhoc;
 
+import android.app.Activity;
 import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
+import android.widget.TextView;
+
+import org.w3c.dom.Text;
+
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link NewFeedFragment.OnFragmentInteractionListener} interface
+ * {@link LogFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link NewFeedFragment#newInstance} factory method to
+ * Use the {@link LogFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class NewFeedFragment extends Fragment {
+public class LogFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-
+    public static TextView text_log;
+    public static String text="";
+    public static FragmentActivity activity;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
-    private ListView listview;
-    public static EfficientAdapter efficientAdapter;
-    private AppBarLayout appBar;
-    private MyDatabase myDatabase;
-    private SQLiteDatabase sqLiteDatabase;
 
-    public NewFeedFragment() {
+    public LogFragment() {
         // Required empty public constructor
     }
 
@@ -47,19 +46,17 @@ public class NewFeedFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment NewFeedFragment.
+     * @return A new instance of fragment LogFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static NewFeedFragment newInstance(String param1, String param2) {
-        NewFeedFragment fragment = new NewFeedFragment();
+    public static LogFragment newInstance(String param1, String param2) {
+        LogFragment fragment = new LogFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
-
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -69,27 +66,17 @@ public class NewFeedFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
-        appBar = (AppBarLayout) getActivity().findViewById(R.id.appbar);
-        myDatabase = new MyDatabase(getActivity());
-        sqLiteDatabase = myDatabase.getWritableDatabase();
-
-
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View v = inflater.inflate(R.layout.fragment_new_feed, container, false);
-        listview = (ListView) v.findViewById(R.id.listview);
-        efficientAdapter = new EfficientAdapter(getActivity(), sqLiteDatabase);
-
-        listview.setAdapter(efficientAdapter);
-        //ListenerPacket start
-
-        return v;
+        View view = inflater.inflate(R.layout.fragment_log, container, false);
+        text_log = (TextView) view.findViewById(R.id.text_log);
+        activity  =  (FragmentActivity) view.getContext();
+        return view;
     }
-
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
@@ -97,7 +84,6 @@ public class NewFeedFragment extends Fragment {
             mListener.onFragmentInteraction(uri);
         }
     }
-
 
     @Override
     public void onAttach(Context context) {
@@ -107,14 +93,6 @@ public class NewFeedFragment extends Fragment {
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
-        }
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (efficientAdapter != null) {
-            efficientAdapter.updateTable();
         }
     }
 
@@ -139,14 +117,17 @@ public class NewFeedFragment extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 
-    public void onDestroy() {
-        super.onDestroy();
-        sqLiteDatabase.close();
-        myDatabase.close();
-    }
+    public static void print(String t) {
+        text = text + t + "\n";
+        if (text_log != null) {
+            activity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    text_log.setText(text);
 
-    public static void updateTable() {
-        efficientAdapter.updateTable();
+                }
+            });
+        }
     }
 
 

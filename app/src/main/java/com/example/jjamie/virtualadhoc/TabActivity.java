@@ -4,8 +4,11 @@ import android.app.Activity;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.os.SystemClock;
+import android.provider.Settings;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -21,7 +24,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.TextView;
 
-public class TabActivity extends AppCompatActivity implements NewFeedFragment.OnFragmentInteractionListener, MateFragment.OnFragmentInteractionListener, ProfileFragment.OnFragmentInteractionListener {
+public class TabActivity extends AppCompatActivity implements NewFeedFragment.OnFragmentInteractionListener, LogFragment.OnFragmentInteractionListener, ProfileFragment.OnFragmentInteractionListener {
     public static String senderName;
     private FloatingActionButton fab_camera;
     private FloatingActionButton fab_edit;
@@ -31,12 +34,11 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
     public static ScoreListener scoreListener;
     private MyDatabase myDatabase;
     private SQLiteDatabase sqLiteDatabase;
-    private MessageListener messageListener;
+    AlbumStorageDirFactory mAlbumStorageDirFactory;
+    ListenerPacket listenerPacket;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        messageListener = new MessageListener();
-
         requestWindowFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tab);
@@ -105,6 +107,17 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
 
         synchronized (connectionManager) {
             connectionManager.wake();
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
+            mAlbumStorageDirFactory = new FroyoAlbumDirFactory();
+        } else {
+            mAlbumStorageDirFactory = new BaseAlbumDirFactory();
+        }
+
+        if (listenerPacket == null) {
+            listenerPacket = new ListenerPacket(getActivity(), mAlbumStorageDirFactory, sqLiteDatabase, myDatabase);
+            listenerPacket.start();
         }
 
     }
@@ -197,7 +210,7 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
                 case 0:
                     return NewFeedFragment.newInstance("", "");
                 case 1:
-                    return MateFragment.newInstance("", "");
+                    return LogFragment.newInstance("", "");
                 case 2:
                     return ProfileFragment.newInstance("", "");
             }
@@ -220,7 +233,7 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
                 case 0:
                     return "Home";
                 case 1:
-                    return "Mate";
+                    return "Log";
                 case 2:
                     return "Profile";
                 default:
