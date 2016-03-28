@@ -17,6 +17,7 @@ import java.io.ObjectInputStream;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Calendar;
 
 public class ListenerPacket extends Thread {
 
@@ -124,7 +125,16 @@ public class ListenerPacket extends Thread {
                 myDatabase.addToTablePicture(sqLiteDatabase, image.senderName, image.filename, image.message, image.location);
 
                 Log.d(TAG, "Finished...");
-                LogFragment.print("Time recieve: " + System.currentTimeMillis() + " | From: " + image.senderName + " | Message:  " + image.message);
+                Calendar rightNow = Calendar.getInstance();
+
+                long offset = rightNow.get(Calendar.ZONE_OFFSET) +
+                        rightNow.get(Calendar.DST_OFFSET);
+
+                long time = (rightNow.getTimeInMillis() + offset) %
+                        (24 * 60 * 60 * 1000);
+                LogFragment.print("Time recieve: " + time + " | From: " + image.senderName + " | Message:  " + image.message);
+
+//                LogFragment.print("Time recieve: " + System.currentTimeMillis() + " | From: " + image.senderName + " | Message:  " + image.message);
 
                 System.out.println("TestRecieveData: " + System.currentTimeMillis());
 

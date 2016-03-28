@@ -20,6 +20,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -288,7 +289,7 @@ public class ConnectionManager extends Thread {
                                 Thread.sleep(6000);
                                 timeState = timeState + 6;
                                 accTime = accTime + 6;
-                                if(timeState >=100) break;
+                                if (timeState >= 100) break;
 
                                 LogFragment.print("Mode 2 Timestate: " + timeState);
 
@@ -358,7 +359,7 @@ public class ConnectionManager extends Thread {
                                 count++;
                                 Thread.sleep(4000);
                                 timeState = timeState + 4;
-                                if(timeState > timeRandom) break;
+                                if (timeState > timeRandom) break;
 
                                 LogFragment.print("Mode 2 Timestate: " + timeState);
 
@@ -416,7 +417,7 @@ public class ConnectionManager extends Thread {
                                 count++;
                                 Thread.sleep(4000);
                                 accTime = accTime + 4;
-                                if(timeState >=100) break;
+                                if (timeState >= 100) break;
 
                                 System.out.println("Going to sleep");
                                 //Thread.sleep(2000);
@@ -443,7 +444,7 @@ public class ConnectionManager extends Thread {
                                 timeState = timeState + 6;
                                 accTime = accTime + 6;
                                 //add send data
-                                if(timeState > timeRandom) break;
+                                if (timeState > timeRandom) break;
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
@@ -610,7 +611,18 @@ public class ConnectionManager extends Thread {
         mCursor.moveToFirst();
         if (mCursor.getCount() > 0) {
             System.out.println("TestSendData: " + System.currentTimeMillis());
-            LogFragment.print("Time Send: " + System.currentTimeMillis());
+
+            Calendar rightNow = Calendar.getInstance();
+
+            long offset = rightNow.get(Calendar.ZONE_OFFSET) +
+                    rightNow.get(Calendar.DST_OFFSET);
+
+            long time = (rightNow.getTimeInMillis() + offset) %
+                    (24 * 60 * 60 * 1000);
+
+//            LogFragment.print("Time Send: " + System.currentTimeMillis());
+            LogFragment.print("Time Send: " + time);
+
         }
         for (int position = 0; position < mCursor.getCount(); position++) {
             mCursor.moveToPosition(position);
