@@ -204,6 +204,7 @@ public class ConnectionManager extends Thread {
                     }
                 }
                 while(timeState<=25) {
+                    tempState = 1;
                     for (int i = 0; i < 5; i++) {
                         listAP(contexts);
                         if (availableAP.size() > 0) {
@@ -217,7 +218,6 @@ public class ConnectionManager extends Thread {
                         }
                     }
                     while (availableAP.size() > 0) {
-                        tempState = 1;
                         System.out.println("Stage: AvailableApSize>0");
                         connectAP(contexts);
                         try {
@@ -309,6 +309,7 @@ public class ConnectionManager extends Thread {
                     while (timeState>=100&&timeState<=140){
                         for (int i = 0; i < 5; i++) {
                             listAP(contexts);
+                            tempState = 1;
                             if (availableAP.size() > 0) {
                                 break;
                             }
@@ -322,7 +323,6 @@ public class ConnectionManager extends Thread {
                             }
                         }
                         while (availableAP.size() > 0) {
-                            tempState = 1;
                             System.out.println("Stage: AvailableApSize>0");
                             connectAP(contexts);
                             try {
@@ -364,6 +364,7 @@ public class ConnectionManager extends Thread {
                     }
                     while (timeState<100) {
                         for (int i = 0; i < 5; i++) {
+                            tempState = 1;
                             listAP(contexts);
                             if (availableAP.size() > 0) {
                                 break;
@@ -377,7 +378,7 @@ public class ConnectionManager extends Thread {
                             }
                         }
                         while (availableAP.size() > 0) {
-                            tempState = 1;
+
                             System.out.println("Stage: AvailableApSize>0");
                             connectAP(contexts);
                             try {
