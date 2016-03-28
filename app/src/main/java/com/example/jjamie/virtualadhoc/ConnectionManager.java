@@ -612,7 +612,7 @@ public class ConnectionManager extends Thread {
 
     public void sendData() {
         // Query data from TABLE_NAME_PICTURE
-
+        Long time = getCurrentTimeStamp();
         mCursor = sqLiteDatabase.rawQuery("SELECT * FROM " + MyDatabase.TABLE_NAME_PICTURE + " ORDER BY _id DESC", null);
         mCursor.moveToFirst();
         if (mCursor.getCount() > 0) {
@@ -620,7 +620,7 @@ public class ConnectionManager extends Thread {
 
 
 //            LogFragment.print("Time Send: " + System.currentTimeMillis());
-            LogFragment.print("Time Send: " + getCurrentTimeStamp());
+            LogFragment.print("Time Send: " + time);
 
         }
         for (int position = 0; position < mCursor.getCount(); position++) {
@@ -816,17 +816,4 @@ public class ConnectionManager extends Thread {
         }
     }
 
-    public static String getCurrentTimeStamp(){
-        try {
-
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            String currentTimeStamp = dateFormat.format(new Date()); // Find todays date
-
-            return currentTimeStamp;
-        } catch (Exception e) {
-            e.printStackTrace();
-
-            return null;
-        }
-    }
 }
