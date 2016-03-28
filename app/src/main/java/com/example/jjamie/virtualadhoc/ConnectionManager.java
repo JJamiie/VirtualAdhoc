@@ -20,8 +20,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -288,7 +291,7 @@ public class ConnectionManager extends Thread {
                                 Thread.sleep(6000);
                                 timeState = timeState + 6;
                                 accTime = accTime + 6;
-                                if(timeState >=100) break;
+                                if (timeState >= 100) break;
 
                                 LogFragment.print("Mode 2 Timestate: " + timeState);
 
@@ -358,7 +361,7 @@ public class ConnectionManager extends Thread {
                                 count++;
                                 Thread.sleep(4000);
                                 timeState = timeState + 4;
-                                if(timeState > timeRandom) break;
+                                if (timeState > timeRandom) break;
 
                                 LogFragment.print("Mode 2 Timestate: " + timeState);
 
@@ -417,7 +420,7 @@ public class ConnectionManager extends Thread {
                                 count++;
                                 Thread.sleep(4000);
                                 accTime = accTime + 4;
-                                if(timeState >=100) break;
+                                if (timeState >= 100) break;
 
                                 System.out.println("Going to sleep");
                                 //Thread.sleep(2000);
@@ -444,7 +447,7 @@ public class ConnectionManager extends Thread {
                                 timeState = timeState + 6;
                                 accTime = accTime + 6;
                                 //add send data
-                                if(timeState > timeRandom) break;
+                                if (timeState > timeRandom) break;
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
@@ -614,7 +617,11 @@ public class ConnectionManager extends Thread {
         mCursor.moveToFirst();
         if (mCursor.getCount() > 0) {
             System.out.println("TestSendData: " + System.currentTimeMillis());
-            LogFragment.print("Time Send: " + System.currentTimeMillis());
+
+
+//            LogFragment.print("Time Send: " + System.currentTimeMillis());
+            LogFragment.print("Time Send: " + getCurrentTimeStamp());
+
         }
         for (int position = 0; position < mCursor.getCount(); position++) {
             mCursor.moveToPosition(position);
@@ -806,6 +813,20 @@ public class ConnectionManager extends Thread {
         if (android.os.Build.VERSION.SDK_INT > 9) {
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
+        }
+    }
+
+    public static String getCurrentTimeStamp(){
+        try {
+
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String currentTimeStamp = dateFormat.format(new Date()); // Find todays date
+
+            return currentTimeStamp;
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            return null;
         }
     }
 }
