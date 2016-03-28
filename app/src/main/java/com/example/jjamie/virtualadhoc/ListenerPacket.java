@@ -127,7 +127,7 @@ public class ListenerPacket extends Thread {
                 myDatabase.addToTablePicture(sqLiteDatabase, image.senderName, image.filename, image.message, image.location);
 
                 Log.d(TAG, "Finished...");
-                
+
                 LogFragment.print("Time recieve: " + getCurrentTimeStamp() + " | From: " + image.senderName + " | Message:  " + image.message);
 
 //                LogFragment.print("Time recieve: " + System.currentTimeMillis() + " | From: " + image.senderName + " | Message:  " + image.message);
@@ -165,18 +165,15 @@ public class ListenerPacket extends Thread {
         return Formatter.formatIpAddress(mWifi.getConnectionInfo().getIpAddress());
     }
 
-    public static String getCurrentTimeStamp(){
-        try {
+    public static Long getCurrentTimeStamp(){
+        Calendar rightNow = Calendar.getInstance();
 
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            String currentTimeStamp = dateFormat.format(new Date()); // Find todays date
+        long offset = rightNow.get(Calendar.ZONE_OFFSET) +
+                rightNow.get(Calendar.DST_OFFSET);
 
-            return currentTimeStamp;
-        } catch (Exception e) {
-            e.printStackTrace();
-
-            return null;
-        }
+        long time = (rightNow.getTimeInMillis() + offset) %
+                (24 * 60 * 60 * 1000);
+        return time;
     }
 
 }
