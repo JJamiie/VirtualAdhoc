@@ -481,7 +481,7 @@ public class ConnectionManager extends Thread {
         String checkSSID=info.getSSID();
         List<WifiConfiguration> list = wifiManager.getConfiguredNetworks();
         for (WifiConfiguration i : list) {
-            if (i.SSID != null && i.SSID.equals("\"" + SSID + "\"")&&!i.SSID.equals("\"" + checkSSID + "\"")) {
+            if (i.SSID != null && i.SSID.equals("\"" + SSID + "\"")&&!i.SSID.equals("\"" + checkSSID  + "\"")) {
                 wifiManager.disconnect();
                 wifiManager.enableNetwork(i.networkId, true);
                 wifiManager.reconnect();
@@ -816,14 +816,17 @@ public class ConnectionManager extends Thread {
         }
     }
 
-    public static Long getCurrentTimeStamp(){
-        Calendar rightNow = Calendar.getInstance();
+    public static String getCurrentTimeStamp(){
+        try {
 
-        long offset = rightNow.get(Calendar.ZONE_OFFSET) +
-                rightNow.get(Calendar.DST_OFFSET);
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String currentTimeStamp = dateFormat.format(new Date()); // Find todays date
 
-        long time = (rightNow.getTimeInMillis() + offset) %
-                (24 * 60 * 60 * 1000);
-        return time;
+            return currentTimeStamp;
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            return null;
+        }
     }
 }
