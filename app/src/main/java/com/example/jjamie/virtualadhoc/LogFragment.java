@@ -1,6 +1,5 @@
 package com.example.jjamie.virtualadhoc;
 
-import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
@@ -10,8 +9,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
-import org.w3c.dom.Text;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 
 
 /**
@@ -30,6 +30,7 @@ public class LogFragment extends Fragment {
     public static TextView text_log;
     public static String text="";
     public static FragmentActivity activity;
+    public static final String TAG = "LogFragment";
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
@@ -127,6 +128,18 @@ public class LogFragment extends Fragment {
 
                 }
             });
+        }
+    }
+
+    private void writeToFile(String data,String filename){
+        try{
+            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(getActivity().openFileOutput(filename,getActivity().MODE_ENABLE_WRITE_AHEAD_LOGGING));
+            outputStreamWriter.write(data);
+            outputStreamWriter.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
