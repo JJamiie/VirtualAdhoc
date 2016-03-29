@@ -193,9 +193,11 @@ public class ConnectionManager extends Thread {
     }
 
     public void run() {
+
         enableWifi(contexts);
         results.clear();
         availableAP.clear();
+        accTime=0;
         while (true) {
 
             while (mode == 1) {
@@ -815,5 +817,16 @@ public class ConnectionManager extends Thread {
             StrictMode.setThreadPolicy(policy);
         }
     }
+    public static Long getCurrentTimeStamp(){
+        Calendar rightNow = Calendar.getInstance();
+
+        long offset = rightNow.get(Calendar.ZONE_OFFSET) +
+                rightNow.get(Calendar.DST_OFFSET);
+
+        long time = (rightNow.getTimeInMillis() + offset) %
+                (24 * 60 * 60 * 1000);
+        return time;
+    }
+
 
 }
