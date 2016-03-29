@@ -828,5 +828,4 @@ public class ConnectionManager extends Thread {
         return time;
     }
 
-
 }
