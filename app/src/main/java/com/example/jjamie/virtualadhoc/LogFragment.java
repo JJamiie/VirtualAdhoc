@@ -3,16 +3,21 @@ package com.example.jjamie.virtualadhoc;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -28,9 +33,10 @@ public class LogFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     public static TextView text_log;
-    public static String text="";
+    public static Button btn_save;
+    public static String text = "";
+    public static int round = 0;
     public static FragmentActivity activity;
-    public static final String TAG = "LogFragment";
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
@@ -75,7 +81,15 @@ public class LogFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_log, container, false);
         text_log = (TextView) view.findViewById(R.id.text_log);
-        activity  =  (FragmentActivity) view.getContext();
+        activity = (FragmentActivity) view.getContext();
+        btn_save = (Button) view.findViewById(R.id.save);
+        btn_save.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+                writeToFile(text, timeStamp);
+            }
+        });
         return view;
     }
 
@@ -131,16 +145,36 @@ public class LogFragment extends Fragment {
         }
     }
 
-    private void writeToFile(String data,String filename){
-        try{
-            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(getActivity().openFileOutput(filename,getActivity().MODE_ENABLE_WRITE_AHEAD_LOGGING));
-            outputStreamWriter.write(data);
-            outputStreamWriter.close();
+    public static void resetText() {
+        text = "";
+        if (text_log != null) {
+            activity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    text_log.setText(text);
+
+                }
+            });
+        }
+    }
+
+    private void writeToFile(String data, String filename) {
+        String path = Environment.getExternalStorageDirectory().toString() + "/pigeon/";
+        File file = new File(path);
+        file.mkdirs();
+        File outputFile = new File(file, filename + ".txt");
+        try {
+            FileOutputStream stream = new FileOutputStream(outputFile);
+            stream.write(data.getBytes());
+            stream.close();
+
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
+        resetText();
+
     }
 
 

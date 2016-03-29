@@ -5,15 +5,28 @@
     tools:context="com.example.jjamie.virtualadhoc.LogFragment">
 
     <!-- TODO: Update blank fragment layout -->
-    <ScrollView
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/text_log"
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            />
-    </ScrollView>
+            android:layout_height="match_parent"
+            android:layout_above="@+id/save"
+            android:paddingLeft="10dp">
+            <TextView
+                android:id="@+id/text_log"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </ScrollView>
+
+        <Button
+            android:id="@+id/save"
+            android:text="Save"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_alignParentBottom="true"/>
+    </RelativeLayout>
+
 
 </FrameLayout>
