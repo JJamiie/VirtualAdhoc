@@ -35,6 +35,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Calendar;
 
 public class CaptionActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, LocationListener {
@@ -195,8 +196,9 @@ public class CaptionActivity extends AppCompatActivity implements GoogleApiClien
 
     private void addMessageToPicture() {
         String message = messageEditText.getText().toString();
-       // String latitudeAndLongtitude = latitude + "," + longitude;
+        // String latitudeAndLongtitude = latitude + "," + longitude;
         String latitudeAndLongtitude = 0.0 + "," + 0.0;
+        LogFragment.print("Create message: " + getCurrentTimeStamp());
 
         try {
             byte[] img = null;
@@ -379,6 +381,16 @@ public class CaptionActivity extends AppCompatActivity implements GoogleApiClien
         myDatabase.close();
     }
 
+    public static Long getCurrentTimeStamp() {
+        Calendar rightNow = Calendar.getInstance();
+
+        long offset = rightNow.get(Calendar.ZONE_OFFSET) +
+                rightNow.get(Calendar.DST_OFFSET);
+
+        long time = (rightNow.getTimeInMillis() + offset) %
+                (24 * 60 * 60 * 1000);
+        return time;
+    }
 
 }
 

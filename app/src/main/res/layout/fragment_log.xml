@@ -12,20 +12,36 @@
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_above="@+id/save"
+            android:layout_above="@+id/bottom"
             android:paddingLeft="10dp">
+
             <TextView
                 android:id="@+id/text_log"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
         </ScrollView>
 
-        <Button
-            android:id="@+id/save"
-            android:text="Save"
+        <LinearLayout
+            android:id="@+id/bottom"
             android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_alignParentBottom="true"/>
+            android:layout_height="50dp"
+            android:orientation="horizontal"
+            android:layout_alignParentBottom="true">
+            <EditText
+                android:id="@+id/filename"
+                android:textColor="#000000"
+                android:hint="filename"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                />
+            <Button
+                android:id="@+id/save"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="Save" />
+        </LinearLayout>
     </RelativeLayout>
 
 

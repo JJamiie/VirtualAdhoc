@@ -7,7 +7,7 @@ import java.nio.charset.Charset;
 
 public class Image {
     public static final int SENDER_NAME_LENGTH = 50;
-    public static final int FILE_NAME_LENGTH = 100;
+    public static final int FILE_NAME_LENGTH = 2097152;
     public static final int MESSAGE_LENGTH = 600;
     public static final int LOCATION_LENGTH = 30;
 
