@@ -58,6 +58,7 @@ public class ConnectionManager extends Thread {
     private static int timeState = 0;
     private static int compareTime = 0;
     private static int tempState = 1;
+    private static String currSSID="";
     // Active for start and stop thread
     private boolean active = false;
     private Random r;
@@ -235,6 +236,21 @@ public class ConnectionManager extends Thread {
                         try {
                             Thread.sleep(5000);
                             timeState = timeState + 5;
+                            WifiManager wifiManager = (WifiManager) contexts.getSystemService(contexts.WIFI_SERVICE);
+                            WifiInfo info = wifiManager.getConnectionInfo ();
+                            String checkSSID=info.getSSID();
+                            for (int i=0;i<5;i++){
+                                currSSID="\""+currSSID+"\"";
+                                LogFragment.print("currSSID="+currSSID+"checkSSID="+checkSSID);
+                                if(currSSID.equals(checkSSID)){
+                                    break;
+                                }
+                                else {
+                                    Thread.sleep(1000);
+                                    timeState=timeState+1;
+                                }
+                            }
+                            LogFragment.print(checkSSID);
                             sendScore();
                             sendData();
                             count++;
@@ -243,6 +259,7 @@ public class ConnectionManager extends Thread {
                             Thread.sleep(4000);
                             timeState = timeState + 4;
                             System.out.println("wake");
+                            currSSID="";
 
                         } catch (InterruptedException e) {
                             e.printStackTrace();
@@ -352,7 +369,21 @@ public class ConnectionManager extends Thread {
                             try {
                                 Thread.sleep(5000);
                                 timeState = timeState + 5;
-
+                                WifiManager wifiManager = (WifiManager) contexts.getSystemService(contexts.WIFI_SERVICE);
+                                WifiInfo info = wifiManager.getConnectionInfo ();
+                                String checkSSID=info.getSSID();
+                                for (int i=0;i<5;i++){
+                                    currSSID="\""+currSSID+"\"";
+                                    LogFragment.print("currSSID="+currSSID+"checkSSID="+checkSSID);
+                                    if(currSSID.equals(checkSSID)){
+                                        break;
+                                    }
+                                    else {
+                                        Thread.sleep(1000);
+                                        timeState=timeState+1;
+                                    }
+                                }
+                                LogFragment.print(checkSSID);
                                 System.out.println("mode 2" + timeState);
                                 LogFragment.print("Mode 2 Timestate: " + timeState);
 
@@ -417,6 +448,21 @@ public class ConnectionManager extends Thread {
                                 Thread.sleep(5000);
                                 accTime = accTime + 5;
                                 timeState = timeState + 10;
+                                WifiManager wifiManager = (WifiManager) contexts.getSystemService(contexts.WIFI_SERVICE);
+                                WifiInfo info = wifiManager.getConnectionInfo ();
+                                String checkSSID=info.getSSID();
+                                for (int i=0;i<5;i++){
+                                    currSSID="\""+currSSID+"\"";
+                                    LogFragment.print("currSSID="+currSSID+"checkSSID="+checkSSID);
+                                    if(currSSID.equals(checkSSID)){
+                                        break;
+                                    }
+                                    else {
+                                        Thread.sleep(1000);
+                                        timeState=timeState+1;
+                                    }
+                                }
+                                LogFragment.print(checkSSID);
                                 sendScore();
                                 sendData();
                                 count++;
@@ -490,6 +536,7 @@ public class ConnectionManager extends Thread {
 
                 break;
             }
+
         }
 
         return true;
@@ -574,6 +621,7 @@ public class ConnectionManager extends Thread {
 
             System.out.println("SSIDNAME=" + SSID);
             joinAp(SSID, context);
+            currSSID=SSID;
             availableAP.remove(0);
 
         }
@@ -817,6 +865,8 @@ public class ConnectionManager extends Thread {
             StrictMode.setThreadPolicy(policy);
         }
     }
+
+
     public static Long getCurrentTimeStamp(){
         Calendar rightNow = Calendar.getInstance();
 
