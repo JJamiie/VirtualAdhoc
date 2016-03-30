@@ -35,6 +35,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Calendar;
 
 public class CaptionActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, LocationListener {
@@ -67,7 +68,7 @@ public class CaptionActivity extends AppCompatActivity implements GoogleApiClien
         setContentView(R.layout.activity_caption);
         // ATTENTION: This "addApi(AppIndex.API)"was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
-        googleApiClient = new GoogleApiClient.Builder(this).addApi(LocationServices.API).addConnectionCallbacks(this).addOnConnectionFailedListener(this).addApi(AppIndex.API).build();
+        //googleApiClient = new GoogleApiClient.Builder(this).addApi(LocationServices.API).addConnectionCallbacks(this).addOnConnectionFailedListener(this).addApi(AppIndex.API).build();
         camera_button = (Button) findViewById(R.id.camera_button);
         currentPhotoImageView = (ImageView) findViewById(R.id.imageForCaption);
         messageEditText = (EditText) findViewById(R.id.captionEditText);
@@ -194,8 +195,9 @@ public class CaptionActivity extends AppCompatActivity implements GoogleApiClien
     }
 
     private void addMessageToPicture() {
+
         String message = messageEditText.getText().toString();
-       // String latitudeAndLongtitude = latitude + "," + longitude;
+        // String latitudeAndLongtitude = latitude + "," + longitude;
         String latitudeAndLongtitude = 0.0 + "," + 0.0;
 
         try {
@@ -230,7 +232,7 @@ public class CaptionActivity extends AppCompatActivity implements GoogleApiClien
                 }
 
                 Broadcaster.broadcast(image.getBytes(), ListenerPacket.PORT_PACKET);
-
+                LogFragment.print("Create message time: " + getCurrentTimeStamp());
                 finish();
             }
         } catch (IOException e) {
@@ -238,49 +240,61 @@ public class CaptionActivity extends AppCompatActivity implements GoogleApiClien
         } catch (LengthIncorrectLengthException e) {
             e.printStackTrace();
         }
+
+    }
+
+    public static Long getCurrentTimeStamp() {
+        Calendar rightNow = Calendar.getInstance();
+
+        long offset = rightNow.get(Calendar.ZONE_OFFSET) +
+                rightNow.get(Calendar.DST_OFFSET);
+
+        long time = (rightNow.getTimeInMillis() + offset) %
+                (24 * 60 * 60 * 1000);
+        return time;
     }
 
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        googleApiClient.connect();
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        Action viewAction = Action.newAction(
-                Action.TYPE_VIEW, // TODO: choose an action type.
-                "Caption Page", // TODO: Define a title for the content shown.
-                // TODO: If you have web page content that matches this app activity's content,
-                // make sure this auto-generated web page URL is correct.
-                // Otherwise, set the URL to null.
-                Uri.parse("http://host/path"),
-                // TODO: Make sure this auto-generated app deep link URI is correct.
-                Uri.parse("android-app://com.example.jjamie.virtualadhoc/http/host/path")
-        );
-        AppIndex.AppIndexApi.start(googleApiClient, viewAction);
-        settingsRequest();
-    }
+//    @Override
+//    public void onStart() {
+//        super.onStart();
+//        googleApiClient.connect();
+//        // ATTENTION: This was auto-generated to implement the App Indexing API.
+//        // See https://g.co/AppIndexing/AndroidStudio for more information.
+//        Action viewAction = Action.newAction(
+//                Action.TYPE_VIEW, // TODO: choose an action type.
+//                "Caption Page", // TODO: Define a title for the content shown.
+//                // TODO: If you have web page content that matches this app activity's content,
+//                // make sure this auto-generated web page URL is correct.
+//                // Otherwise, set the URL to null.
+//                Uri.parse("http://host/path"),
+//                // TODO: Make sure this auto-generated app deep link URI is correct.
+//                Uri.parse("android-app://com.example.jjamie.virtualadhoc/http/host/path")
+//        );
+//        AppIndex.AppIndexApi.start(googleApiClient, viewAction);
+//        settingsRequest();
+//    }
 
-    @Override
-    public void onStop() {
-        super.onStop();
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        Action viewAction = Action.newAction(
-                Action.TYPE_VIEW, // TODO: choose an action type.
-                "Caption Page", // TODO: Define a title for the content shown.
-                // TODO: If you have web page content that matches this app activity's content,
-                // make sure this auto-generated web page URL is correct.
-                // Otherwise, set the URL to null.
-                Uri.parse("http://host/path"),
-                // TODO: Make sure this auto-generated app deep link URI is correct.
-                Uri.parse("android-app://com.example.jjamie.virtualadhoc/http/host/path")
-        );
-        AppIndex.AppIndexApi.end(googleApiClient, viewAction);
-        if (googleApiClient != null && googleApiClient.isConnected()) {
-            googleApiClient.disconnect();
-        }
-    }
+//    @Override
+//    public void onStop() {
+//        super.onStop();
+//        // ATTENTION: This was auto-generated to implement the App Indexing API.
+//        // See https://g.co/AppIndexing/AndroidStudio for more information.
+//        Action viewAction = Action.newAction(
+//                Action.TYPE_VIEW, // TODO: choose an action type.
+//                "Caption Page", // TODO: Define a title for the content shown.
+//                // TODO: If you have web page content that matches this app activity's content,
+//                // make sure this auto-generated web page URL is correct.
+//                // Otherwise, set the URL to null.
+//                Uri.parse("http://host/path"),
+//                // TODO: Make sure this auto-generated app deep link URI is correct.
+//                Uri.parse("android-app://com.example.jjamie.virtualadhoc/http/host/path")
+//        );
+//        AppIndex.AppIndexApi.end(googleApiClient, viewAction);
+//        if (googleApiClient != null && googleApiClient.isConnected()) {
+//            googleApiClient.disconnect();
+//        }
+//    }
 
     @Override
     public void onConnected(Bundle bundle) {

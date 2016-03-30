@@ -7,13 +7,15 @@ import java.util.ArrayList;
 public class Broadcaster {
 
 
-    public static void broadcast(byte[] bytes,int port) {
+    public static void broadcast(byte[] bytes, int port) {
         Unicaster unicaster = new Unicaster(port);
         //Get neighborlist
         ArrayList<String> neighborList = getNeighborList();
         if (neighborList.size() == 0) return;
         for (int i = 0; i < neighborList.size(); i++) {
-            unicaster.unicast(bytes, neighborList.get(i));
+            String[] split = neighborList.get(i).split("---");
+            unicaster.unicast(bytes, split[0]);
+            LogFragment.print("Send to MAC--- " + split[1]);
         }
     }
 
@@ -32,7 +34,7 @@ public class Broadcaster {
                     String mac = splitted[3];
                     if (mac.matches("..:..:..:..:..:..")) {
                         macCount++;
-                        clientList.add(splitted[0]);
+                        clientList.add(splitted[0] + "---" + splitted[3]);
                         System.out.println("Count : " + macCount + " IP Address : " + splitted[0]);
                     }
 
@@ -43,8 +45,6 @@ public class Broadcaster {
         }
         return clientList;
     }
-
-
 
 
 }

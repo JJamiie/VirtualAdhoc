@@ -17,6 +17,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
+
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.ConnectionResult;
@@ -69,16 +70,16 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                     });
                 } else {
 
-                    LocationManager locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE );
-                    boolean gps_enabled = locationManager.isProviderEnabled( LocationManager.GPS_PROVIDER);
-                    boolean network_enabled = locationManager.isProviderEnabled( LocationManager.NETWORK_PROVIDER);
-                    
-                    if(gps_enabled || network_enabled){
-                        startTabActivity();
-                    }else{
-                        settingsRequest();
-                    }
+//                    LocationManager locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE );
+//                    boolean gps_enabled = locationManager.isProviderEnabled( LocationManager.GPS_PROVIDER);
+//                    boolean network_enabled = locationManager.isProviderEnabled( LocationManager.NETWORK_PROVIDER);
 
+//                    if(gps_enabled || network_enabled){
+//                        startTabActivity();
+//                    }else{
+//                        settingsRequest();
+//                    }
+                    startTabActivity();
                 }
             }
         });

@@ -17,8 +17,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -178,7 +177,6 @@ public class LogFragment extends Fragment {
             e.printStackTrace();
         }
         resetText();
-
     }
 
 
