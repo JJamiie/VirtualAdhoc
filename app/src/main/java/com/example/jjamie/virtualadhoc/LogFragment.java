@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import java.io.File;
@@ -34,6 +35,8 @@ public class LogFragment extends Fragment {
     private static final String ARG_PARAM2 = "param2";
     public static TextView text_log;
     public static Button btn_save;
+    public static EditText edt_title;
+
     public static String text = "";
     public static int round = 0;
     public static FragmentActivity activity;
@@ -83,11 +86,12 @@ public class LogFragment extends Fragment {
         text_log = (TextView) view.findViewById(R.id.text_log);
         activity = (FragmentActivity) view.getContext();
         btn_save = (Button) view.findViewById(R.id.save);
+        edt_title = (EditText) view.findViewById(R.id.edt_title);
         btn_save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-                writeToFile(text, timeStamp);
+//                String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+                writeToFile(text, edt_title.getText().toString());
             }
         });
         return view;
