@@ -239,8 +239,8 @@ public class ConnectionManager extends Thread {
                             WifiManager wifiManager = (WifiManager) contexts.getSystemService(contexts.WIFI_SERVICE);
                             WifiInfo info = wifiManager.getConnectionInfo ();
                             String checkSSID=info.getSSID();
+                            currSSID="\""+currSSID+"\"";
                             for (int i=0;i<5;i++){
-                                currSSID="\""+currSSID+"\"";
                                 LogFragment.print("currSSID="+currSSID+"checkSSID="+checkSSID);
                                 if(currSSID.equals(checkSSID)){
                                     break;
@@ -372,8 +372,8 @@ public class ConnectionManager extends Thread {
                                 WifiManager wifiManager = (WifiManager) contexts.getSystemService(contexts.WIFI_SERVICE);
                                 WifiInfo info = wifiManager.getConnectionInfo ();
                                 String checkSSID=info.getSSID();
+                                currSSID="\""+currSSID+"\"";
                                 for (int i=0;i<5;i++){
-                                    currSSID="\""+currSSID+"\"";
                                     LogFragment.print("currSSID="+currSSID+"checkSSID="+checkSSID);
                                     if(currSSID.equals(checkSSID)){
                                         break;
@@ -451,8 +451,8 @@ public class ConnectionManager extends Thread {
                                 WifiManager wifiManager = (WifiManager) contexts.getSystemService(contexts.WIFI_SERVICE);
                                 WifiInfo info = wifiManager.getConnectionInfo ();
                                 String checkSSID=info.getSSID();
+                                currSSID="\""+currSSID+"\"";
                                 for (int i=0;i<5;i++){
-                                    currSSID="\""+currSSID+"\"";
                                     LogFragment.print("currSSID="+currSSID+"checkSSID="+checkSSID);
                                     if(currSSID.equals(checkSSID)){
                                         break;
