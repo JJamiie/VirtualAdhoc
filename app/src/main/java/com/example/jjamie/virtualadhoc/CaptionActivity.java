@@ -209,6 +209,7 @@ public class CaptionActivity extends AppCompatActivity implements GoogleApiClien
                 buf.close();
             }
             Image image = null;
+
             if (isCaptured) {
                 if (gps_button_isClicked) {
                     myDatabase.addToTablePicture(sQLiteDatabase, senderName, currentPhoto.getName(), message, latitudeAndLongtitude);
@@ -229,9 +230,10 @@ public class CaptionActivity extends AppCompatActivity implements GoogleApiClien
                 } else {
                     myDatabase.addToTablePicture(sQLiteDatabase, senderName, null, message, null);
                     image = new Image(senderName, "null", message, "null", img);
-                }
 
+                }
                 Broadcaster.broadcast(image.getBytes(), ListenerPacket.PORT_PACKET);
+
 
                 finish();
             }

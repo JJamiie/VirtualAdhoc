@@ -33,7 +33,7 @@ public class Broadcaster {
                     if (mac.matches("..:..:..:..:..:..")) {
                         macCount++;
                         clientList.add(splitted[0]);
-                        LogFragment.print("IP Address : " + splitted[0] + " MAX Address : " + splitted[3]);
+                        LogFragment.print("IP Address : " + splitted[0] + " MAC Address : " + splitted[3]);
                         System.out.println("Count : " + macCount + " IP Address : " + splitted[0]);
                     }
 

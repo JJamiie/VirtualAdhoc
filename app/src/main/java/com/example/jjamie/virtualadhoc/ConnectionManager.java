@@ -62,7 +62,6 @@ public class ConnectionManager extends Thread {
     private boolean active = false;
     private Random r;
 
-
     public ConnectionManager(Context context, SQLiteDatabase sqLiteDatabase) {
         contexts = context;
         r = new Random();
@@ -213,7 +212,7 @@ public class ConnectionManager extends Thread {
                         e.printStackTrace();
                     }
                 }
-                while(timeState<=25) {
+                while (timeState <= 25) {
                     tempState = 1;
                     for (int i = 0; i < 5; i++) {
                         listAP(contexts);
@@ -234,7 +233,6 @@ public class ConnectionManager extends Thread {
                             Thread.sleep(5000);
                             timeState = timeState + 5;
                             sendScore();
-                            sendData();
                             count++;
                             LogFragment.print("Mode 1 Timestate: " + timeState);
                             System.out.println("Mode1 Timestate" + timeState);
@@ -417,6 +415,7 @@ public class ConnectionManager extends Thread {
                                 timeState = timeState + 10;
                                 sendScore();
                                 sendData();
+
                                 count++;
                                 Thread.sleep(4000);
                                 accTime = accTime + 4;
@@ -477,11 +476,11 @@ public class ConnectionManager extends Thread {
         conf.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
         WifiManager wifiManager = (WifiManager) context.getSystemService(context.WIFI_SERVICE);
         wifiManager.addNetwork(conf);
-        WifiInfo info = wifiManager.getConnectionInfo ();
-        String checkSSID=info.getSSID();
+        WifiInfo info = wifiManager.getConnectionInfo();
+        String checkSSID = info.getSSID();
         List<WifiConfiguration> list = wifiManager.getConfiguredNetworks();
         for (WifiConfiguration i : list) {
-            if (i.SSID != null && i.SSID.equals("\"" + SSID + "\"")&&!i.SSID.equals("\"" + checkSSID  + "\"")) {
+            if (i.SSID != null && i.SSID.equals("\"" + SSID + "\"") && !i.SSID.equals("\"" + checkSSID + "\"")) {
                 wifiManager.disconnect();
                 wifiManager.enableNetwork(i.networkId, true);
                 wifiManager.reconnect();
@@ -815,7 +814,8 @@ public class ConnectionManager extends Thread {
             StrictMode.setThreadPolicy(policy);
         }
     }
-    public static Long getCurrentTimeStamp(){
+
+    public static Long getCurrentTimeStamp() {
         Calendar rightNow = Calendar.getInstance();
 
         long offset = rightNow.get(Calendar.ZONE_OFFSET) +
