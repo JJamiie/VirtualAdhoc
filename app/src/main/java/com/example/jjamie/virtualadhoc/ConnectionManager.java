@@ -469,6 +469,7 @@ public class ConnectionManager extends Thread {
         }
     }
 
+
     public static boolean joinAp(String SSID, Context context) {
         WifiConfiguration conf = new WifiConfiguration();
 
@@ -609,60 +610,91 @@ public class ConnectionManager extends Thread {
         Broadcaster.broadcast(b, ScoreListener.PORT_SCORE);
     }
 
+//    public void sendData() {
+//        // Query data from TABLE_NAME_PICTURE
+//        Long time = getCurrentTimeStamp();
+//        mCursor = sqLiteDatabase.rawQuery("SELECT * FROM " + MyDatabase.TABLE_NAME_PICTURE + " ORDER BY _id DESC", null);
+//        mCursor.moveToFirst();
+//        if (mCursor.getCount() > 0) {
+//            System.out.println("TestSendData: " + System.currentTimeMillis());
+//
+//
+////            LogFragment.print("Time Send: " + System.currentTimeMillis());
+//            LogFragment.print("Time Send: " + time);
+//
+//        }
+//        for (int position = 0; position < mCursor.getCount(); position++) {
+//            mCursor.moveToPosition(position);
+//            System.out.println("getcount: " + position);
+//
+//            //Set sendername
+//            int columnIndex = mCursor.getColumnIndex(MyDatabase.COL_SENDER_NAME);
+//            String senderName = mCursor.getString(columnIndex);
+//
+//            //Set message
+//            columnIndex = mCursor.getColumnIndex(MyDatabase.COL_MESSAGE);
+//            String message = mCursor.getString(columnIndex);
+//
+//            //Set location
+//            columnIndex = mCursor.getColumnIndex(MyDatabase.COL_LOCATION);
+//            String location = mCursor.getString(columnIndex);
+//
+//            //Set filename
+//            columnIndex = mCursor.getColumnIndex(MyDatabase.COL_FILE_NAME);
+//            String filename = mCursor.getString(columnIndex);
+//            File fileImage = ManageImage.isExist(filename);
+//            try {
+//                if (fileImage != null) {
+//                    byte[] img = new byte[(int) fileImage.length()];
+//                    BufferedInputStream buf = new BufferedInputStream(new FileInputStream(fileImage));
+//                    buf.read(img, 0, img.length);
+//                    buf.close();
+//                    Image image = new Image(senderName, filename, message, location, img);
+//                    Broadcaster.broadcast(image.getBytes(), ListenerPacket.PORT_PACKET);
+//                } else {
+//                    Image image = new Image(senderName, filename, message, location, null);
+//                    Broadcaster.broadcast(image.getBytes(), ListenerPacket.PORT_PACKET);
+//                }
+//            } catch (FileNotFoundException e) {
+//                e.printStackTrace();
+//            } catch (LengthIncorrectLengthException e) {
+//                e.printStackTrace();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//    }
+
+
     public void sendData() {
         // Query data from TABLE_NAME_PICTURE
+        LogFragment.print("Send data");
         Long time = getCurrentTimeStamp();
-        mCursor = sqLiteDatabase.rawQuery("SELECT * FROM " + MyDatabase.TABLE_NAME_PICTURE + " ORDER BY _id DESC", null);
+        mCursor = sqLiteDatabase.rawQuery("SELECT * FROM " + MyDatabase.TABLE_NAME_PICTURE, null);
         mCursor.moveToFirst();
         if (mCursor.getCount() > 0) {
             System.out.println("TestSendData: " + System.currentTimeMillis());
-
-
-//            LogFragment.print("Time Send: " + System.currentTimeMillis());
-            LogFragment.print("Time Send: " + time);
-
+            LogFragment.print("Time Send report list of image name: " + time);
         }
+        ArrayList<String> list_name_image = new ArrayList<String>();
         for (int position = 0; position < mCursor.getCount(); position++) {
             mCursor.moveToPosition(position);
-            System.out.println("getcount: " + position);
-
-            //Set sendername
-            int columnIndex = mCursor.getColumnIndex(MyDatabase.COL_SENDER_NAME);
-            String senderName = mCursor.getString(columnIndex);
-
-            //Set message
-            columnIndex = mCursor.getColumnIndex(MyDatabase.COL_MESSAGE);
-            String message = mCursor.getString(columnIndex);
-
-            //Set location
-            columnIndex = mCursor.getColumnIndex(MyDatabase.COL_LOCATION);
-            String location = mCursor.getString(columnIndex);
-
             //Set filename
-            columnIndex = mCursor.getColumnIndex(MyDatabase.COL_FILE_NAME);
+            int columnIndex = mCursor.getColumnIndex(MyDatabase.COL_FILE_NAME);
             String filename = mCursor.getString(columnIndex);
-            File fileImage = ManageImage.isExist(filename);
-            try {
-                if (fileImage != null) {
-                    byte[] img = new byte[(int) fileImage.length()];
-                    BufferedInputStream buf = new BufferedInputStream(new FileInputStream(fileImage));
-                    buf.read(img, 0, img.length);
-                    buf.close();
-                    Image image = new Image(senderName, filename, message, location, img);
-                    Broadcaster.broadcast(image.getBytes(), ListenerPacket.PORT_PACKET);
-                } else {
-                    Image image = new Image(senderName, filename, message, location, null);
-                    Broadcaster.broadcast(image.getBytes(), ListenerPacket.PORT_PACKET);
-                }
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (LengthIncorrectLengthException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            list_name_image.add(filename);
+            LogFragment.print("filename: " + filename);
         }
+        if (list_name_image.size() == 0) return;
+        byte[] type = Image.intToBytes(ListenerPacket.SENDER_REPORT_LIST_IMAGE);
+        byte[] list_image = ReportNeighbor.arrayListStringToByte(list_name_image);
+
+        byte[] data = new byte[ListenerPacket.TYPE_LENGTH + list_image.length];
+        System.arraycopy(type, 0, data, 0, ListenerPacket.TYPE_LENGTH);
+        System.arraycopy(list_image, 0, data, ListenerPacket.TYPE_LENGTH, list_image.length);
+        Broadcaster.broadcast(data, ListenerPacket.PORT_PACKET);
     }
+
 
     public static ArrayList<String> listNeighbourAp(Context context) {
         String tokens[] = null;

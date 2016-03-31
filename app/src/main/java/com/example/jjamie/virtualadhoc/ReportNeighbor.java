@@ -28,6 +28,8 @@ public class ReportNeighbor {
 
     }
 
+
+
     public static ArrayList<Neighbor> byteToArraylist(byte[] data) {
 
         ObjectInputStream ois = null;
@@ -110,6 +112,49 @@ public class ReportNeighbor {
 
         return senderNameString;
     }
+
+
+    public static byte[] arrayListStringToByte(ArrayList<String> data) {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ObjectOutputStream oos = null;
+        try {
+            oos = new ObjectOutputStream(bos);
+            oos.writeObject(data);//mArrayList is the array to convert
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        byte[] buff = bos.toByteArray();
+        return buff;
+
+    }
+
+    public static ArrayList<String> byteToArraylistString(byte[] data) {
+
+        ObjectInputStream ois = null;
+        ArrayList<String> arrayList_data = null;
+        try {
+            ois = new ObjectInputStream(new ByteArrayInputStream(data));
+            arrayList_data = (ArrayList<String>) ois.readObject();
+            ois.close();
+        } catch (IOException e) {
+
+        } catch (ClassNotFoundException e) {
+        }
+        return arrayList_data;
+    }
+
+    public static ArrayList<String> recieveListNameImage(byte[] bytes) {
+        int lengthArrayClient = bytes.length - (ListenerPacket.TYPE_LENGTH);
+        byte[] arrayNameImage = new byte[lengthArrayClient];
+        System.arraycopy(bytes, ListenerPacket.TYPE_LENGTH, arrayNameImage, 0, lengthArrayClient);
+        ArrayList<String> nameImage = byteToArraylistString(arrayNameImage);
+        System.out.println("Recieve list of name image " + nameImage.size());
+        return nameImage;
+    }
+
+
+
 
 
 }

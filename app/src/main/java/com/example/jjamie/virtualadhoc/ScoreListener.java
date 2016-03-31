@@ -60,6 +60,7 @@ public class ScoreListener extends Thread {
 
             }
         } catch (IOException e) {
+            LogFragment.print("IOException: "+e.getMessage());
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
@@ -68,6 +69,7 @@ public class ScoreListener extends Thread {
                 try {
                     socket.close();
                 } catch (IOException e) {
+                    LogFragment.print(e.getMessage());
                     e.printStackTrace();
                 }
             }
