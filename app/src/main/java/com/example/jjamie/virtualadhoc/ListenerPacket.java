@@ -38,6 +38,7 @@ public class ListenerPacket extends Thread {
     private Cursor mCursor;
     private SQLiteDatabase sqLiteDatabase;
     private MyDatabase myDatabase;
+    private ConnectionManager connectionManager;
     public static final int TYPE_LENGTH = 4;
     public static final int IMAGE_TYPE = 1;
     public static final int SENDER_REPORT_LIST_IMAGE = 2;
@@ -45,12 +46,13 @@ public class ListenerPacket extends Thread {
     private static Unicaster unicaster;
 
 
-    public ListenerPacket(Activity activity, AlbumStorageDirFactory mAlbumStorageDirFactory, SQLiteDatabase sqLiteDatabase, MyDatabase myDatabase) {
+    public ListenerPacket(Activity activity, AlbumStorageDirFactory mAlbumStorageDirFactory, SQLiteDatabase sqLiteDatabase, MyDatabase myDatabase,ConnectionManager connectionManager) {
         this.activity = activity;
         this.mAlbumStorageDirFactory = mAlbumStorageDirFactory;
         this.mWifi = (WifiManager) activity.getSystemService(Context.WIFI_SERVICE);
         this.sqLiteDatabase = sqLiteDatabase;
         this.myDatabase = myDatabase;
+        this.connectionManager=connectionManager;
         unicaster = new Unicaster(ListenerPacket.PORT_PACKET);
     }
 
@@ -64,6 +66,7 @@ public class ListenerPacket extends Thread {
 
                 Log.d(TAG, "Waiting...");
                 socket = serverSocket.accept();
+                connectionManager.setTransferCondition(true);
                 socket.setSoTimeout(10000);
 
                 //Receive file
@@ -73,6 +76,7 @@ public class ListenerPacket extends Thread {
                 byte[] byte_packet = (byte[]) objectInputStream.readObject();
 
                 socket.close();
+                connectionManager.setTransferCondition(false);
                 //if type is IMAGE_TYPE, packet is image.
                 byte[] type_packet_byte = new byte[TYPE_LENGTH];
                 System.arraycopy(byte_packet, 0, type_packet_byte, 0, TYPE_LENGTH);
@@ -109,6 +113,7 @@ public class ListenerPacket extends Thread {
             if (socket != null) {
                 try {
                     socket.close();
+                    connectionManager.setTransferCondition(false);
                 } catch (IOException e) {
                     LogFragment.print("Finally: " + e.getMessage());
                     e.printStackTrace();

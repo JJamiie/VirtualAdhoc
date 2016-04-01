@@ -58,6 +58,7 @@ public class ConnectionManager extends Thread {
     private static int timeState = 0;
     private static int compareTime = 0;
     private static int tempState = 1;
+    private static boolean condition = true;
     // Active for start and stop thread
     private boolean active = false;
     private Random r;
@@ -195,6 +196,7 @@ public class ConnectionManager extends Thread {
         enableWifi(contexts);
         results.clear();
         availableAP.clear();
+        condition=false;
         while (true) {
 
             while (mode == 1) {
@@ -239,6 +241,7 @@ public class ConnectionManager extends Thread {
                             Thread.sleep(4000);
                             timeState = timeState + 4;
                             System.out.println("wake");
+                            waitForConditionChange();
 
                         } catch (InterruptedException e) {
                             e.printStackTrace();
@@ -262,6 +265,7 @@ public class ConnectionManager extends Thread {
                             e.printStackTrace();
                         }
                     }
+                    waitForConditionChange();
                     ApManager.configApState(contexts, false);
                     try {
                         Thread.sleep(2000);
@@ -301,6 +305,14 @@ public class ConnectionManager extends Thread {
                                 e.printStackTrace();
                             }
                         }
+                        while (condition){
+                            try {
+                                Thread.sleep(1000);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+
                         ApManager.configApState(contexts, false);
                         try {
                             Thread.sleep(4000);
@@ -365,6 +377,7 @@ public class ConnectionManager extends Thread {
 
                                 System.out.println("mode 2" + timeState);
                                 //Thread.sleep(2000);
+                                waitForConditionChange();
 
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
@@ -420,7 +433,7 @@ public class ConnectionManager extends Thread {
                                 Thread.sleep(4000);
                                 accTime = accTime + 4;
                                 if (timeState >= 100) break;
-
+                                waitForConditionChange();
                                 System.out.println("Going to sleep");
                                 //Thread.sleep(2000);
                                 LogFragment.print("Mode 3 Timestate: " + timeState);
@@ -451,6 +464,7 @@ public class ConnectionManager extends Thread {
                                 e.printStackTrace();
                             }
                         }
+                        waitForConditionChange();
                         ApManager.configApState(contexts, false);
                         try {
                             Thread.sleep(3000);
@@ -593,10 +607,6 @@ public class ConnectionManager extends Thread {
     public void wake() {
         active = true;
         notifyAll();
-    }
-
-    public void addScore(String sender, int mscore) {
-
     }
 
     public void sleep() {
@@ -844,6 +854,18 @@ public class ConnectionManager extends Thread {
         if (android.os.Build.VERSION.SDK_INT > 9) {
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
+        }
+    }
+    public static void setTransferCondition(boolean status){
+        condition=status;
+    }
+    public static void waitForConditionChange(){
+        while (condition){
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 

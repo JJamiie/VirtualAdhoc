@@ -114,7 +114,7 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
         }
 
         if (listenerPacket == null) {
-            listenerPacket = new ListenerPacket(getActivity(), mAlbumStorageDirFactory, sqLiteDatabase, myDatabase);
+            listenerPacket = new ListenerPacket(getActivity(), mAlbumStorageDirFactory, sqLiteDatabase, myDatabase,connectionManager);
             listenerPacket.start();
         }
 
