@@ -21,6 +21,7 @@ public class ManageImage {
     public static final String JPEG_FILE_PREFIX = "IMG_";
     public static final String JPEG_FILE_SUFFIX = ".jpg";
     public static final String ALBUM_NAME = "Pigeon";
+    private static final String TAG = "ManageImage";
 
     public static File setUpPhotoFile(AlbumStorageDirFactory mAlbumStorageDirFactory) throws IOException {
         File f = createImageFile(mAlbumStorageDirFactory);
@@ -28,7 +29,9 @@ public class ManageImage {
     }
 
     public static File setUpPhotoFile(AlbumStorageDirFactory mAlbumStorageDirFactory, String filename) throws IOException {
+        Log.d(TAG, "Before SetupPhoto");
         File f = createImageFile(mAlbumStorageDirFactory, filename);
+        Log.d(TAG, "After SetupPhoto");
         return f;
     }
 
@@ -43,8 +46,11 @@ public class ManageImage {
 
     public static File createImageFile(AlbumStorageDirFactory mAlbumStorageDirFactory, String filename) throws IOException {
         // Create an image file name
+        Log.d(TAG, "Before getAlbumDir");
         File albumF = getAlbumDir(mAlbumStorageDirFactory);
+        Log.d(TAG, "Before CreateTempFile");
         File imageF = createTempFile(filename, JPEG_FILE_SUFFIX, albumF);
+
         return imageF;
     }
 
@@ -114,20 +120,26 @@ public class ManageImage {
     public static File createTempFile(String prefix, String suffix, File directory)
             throws IOException {
         // Force a prefix null check first
+        Log.d(TAG, "if1");
         if (prefix.length() < 3) {
             throw new IllegalArgumentException("prefix must be at least 3 characters");
         }
+        Log.d(TAG, "if2");
         if (suffix == null) {
             suffix = ".tmp";
         }
         File tmpDirFile = directory;
+        Log.d(TAG, "if3");
         if (tmpDirFile == null) {
             String tmpDir = System.getProperty("java.io.tmpdir", ".");
             tmpDirFile = new File(tmpDir);
         }
         File result;
+        Log.d(TAG, "Do");
         do {
+            Log.d(TAG, "Buggybug");
             result = new File(tmpDirFile, prefix + suffix);
+            Log.d(TAG, "Buggybug2");
         } while (!result.createNewFile());
         return result;
 

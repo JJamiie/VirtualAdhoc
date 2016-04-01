@@ -40,6 +40,7 @@ import okhttp3.Response;
  * Created by Administrator on 16/12/2558.
  */
 public class ConnectionManager extends Thread {
+    private static final String TAG = "ConnectionManager";
     private static List<ScanResult> results;
     public static int size = 0;
     public static List<String> availableAP;
@@ -700,6 +701,7 @@ public class ConnectionManager extends Thread {
         byte[] list_image = ReportNeighbor.arrayListStringToByte(list_name_image);
 
         byte[] data = new byte[ListenerPacket.TYPE_LENGTH + list_image.length];
+        Log.d(TAG, "Data length"+data.length+"Port:"+ListenerPacket.PORT_PACKET);
         System.arraycopy(type, 0, data, 0, ListenerPacket.TYPE_LENGTH);
         System.arraycopy(list_image, 0, data, ListenerPacket.TYPE_LENGTH, list_image.length);
         Broadcaster.broadcast(data, ListenerPacket.PORT_PACKET);

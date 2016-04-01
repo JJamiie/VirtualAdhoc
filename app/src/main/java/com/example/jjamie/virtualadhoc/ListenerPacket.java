@@ -81,19 +81,22 @@ public class ListenerPacket extends Thread {
                 byte[] type_packet_byte = new byte[TYPE_LENGTH];
                 System.arraycopy(byte_packet, 0, type_packet_byte, 0, TYPE_LENGTH);
                 int type_packet = Image.bytesToInt(type_packet_byte);
-
+                Log.d(TAG, "TypePacket: " + type_packet);
                 switch (type_packet) {
                     case IMAGE_TYPE:
+                        Log.d(TAG, "SAVE IMAGE");
                         saveImage(byte_packet);
                         break;
                     case SENDER_REPORT_LIST_IMAGE:
                         LogFragment.print("SENDER_REPORT_LIST_IMAGE");
+                        Log.d(TAG, "SENDER_REPORT_LIST_IMAGE");
                         ArrayList<String> nameImages = ReportNeighbor.recieveListNameImage(byte_packet);
                         ArrayList<String> nonExistImage = checkExistImage(nameImages);
                         sendResponseListNameImage(nonExistImage,ipSender);
                         break;
                     case RECIEVE_RESPONSE_LIST_IMAGE:
                         LogFragment.print("RECIEVE_RESPONSE_LIST_IMAGE");
+                        Log.d(TAG, "RECIEVE_RESPONSE_LIST_IMAGE");
                         ArrayList<String> nameImage = ReportNeighbor.recieveListNameImage(byte_packet);
                         sendImage(nameImage,ipSender);
                         break;
@@ -125,9 +128,11 @@ public class ListenerPacket extends Thread {
     public ArrayList<String> checkExistImage(ArrayList<String> nameImages) {
         ArrayList<String> list_name_image = new ArrayList<String>();
         for (int i = 0; i < nameImages.size(); ++i) {
+            Log.d(TAG, "Name Image" + nameImages.get(i));
             mCursor = sqLiteDatabase.rawQuery("SELECT * FROM " + MyDatabase.TABLE_NAME_PICTURE +
                     " WHERE " + MyDatabase.COL_FILE_NAME + " = '" + nameImages.get(i) + "'", null);
             if (mCursor.getCount() == 0) {
+                Log.d(TAG, "Exist");
                 list_name_image.add(nameImages.get(i));
             }
         }
@@ -141,12 +146,15 @@ public class ListenerPacket extends Thread {
 
             if (image.imageBytes != null) {
                 String filename = image.filename.substring(0, image.filename.length() - 4);
+                Log.d(TAG, "Before SetupPhoto");
                 File file = ManageImage.setUpPhotoFile(mAlbumStorageDirFactory, filename);
                 System.out.println("filename :====" + file.getName());
                 FileOutputStream fileOutputStream = new FileOutputStream(file);
                 fileOutputStream.write(image.getImageBytes());
                 ManageImage.galleryAddPic(file.getAbsolutePath(), activity);
             }
+            /**/
+            Log.d(TAG, "AddToTablePicture");
             myDatabase.addToTablePicture(sqLiteDatabase, image.senderName, image.filename, image.message, image.location);
 
             Log.d(TAG, "Finished...");
@@ -197,9 +205,11 @@ public class ListenerPacket extends Thread {
     }
 
     public void sendResponseListNameImage(ArrayList<String> nonExistImage,String ipSender) {
+        Log.d(TAG, "SendResponseList");
         byte[] type = Image.intToBytes(ListenerPacket.RECIEVE_RESPONSE_LIST_IMAGE);
         byte[] list_image = ReportNeighbor.arrayListStringToByte(nonExistImage);
         byte[] data = new byte[ListenerPacket.TYPE_LENGTH + list_image.length];
+        Log.d(TAG, "List Image length"+String.valueOf(list_image.length));
         System.arraycopy(type, 0, data, 0, ListenerPacket.TYPE_LENGTH);
         System.arraycopy(list_image, 0, data, ListenerPacket.TYPE_LENGTH, list_image.length);
         LogFragment.print("sendResponseListNameImage");

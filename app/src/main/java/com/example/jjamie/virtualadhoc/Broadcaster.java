@@ -1,5 +1,7 @@
 package com.example.jjamie.virtualadhoc;
 
+import android.util.Log;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
@@ -7,11 +9,16 @@ import java.util.ArrayList;
 public class Broadcaster {
 
 
+    private static final String TAG ="Broadcaster" ;
+
     public static void broadcast(byte[] bytes,int port) {
         Unicaster unicaster = new Unicaster(port);
         //Get neighborlist
         ArrayList<String> neighborList = getNeighborList();
-        if (neighborList.size() == 0) return;
+        if (neighborList.size() == 0) {
+            Log.d(TAG, "NoNeighbour");
+            return;
+        }
         for (int i = 0; i < neighborList.size(); i++) {
             unicaster.unicast(bytes, neighborList.get(i));
         }
