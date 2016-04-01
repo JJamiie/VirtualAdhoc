@@ -100,12 +100,12 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
 
         connectionManager = new ConnectionManager(getApplicationContext(), sqLiteDatabase);
         connectionManager.start();
-//        scoreListener =new ScoreListener(connectionManager);
-//        scoreListener.start();
-//
-//        synchronized (connectionManager) {
-//            connectionManager.wake();
-//        }
+        scoreListener = new ScoreListener(connectionManager);
+        scoreListener.start();
+
+        synchronized (connectionManager) {
+            connectionManager.wake();
+        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
             mAlbumStorageDirFactory = new FroyoAlbumDirFactory();
@@ -114,7 +114,7 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
         }
 
         if (listenerPacket == null) {
-            listenerPacket = new ListenerPacket(getActivity(), mAlbumStorageDirFactory, sqLiteDatabase, myDatabase);
+            listenerPacket = new ListenerPacket(getActivity(), mAlbumStorageDirFactory, sqLiteDatabase, myDatabase, connectionManager);
             listenerPacket.start();
         }
 
@@ -254,23 +254,24 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
         connectionManager.sleep();
     }
 
-    public static void unFreezeConnectionManager(){
+    public static void unFreezeConnectionManager() {
         synchronized (connectionManager) {
             connectionManager.wake();
         }
     }
 
 
-    public static void changeConnectionManagerStateToAP(){
-
-    }
-    public static void changeConfirmFlag(boolean var){
+    public static void changeConnectionManagerStateToAP() {
 
     }
 
-    public static void sendConfirmationMessage(){
+    public static void changeConfirmFlag(boolean var) {
+
+    }
+
+    public static void sendConfirmationMessage() {
         byte[] con = Image.intToBytes(6);
-        Broadcaster.broadcast(con,3333);
+        Broadcaster.broadcast(con, 3333);
     }
 
     private void animateFab(int position) {

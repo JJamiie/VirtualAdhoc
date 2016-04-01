@@ -37,6 +37,7 @@ import okhttp3.Response;
  * Created by Administrator on 16/12/2558.
  */
 public class ConnectionManager extends Thread {
+    private static final String TAG = "ConnectionManager";
     private static List<ScanResult> results;
     public static int size = 0;
     public static List<String> availableAP;
@@ -55,6 +56,7 @@ public class ConnectionManager extends Thread {
     private static int timeState = 0;
     private static int compareTime = 0;
     private static int tempState = 1;
+    private static boolean condition = true;
     // Active for start and stop thread
     private boolean active = false;
     private Random r;
@@ -193,6 +195,7 @@ public class ConnectionManager extends Thread {
         enableWifi(contexts);
         results.clear();
         availableAP.clear();
+        condition=false;
         while (true) {
 
             while (mode == 1) {
@@ -237,6 +240,7 @@ public class ConnectionManager extends Thread {
                             Thread.sleep(4000);
                             timeState = timeState + 4;
                             System.out.println("wake");
+                            waitForConditionChange();
 
                         } catch (InterruptedException e) {
                             e.printStackTrace();
@@ -260,6 +264,7 @@ public class ConnectionManager extends Thread {
                             e.printStackTrace();
                         }
                     }
+                    waitForConditionChange();
                     ApManager.configApState(contexts, false);
                     try {
                         Thread.sleep(2000);
@@ -299,6 +304,14 @@ public class ConnectionManager extends Thread {
                                 e.printStackTrace();
                             }
                         }
+                        while (condition){
+                            try {
+                                Thread.sleep(1000);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+
                         ApManager.configApState(contexts, false);
                         try {
                             Thread.sleep(4000);
@@ -363,6 +376,7 @@ public class ConnectionManager extends Thread {
 
                                 System.out.println("mode 2" + timeState);
                                 //Thread.sleep(2000);
+                                waitForConditionChange();
 
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
@@ -418,7 +432,7 @@ public class ConnectionManager extends Thread {
                                 Thread.sleep(4000);
                                 accTime = accTime + 4;
                                 if (timeState >= 100) break;
-
+                                waitForConditionChange();
                                 System.out.println("Going to sleep");
                                 //Thread.sleep(2000);
                                 LogFragment.print("Mode 3 Timestate: " + timeState);
@@ -449,6 +463,7 @@ public class ConnectionManager extends Thread {
                                 e.printStackTrace();
                             }
                         }
+                        waitForConditionChange();
                         ApManager.configApState(contexts, false);
                         try {
                             Thread.sleep(3000);
@@ -593,10 +608,6 @@ public class ConnectionManager extends Thread {
         notifyAll();
     }
 
-    public void addScore(String sender, int mscore) {
-
-    }
-
     public void sleep() {
         active = false;
     }
@@ -688,6 +699,7 @@ public class ConnectionManager extends Thread {
         byte[] list_image = ReportNeighbor.arrayListStringToByte(list_name_image);
 
         byte[] data = new byte[ListenerPacket.TYPE_LENGTH + list_image.length];
+        Log.d(TAG, "Data length"+data.length+"Port:"+ListenerPacket.PORT_PACKET);
         System.arraycopy(type, 0, data, 0, ListenerPacket.TYPE_LENGTH);
         System.arraycopy(list_image, 0, data, ListenerPacket.TYPE_LENGTH, list_image.length);
         Broadcaster.broadcast(data, ListenerPacket.PORT_PACKET);
@@ -842,6 +854,18 @@ public class ConnectionManager extends Thread {
         if (android.os.Build.VERSION.SDK_INT > 9) {
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
+        }
+    }
+    public static void setTransferCondition(boolean status){
+        condition=status;
+    }
+    public static void waitForConditionChange(){
+        while (condition){
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 

@@ -181,7 +181,7 @@ public class CaptionActivity extends AppCompatActivity implements GoogleApiClien
         try {
 
             fOut = new FileOutputStream(currentPhoto);
-            b.compress(Bitmap.CompressFormat.JPEG, 60, fOut);
+            b.compress(Bitmap.CompressFormat.JPEG, 40, fOut);
             fOut.flush();
             fOut.close();
             b.recycle();
@@ -234,7 +234,6 @@ public class CaptionActivity extends AppCompatActivity implements GoogleApiClien
 
                 }
                 Broadcaster.broadcast(image.getBytes(), ListenerPacket.PORT_PACKET);
-
 
                 finish();
             }
