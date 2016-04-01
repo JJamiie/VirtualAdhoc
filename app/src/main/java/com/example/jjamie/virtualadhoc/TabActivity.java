@@ -100,12 +100,12 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
 
         connectionManager = new ConnectionManager(getApplicationContext(), sqLiteDatabase);
         connectionManager.start();
-        scoreListener =new ScoreListener(connectionManager);
-        scoreListener.start();
-
-        synchronized (connectionManager) {
-            connectionManager.wake();
-        }
+//        scoreListener =new ScoreListener(connectionManager);
+//        scoreListener.start();
+//
+//        synchronized (connectionManager) {
+//            connectionManager.wake();
+//        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
             mAlbumStorageDirFactory = new FroyoAlbumDirFactory();

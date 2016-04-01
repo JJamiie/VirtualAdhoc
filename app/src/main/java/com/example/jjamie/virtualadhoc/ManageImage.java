@@ -97,6 +97,30 @@ public class ManageImage {
         return files;
     }
 
+    public static void deleteFile(String filename) {
+
+        String path = Environment.getExternalStorageDirectory() + "/pictures/" + ManageImage.ALBUM_NAME;
+        File dir = new File(path);
+        File[] files = dir.listFiles();
+        if (files == null) return;
+        for (int i = 0; i < files.length; i++) {
+
+            if (files[i].getName().equals(filename)) {
+                files[i].delete();
+                break;
+            }
+        }
+    }
+
+    public static void deleteAllFiles() {
+        String path = Environment.getExternalStorageDirectory() + "/pictures/" + ManageImage.ALBUM_NAME;
+        File dir = new File(path);
+        File[] files = dir.listFiles();
+
+        for (int i = 0; i < files.length; i++) {
+                files[i].delete();
+        }
+    }
 
     public static File isExist(String filename) {
         String path = Environment.getExternalStorageDirectory() + "/pictures/" + ManageImage.ALBUM_NAME;

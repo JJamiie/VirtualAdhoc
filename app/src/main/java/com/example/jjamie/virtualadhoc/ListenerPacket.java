@@ -77,6 +77,7 @@ public class ListenerPacket extends Thread {
                 byte[] type_packet_byte = new byte[TYPE_LENGTH];
                 System.arraycopy(byte_packet, 0, type_packet_byte, 0, TYPE_LENGTH);
                 int type_packet = Image.bytesToInt(type_packet_byte);
+                LogFragment.print("Recieve type packet: " + type_packet);
 
                 switch (type_packet) {
                     case IMAGE_TYPE:
@@ -86,12 +87,13 @@ public class ListenerPacket extends Thread {
                         LogFragment.print("SENDER_REPORT_LIST_IMAGE");
                         ArrayList<String> nameImages = ReportNeighbor.recieveListNameImage(byte_packet);
                         ArrayList<String> nonExistImage = checkExistImage(nameImages);
-                        sendResponseListNameImage(nonExistImage,ipSender);
+                        LogFragment.print("Send response size: " + nonExistImage.size());
+                        sendResponseListNameImage(nonExistImage, ipSender);
                         break;
                     case RECIEVE_RESPONSE_LIST_IMAGE:
                         LogFragment.print("RECIEVE_RESPONSE_LIST_IMAGE");
                         ArrayList<String> nameImage = ReportNeighbor.recieveListNameImage(byte_packet);
-                        sendImage(nameImage,ipSender);
+                        sendImage(nameImage, ipSender);
                         break;
                     default:
                         break;
@@ -120,6 +122,7 @@ public class ListenerPacket extends Thread {
     public ArrayList<String> checkExistImage(ArrayList<String> nameImages) {
         ArrayList<String> list_name_image = new ArrayList<String>();
         for (int i = 0; i < nameImages.size(); ++i) {
+            LogFragment.print("NameImage: "+ nameImages.get(i));
             mCursor = sqLiteDatabase.rawQuery("SELECT * FROM " + MyDatabase.TABLE_NAME_PICTURE +
                     " WHERE " + MyDatabase.COL_FILE_NAME + " = '" + nameImages.get(i) + "'", null);
             if (mCursor.getCount() == 0) {
@@ -191,18 +194,18 @@ public class ListenerPacket extends Thread {
         return time;
     }
 
-    public void sendResponseListNameImage(ArrayList<String> nonExistImage,String ipSender) {
+    public void sendResponseListNameImage(ArrayList<String> nonExistImage, String ipSender) {
         byte[] type = Image.intToBytes(ListenerPacket.RECIEVE_RESPONSE_LIST_IMAGE);
         byte[] list_image = ReportNeighbor.arrayListStringToByte(nonExistImage);
         byte[] data = new byte[ListenerPacket.TYPE_LENGTH + list_image.length];
         System.arraycopy(type, 0, data, 0, ListenerPacket.TYPE_LENGTH);
         System.arraycopy(list_image, 0, data, ListenerPacket.TYPE_LENGTH, list_image.length);
         LogFragment.print("sendResponseListNameImage");
-        unicaster.unicast(data,ipSender );
+        unicaster.unicast(data, ipSender);
     }
 
-    public void sendImage(ArrayList<String> nameImages,String ipSender) {
-        LogFragment.print("Sent "+nameImages.size()+" pictures");
+    public void sendImage(ArrayList<String> nameImages, String ipSender) {
+        LogFragment.print("Sent " + nameImages.size() + " pictures");
         for (int i = 0; i < nameImages.size(); i++) {
             mCursor = sqLiteDatabase.rawQuery("SELECT * FROM " + MyDatabase.TABLE_NAME_PICTURE +
                     " WHERE " + MyDatabase.COL_FILE_NAME + " = '" + nameImages.get(i) + "'", null);

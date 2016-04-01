@@ -15,16 +15,13 @@ import android.support.annotation.NonNull;
 import android.util.Base64;
 import android.util.Log;
 
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -190,6 +187,7 @@ public class ConnectionManager extends Thread {
         availableAP = new ArrayList<>();
 
     }
+
 
     public void run() {
         enableWifi(contexts);

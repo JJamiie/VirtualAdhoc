@@ -211,11 +211,10 @@ public class CaptionActivity extends AppCompatActivity implements GoogleApiClien
             }
             Image image = null;
             String uniqueID = UUID.randomUUID().toString();
-            LogFragment.print("UUID: " + uniqueID );
             if (isCaptured) {
                 if (gps_button_isClicked) {
                     myDatabase.addToTablePicture(sQLiteDatabase, senderName, currentPhoto.getName(), message, latitudeAndLongtitude);
-                    image = new Image(senderName,currentPhoto.getName(), message, latitudeAndLongtitude, img);
+                    image = new Image(senderName, currentPhoto.getName(), message, latitudeAndLongtitude, img);
                 } else {
                     myDatabase.addToTablePicture(sQLiteDatabase, senderName, currentPhoto.getName(), message, null);
                     image = new Image(senderName, currentPhoto.getName(), message, "null", img);

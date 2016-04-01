@@ -199,10 +199,12 @@ public class EfficientAdapter extends BaseAdapter {
 
                 columnIndex = mCursor.getColumnIndex("_id");
                 final String id = mCursor.getString(columnIndex);
+                columnIndex = mCursor.getColumnIndex(MyDatabase.COL_FILE_NAME);
+                final String fname = mCursor.getString(columnIndex);
                 holder.layout_linear.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View v) {
-                        showdeleteDialog(id);
+                        showdeleteDialog(id,filename);
                         return false;
                     }
                 });
@@ -344,13 +346,12 @@ public class EfficientAdapter extends BaseAdapter {
     }
 
 
-    public void showdeleteDialog(final String id) {
+    public void showdeleteDialog(final String id,final String filename) {
         AlertDialog.Builder builderSingle = new AlertDialog.Builder(activity);
 
         final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(activity, android.R.layout.select_dialog_singlechoice);
         arrayAdapter.add("Delete this message.");
         arrayAdapter.add("Delete all messages.");
-
 
         builderSingle.setNegativeButton(
                 "cancel",
@@ -368,8 +369,10 @@ public class EfficientAdapter extends BaseAdapter {
                     public void onClick(DialogInterface dialog, int which) {
                         String strName = arrayAdapter.getItem(which);
                         if (strName.equals("Delete this message.")) {
+                            ManageImage.deleteFile(filename);
                             sqLiteDatabase.delete(MyDatabase.TABLE_NAME_PICTURE, "_id = " + id, null);
                         } else {
+                            ManageImage.deleteAllFiles();
                             sqLiteDatabase.delete(MyDatabase.TABLE_NAME_PICTURE, null, null);
                         }
                         updateTable();
