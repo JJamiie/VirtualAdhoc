@@ -110,7 +110,6 @@ public class ManageImage {
         File[] files = dir.listFiles();
         if (files == null) return;
         for (int i = 0; i < files.length; i++) {
-
             if (files[i].getName().equals(filename)) {
                 files[i].delete();
                 break;
@@ -124,11 +123,12 @@ public class ManageImage {
         File[] files = dir.listFiles();
 
         for (int i = 0; i < files.length; i++) {
-                files[i].delete();
+            files[i].delete();
         }
     }
 
     public static File isExist(String filename) {
+        if (filename.equals("null")) return null;
         String path = Environment.getExternalStorageDirectory() + "/pictures/" + ManageImage.ALBUM_NAME;
         File dir = new File(path);
         File[] files = dir.listFiles();

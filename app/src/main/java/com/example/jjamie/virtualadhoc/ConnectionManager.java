@@ -45,7 +45,6 @@ public class ConnectionManager extends Thread {
     public static boolean scannerStatus = true;
     public static Context contexts;
     private SQLiteDatabase sqLiteDatabase;
-    private Cursor mCursor;
     private int score = 0;
     private static int accTime = 0;
     private static final int timeout = 500;
@@ -190,12 +189,23 @@ public class ConnectionManager extends Thread {
 
     }
 
+//    public void run() {
+//        while (true) {
+//            try {
+//                Thread.sleep(10000);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//            sendData();
+//        }
+//    }
+
 
     public void run() {
         enableWifi(contexts);
         results.clear();
         availableAP.clear();
-        condition=false;
+        condition = false;
         while (true) {
 
             while (mode == 1) {
@@ -304,7 +314,7 @@ public class ConnectionManager extends Thread {
                                 e.printStackTrace();
                             }
                         }
-                        while (condition){
+                        while (condition) {
                             try {
                                 Thread.sleep(1000);
                             } catch (InterruptedException e) {
@@ -679,30 +689,37 @@ public class ConnectionManager extends Thread {
         // Query data from TABLE_NAME_PICTURE
         LogFragment.print("Send data");
         Long time = getCurrentTimeStamp();
-        mCursor = sqLiteDatabase.rawQuery("SELECT * FROM " + MyDatabase.TABLE_NAME_PICTURE, null);
-        mCursor.moveToFirst();
-        if (mCursor.getCount() > 0) {
-            System.out.println("TestSendData: " + System.currentTimeMillis());
-            LogFragment.print("Time Send report list of image name: " + time);
-        }
-        ArrayList<String> list_name_image = new ArrayList<String>();
-        for (int position = 0; position < mCursor.getCount(); position++) {
-            mCursor.moveToPosition(position);
-            //Set filename
-            int columnIndex = mCursor.getColumnIndex(MyDatabase.COL_FILE_NAME);
-            String filename = mCursor.getString(columnIndex);
-            list_name_image.add(filename);
-            LogFragment.print("filename: " + filename);
-        }
-        if (list_name_image.size() == 0) return;
-        byte[] type = Image.intToBytes(ListenerPacket.SENDER_REPORT_LIST_IMAGE);
-        byte[] list_image = ReportNeighbor.arrayListStringToByte(list_name_image);
+        Cursor mCursor = null;
+        try {
+            mCursor = sqLiteDatabase.rawQuery("SELECT * FROM " + MyDatabase.TABLE_NAME_PICTURE, null);
+            mCursor.moveToFirst();
+            if (mCursor.getCount() > 0) {
+                System.out.println("TestSendData: " + System.currentTimeMillis());
+                LogFragment.print("Time Send report list of image name: " + time);
+            }
+            ArrayList<String> list_name_image = new ArrayList<String>();
+            for (int position = 0; position < mCursor.getCount(); position++) {
+                mCursor.moveToPosition(position);
+                //Set filename
+                int columnIndex = mCursor.getColumnIndex(MyDatabase.COL_FILE_NAME);
+                String filename = mCursor.getString(columnIndex);
+                list_name_image.add(filename);
+                LogFragment.print("filename: " + filename);
+            }
+            if (list_name_image.size() == 0) return;
+            byte[] type = Image.intToBytes(ListenerPacket.SENDER_REPORT_LIST_IMAGE);
+            byte[] list_image = ReportNeighbor.arrayListStringToByte(list_name_image);
 
-        byte[] data = new byte[ListenerPacket.TYPE_LENGTH + list_image.length];
-        Log.d(TAG, "Data length"+data.length+"Port:"+ListenerPacket.PORT_PACKET);
-        System.arraycopy(type, 0, data, 0, ListenerPacket.TYPE_LENGTH);
-        System.arraycopy(list_image, 0, data, ListenerPacket.TYPE_LENGTH, list_image.length);
-        Broadcaster.broadcast(data, ListenerPacket.PORT_PACKET);
+            byte[] data = new byte[ListenerPacket.TYPE_LENGTH + list_image.length];
+            Log.d(TAG, "Data length" + data.length + "Port:" + ListenerPacket.PORT_PACKET);
+            System.arraycopy(type, 0, data, 0, ListenerPacket.TYPE_LENGTH);
+            System.arraycopy(list_image, 0, data, ListenerPacket.TYPE_LENGTH, list_image.length);
+            Broadcaster.broadcast(data, ListenerPacket.PORT_PACKET);
+        } finally {
+            if (mCursor != null) {
+                mCursor.close();
+            }
+        }
     }
 
 
@@ -856,11 +873,13 @@ public class ConnectionManager extends Thread {
             StrictMode.setThreadPolicy(policy);
         }
     }
-    public static void setTransferCondition(boolean status){
-        condition=status;
+
+    public static void setTransferCondition(boolean status) {
+        condition = status;
     }
-    public static void waitForConditionChange(){
-        while (condition){
+
+    public static void waitForConditionChange() {
+        while (condition) {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {

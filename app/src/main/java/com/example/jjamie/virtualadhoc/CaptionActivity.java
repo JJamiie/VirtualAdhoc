@@ -213,11 +213,11 @@ public class CaptionActivity extends AppCompatActivity implements GoogleApiClien
             String uniqueID = UUID.randomUUID().toString();
             if (isCaptured) {
                 if (gps_button_isClicked) {
-                    myDatabase.addToTablePicture(sQLiteDatabase, senderName, currentPhoto.getName(), message, latitudeAndLongtitude);
-                    image = new Image(senderName, currentPhoto.getName(), message, latitudeAndLongtitude, img);
+                    myDatabase.addToTablePicture(sQLiteDatabase, senderName, uniqueID, message, latitudeAndLongtitude, currentPhoto.getName());
+                    image = new Image(senderName,uniqueID , message, latitudeAndLongtitude, img);
                 } else {
-                    myDatabase.addToTablePicture(sQLiteDatabase, senderName, currentPhoto.getName(), message, null);
-                    image = new Image(senderName, currentPhoto.getName(), message, "null", img);
+                    myDatabase.addToTablePicture(sQLiteDatabase, senderName, uniqueID, message, null, currentPhoto.getName());
+                    image = new Image(senderName, uniqueID, message, "null", img);
                 }
                 Broadcaster.broadcast(image.getBytes(), ListenerPacket.PORT_PACKET);
                 finish();
@@ -225,11 +225,11 @@ public class CaptionActivity extends AppCompatActivity implements GoogleApiClien
                 Toast.makeText(getApplicationContext(), "Please add a message before save.", Toast.LENGTH_SHORT).show();
             } else {
                 if (gps_button_isClicked) {
-                    myDatabase.addToTablePicture(sQLiteDatabase, senderName, uniqueID, message, latitudeAndLongtitude);
+                    myDatabase.addToTablePicture(sQLiteDatabase, senderName, uniqueID, message, latitudeAndLongtitude, null);
                     image = new Image(senderName, uniqueID, message, latitudeAndLongtitude, img);
 
                 } else {
-                    myDatabase.addToTablePicture(sQLiteDatabase, senderName, uniqueID, message, null);
+                    myDatabase.addToTablePicture(sQLiteDatabase, senderName, uniqueID, message, null, null);
                     image = new Image(senderName, uniqueID, message, "null", img);
 
                 }

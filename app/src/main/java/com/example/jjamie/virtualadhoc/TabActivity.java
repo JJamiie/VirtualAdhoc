@@ -303,5 +303,11 @@ public class TabActivity extends AppCompatActivity implements NewFeedFragment.On
         myDatabase.close();
     }
 
+    protected void finalize() throws Throwable {
+        super.finalize();
+        sqLiteDatabase.close();
+        myDatabase.close();
+
+    }
 
 }

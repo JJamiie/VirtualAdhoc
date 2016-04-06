@@ -18,7 +18,7 @@ public class MyDatabase extends SQLiteOpenHelper {
     public static final String COL_FILE_NAME = "filename";
     public static final String COL_MESSAGE = "message";
     public static final String COL_LOCATION = "location";
-
+    public static final String COL_IMAGE_NAME = "image";
     // TABLE USER
     public static final String TABLE_NAME_USER = "User";
     public static final String COL_USERNAME = "username";
@@ -41,7 +41,8 @@ public class MyDatabase extends SQLiteOpenHelper {
                 + COL_SENDER_NAME + " TEXT, "
                 + COL_FILE_NAME + " TEXT, "
                 + COL_MESSAGE + " TEXT, "
-                + COL_LOCATION + " TEXT);");
+                + COL_LOCATION + " TEXT, "
+                + COL_IMAGE_NAME + " TEXT);");
 
         //CREATE USER TABLE
         db.execSQL("CREATE TABLE " + TABLE_NAME_USER + " (_id INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -56,9 +57,9 @@ public class MyDatabase extends SQLiteOpenHelper {
 
     }
 
-    public void addToTablePicture(SQLiteDatabase db, String sendername, String filename, String message, String location) {
+    public void addToTablePicture(SQLiteDatabase db, String sendername, String filename, String message, String location, String image) {
         db.execSQL("INSERT INTO " + TABLE_NAME_PICTURE + " (" + COL_SENDER_NAME + ", " + COL_FILE_NAME
-                + ", " + COL_MESSAGE + ", " + COL_LOCATION + ") VALUES ('" + sendername + "', '" + filename + "', '" + message + "', '" + location + "');");
+                + ", " + COL_MESSAGE + ", " + COL_LOCATION + ", " + COL_IMAGE_NAME + ") VALUES ('" + sendername + "', '" + filename + "', '" + message + "', '" + location + "', '" + image + "');");
     }
 
     public void addToTableUser(SQLiteDatabase db, String username, String email, String name, String surename, String sex, String birthdate, String filename, String address) {
@@ -76,15 +77,15 @@ public class MyDatabase extends SQLiteOpenHelper {
         con.put(COL_NAME, name);
         con.put(COL_SURENAME, surename);
         con.put(COL_BIRTHDATE, birthdate);
-        con.put(COL_SEX,sex);
+        con.put(COL_SEX, sex);
         con.put(COL_ADDRESS, address);
-        db.update(TABLE_NAME_USER, con, COL_USERNAME + "='" + username + "'",null);
+        db.update(TABLE_NAME_USER, con, COL_USERNAME + "='" + username + "'", null);
     }
 
     public void updateFilenameProfilePicture(SQLiteDatabase db, String username, String filename) {
         ContentValues con = new ContentValues();
         con.put(COL_FILE_NAME, filename);
-        db.update(TABLE_NAME_USER, con, COL_USERNAME + "='" + username + "'",null);
+        db.update(TABLE_NAME_USER, con, COL_USERNAME + "='" + username + "'", null);
     }
 
 

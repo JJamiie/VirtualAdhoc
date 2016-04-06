@@ -18,9 +18,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.OptionalDataException;
+import java.io.StreamCorruptedException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -35,7 +38,6 @@ public class ListenerPacket extends Thread {
     private ServerSocket serverSocket;
     private Activity activity;
     private AlbumStorageDirFactory mAlbumStorageDirFactory;
-    private Cursor mCursor;
     private SQLiteDatabase sqLiteDatabase;
     private MyDatabase myDatabase;
     private ConnectionManager connectionManager;
@@ -46,13 +48,13 @@ public class ListenerPacket extends Thread {
     private static Unicaster unicaster;
 
 
-    public ListenerPacket(Activity activity, AlbumStorageDirFactory mAlbumStorageDirFactory, SQLiteDatabase sqLiteDatabase, MyDatabase myDatabase,ConnectionManager connectionManager) {
+    public ListenerPacket(Activity activity, AlbumStorageDirFactory mAlbumStorageDirFactory, SQLiteDatabase sqLiteDatabase, MyDatabase myDatabase, ConnectionManager connectionManager) {
         this.activity = activity;
         this.mAlbumStorageDirFactory = mAlbumStorageDirFactory;
         this.mWifi = (WifiManager) activity.getSystemService(Context.WIFI_SERVICE);
         this.sqLiteDatabase = sqLiteDatabase;
         this.myDatabase = myDatabase;
-        this.connectionManager=connectionManager;
+        this.connectionManager = connectionManager;
         unicaster = new Unicaster(ListenerPacket.PORT_PACKET);
     }
 
@@ -62,8 +64,14 @@ public class ListenerPacket extends Thread {
             serverSocket = new ServerSocket(); // <-- create an unbound socket first
             serverSocket.setReuseAddress(true);
             serverSocket.bind(new InetSocketAddress(ListenerPacket.PORT_PACKET));
-            while (true) {
+        } catch (SocketException e1) {
+            e1.printStackTrace();
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
 
+        while (true) {
+            try {
                 Log.d(TAG, "Waiting...");
                 socket = serverSocket.accept();
                 connectionManager.setTransferCondition(true);
@@ -107,38 +115,46 @@ public class ListenerPacket extends Thread {
                         break;
                 }
 
-
-            }
-        } catch (IOException e) {
-            LogFragment.print("IOException: " + e.getMessage());
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-
-        } finally {
-            if (socket != null) {
-                try {
-                    socket.close();
-                    connectionManager.setTransferCondition(false);
-                } catch (IOException e) {
-                    LogFragment.print("Finally: " + e.getMessage());
-                    e.printStackTrace();
+            } catch (SocketException e) {
+                LogFragment.print("SocketException: " + e.getMessage().toString());
+                e.printStackTrace();
+            } catch (OptionalDataException e) {
+                LogFragment.print("OptionalDataException: " + e.getMessage().toString());
+                e.printStackTrace();
+            } catch (IOException e) {
+                LogFragment.print("IOException: " + e.getMessage().toString());
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                LogFragment.print("ClassNotFoundException: " + e.getMessage().toString());
+                e.printStackTrace();
+            } finally {
+                if (socket != null) {
+                    try {
+                        socket.close();
+                        connectionManager.setTransferCondition(false);
+                    } catch (IOException e) {
+                        LogFragment.print("Finally: " + e.getMessage());
+                        e.printStackTrace();
+                    }
                 }
             }
         }
+
+
     }
 
     public ArrayList<String> checkExistImage(ArrayList<String> nameImages) {
         ArrayList<String> list_name_image = new ArrayList<String>();
         for (int i = 0; i < nameImages.size(); ++i) {
-            LogFragment.print("NameImage: "+ nameImages.get(i));
+            LogFragment.print("NameImage: " + nameImages.get(i));
             Log.d(TAG, "Name Image" + nameImages.get(i));
-            mCursor = sqLiteDatabase.rawQuery("SELECT * FROM " + MyDatabase.TABLE_NAME_PICTURE +
+            Cursor mCursor = sqLiteDatabase.rawQuery("SELECT * FROM " + MyDatabase.TABLE_NAME_PICTURE +
                     " WHERE " + MyDatabase.COL_FILE_NAME + " = '" + nameImages.get(i) + "'", null);
             if (mCursor.getCount() == 0) {
                 Log.d(TAG, "Exist");
                 list_name_image.add(nameImages.get(i));
             }
+            mCursor.close();
         }
         return list_name_image;
     }
@@ -148,18 +164,29 @@ public class ListenerPacket extends Thread {
             Image image = new Image(img);
             System.out.println("SenderName: " + image.senderName + " Filename: " + image.filename + " Message: " + image.message + " Location: " + image.location);
 
+            Cursor mCursor = sqLiteDatabase.rawQuery("SELECT * FROM " + MyDatabase.TABLE_NAME_PICTURE +
+                    " WHERE " + MyDatabase.COL_FILE_NAME + " = '" + image.filename + "'", null);
+            if (mCursor.getCount() > 0) {
+                return;
+            }
+            mCursor.close();
+
+            mCursor.close();
             if (image.imageBytes != null) {
-                String filename = image.filename.substring(0, image.filename.length() - 4);
                 Log.d(TAG, "Before SetupPhoto");
-                File file = ManageImage.setUpPhotoFile(mAlbumStorageDirFactory, filename);
+                File file = ManageImage.setUpPhotoFile(mAlbumStorageDirFactory);
                 System.out.println("filename :====" + file.getName());
                 FileOutputStream fileOutputStream = new FileOutputStream(file);
                 fileOutputStream.write(image.getImageBytes());
                 ManageImage.galleryAddPic(file.getAbsolutePath(), activity);
+                myDatabase.addToTablePicture(sqLiteDatabase, image.senderName, image.filename, image.message, image.location, file.getName());
+
+            } else {
+                myDatabase.addToTablePicture(sqLiteDatabase, image.senderName, image.filename, image.message, image.location, null);
+
             }
             /**/
             Log.d(TAG, "AddToTablePicture");
-            myDatabase.addToTablePicture(sqLiteDatabase, image.senderName, image.filename, image.message, image.location);
 
             Log.d(TAG, "Finished...");
 
@@ -208,12 +235,12 @@ public class ListenerPacket extends Thread {
         return time;
     }
 
-    public void sendResponseListNameImage(ArrayList<String> nonExistImage,String ipSender) {
+    public void sendResponseListNameImage(ArrayList<String> nonExistImage, String ipSender) {
         Log.d(TAG, "SendResponseList");
         byte[] type = Image.intToBytes(ListenerPacket.RECIEVE_RESPONSE_LIST_IMAGE);
         byte[] list_image = ReportNeighbor.arrayListStringToByte(nonExistImage);
         byte[] data = new byte[ListenerPacket.TYPE_LENGTH + list_image.length];
-        Log.d(TAG, "List Image length"+String.valueOf(list_image.length));
+        Log.d(TAG, "List Image length" + String.valueOf(list_image.length));
         System.arraycopy(type, 0, data, 0, ListenerPacket.TYPE_LENGTH);
         System.arraycopy(list_image, 0, data, ListenerPacket.TYPE_LENGTH, list_image.length);
         LogFragment.print("sendResponseListNameImage");
@@ -223,8 +250,12 @@ public class ListenerPacket extends Thread {
     public void sendImage(ArrayList<String> nameImages, String ipSender) {
         LogFragment.print("Sent " + nameImages.size() + " pictures");
         for (int i = 0; i < nameImages.size(); i++) {
-            mCursor = sqLiteDatabase.rawQuery("SELECT * FROM " + MyDatabase.TABLE_NAME_PICTURE +
+            Cursor mCursor = sqLiteDatabase.rawQuery("SELECT * FROM " + MyDatabase.TABLE_NAME_PICTURE +
                     " WHERE " + MyDatabase.COL_FILE_NAME + " = '" + nameImages.get(i) + "'", null);
+            if (mCursor.getCount() == 0) {
+                continue;
+            }
+            LogFragment.print("Counttttttttttttttt: "+ mCursor.getCount() );
             mCursor.moveToPosition(0);
 
             //Set sendername
@@ -242,7 +273,11 @@ public class ListenerPacket extends Thread {
             //Set filename
             columnIndex = mCursor.getColumnIndex(MyDatabase.COL_FILE_NAME);
             String filename = mCursor.getString(columnIndex);
-            File fileImage = ManageImage.isExist(filename);
+
+            //Set imagename
+            columnIndex = mCursor.getColumnIndex(MyDatabase.COL_IMAGE_NAME);
+            String imagename = mCursor.getString(columnIndex);
+            File fileImage = ManageImage.isExist(imagename);
 
             LogFragment.print("SEND IMAGE: " + filename);
             try {
@@ -264,8 +299,10 @@ public class ListenerPacket extends Thread {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            mCursor.close();
 
         }
     }
+
 
 }

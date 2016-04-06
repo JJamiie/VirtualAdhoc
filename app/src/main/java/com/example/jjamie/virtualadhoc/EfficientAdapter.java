@@ -46,7 +46,7 @@ public class EfficientAdapter extends BaseAdapter {
     private SOSManager sosManager;
     public static boolean isStartpigeon = false;
     private SQLiteDatabase sqLiteDatabase;
-    private Cursor mCursor;
+    private Cursor mCursor = null;
     public static BaseAdapter adapter;
 
     public EfficientAdapter(Activity activity,SQLiteDatabase sqLiteDatabase) {
@@ -132,9 +132,13 @@ public class EfficientAdapter extends BaseAdapter {
                 Glide.with(activity).load(R.drawable.profile).bitmapTransform(new CropCircleTransformation(activity)).into(holder.picture_profile);
 
                 //Set filename
-                columnIndex = mCursor.getColumnIndex(MyDatabase.COL_FILE_NAME);
+                columnIndex = mCursor.getColumnIndex(MyDatabase.COL_IMAGE_NAME);
                 final String filename = mCursor.getString(columnIndex);
                 final File fileImage = ManageImage.isExist(filename);
+
+                //Set filename
+                columnIndex = mCursor.getColumnIndex(MyDatabase.COL_FILE_NAME);
+                final String picture_id = mCursor.getString(columnIndex);
 
                 //Set image
                 if (fileImage != null) {
@@ -159,10 +163,10 @@ public class EfficientAdapter extends BaseAdapter {
                                 BufferedInputStream buf = new BufferedInputStream(new FileInputStream(fileImage));
                                 buf.read(img, 0, img.length);
                                 buf.close();
-                                Image image = new Image(senderName, filename, message, location, img);
+                                Image image = new Image(senderName, picture_id, message, location, img);
                                 Broadcaster.broadcast(image.getBytes(), ListenerPacket.PORT_PACKET);
                             } else {
-                                Image image = new Image(senderName, filename, message, location, null);
+                                Image image = new Image(senderName, picture_id, message, location, null);
                                 Broadcaster.broadcast(image.getBytes(), ListenerPacket.PORT_PACKET);
                             }
 
