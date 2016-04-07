@@ -59,6 +59,9 @@ public class ConnectionManager extends Thread {
     // Active for start and stop thread
     private boolean active = false;
     private Random r;
+    private static boolean anyH =false;
+    private static boolean anyC =false;
+    private static int tempMode = 1;
 
     public ConnectionManager(Context context, SQLiteDatabase sqLiteDatabase) {
         contexts = context;
@@ -206,6 +209,7 @@ public class ConnectionManager extends Thread {
         results.clear();
         availableAP.clear();
         condition = false;
+        boolean firstTime = true;
         while (true) {
 
             while (mode == 1) {
@@ -214,6 +218,11 @@ public class ConnectionManager extends Thread {
                 LogFragment.print("--------------------------------Mode 1--------------------------------");
                 System.out.println("mode 1");
                 timeState = 0;
+                if(firstTime){
+                    Random r = new Random();
+                    timeState = r.nextInt(40);
+                    firstTime = false;
+                }
                 while (!isWifiOn(contexts)) {
                     System.out.println("Wait for wifi");
                     enableWifi(contexts);
@@ -223,7 +232,7 @@ public class ConnectionManager extends Thread {
                         e.printStackTrace();
                     }
                 }
-                while (timeState <= 25) {
+                while (timeState <= 40) {
                     tempState = 1;
                     for (int i = 0; i < 5; i++) {
                         listAP(contexts);
@@ -258,8 +267,8 @@ public class ConnectionManager extends Thread {
 
                     }
                 }
-                int timeRandom = r.nextInt(60 - 45 + 1) + 45;
-                while (timeState > 25 && timeState <= timeRandom) {
+                int timeRandom = r.nextInt(60 - 45 + 1) + 85;
+                while (timeState > 40 && timeState <= timeRandom) {
                     ApManager.configApState(contexts, true);
                     tempState = 2;
                     System.out.println("Stage: Sleep1");
@@ -285,6 +294,8 @@ public class ConnectionManager extends Thread {
                     }
                     timeState = timeState + 2;
                 }
+                decideMode();
+
             }
             while (mode == 2) {
                 while (accTime <= timeout) {
@@ -788,25 +799,33 @@ public class ConnectionManager extends Thread {
     public static void updateMode() {
         if (compareMode == 1 && mode == 1) {
             if (tempState == 1) {
-                mode = 3;
+                tempMode = 3;
                 LogFragment.print("------------------------Update to mode 3 ------------------------");
 
                 System.out.println("Update mode 3");
             } else {
-                mode = 2;
+                tempMode = 2;
                 LogFragment.print("------------------------Update to mode 2 ------------------------");
                 System.out.println("Update mode 2");
             }
         } else if (compareMode == 2 && mode == 1) {
-            mode = 3;
+            anyH=true;
             LogFragment.print("------------------------Update to mode 3 ------------------------");
             System.out.println("Update mode 3");
         } else if (compareMode == 3 && mode == 1) {
-            mode = 2;
+            anyC=true;
             LogFragment.print("------------------------Update to mode 2 ------------------------");
             System.out.println("Update mode 2");
         }
 
+    }
+    public static void decideMode(){
+        if(tempMode==2){mode=2;
+        }else if(tempMode==3){
+            mode=3;
+        }
+        if(anyC){mode = 2;}
+        if(anyH){mode = 3;}
     }
 
     public static int getTempState() {
