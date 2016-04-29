@@ -218,11 +218,6 @@ public class ConnectionManager extends Thread {
                 LogFragment.print("--------------------------------Mode 1--------------------------------");
                 System.out.println("mode 1");
                 timeState = 0;
-                if(firstTime){
-                    Random r = new Random();
-                    timeState = r.nextInt(40);
-                    firstTime = false;
-                }
                 while (!isWifiOn(contexts)) {
                     System.out.println("Wait for wifi");
                     enableWifi(contexts);
@@ -253,11 +248,12 @@ public class ConnectionManager extends Thread {
                             Thread.sleep(5000);
                             timeState = timeState + 5;
                             sendScore();
+                            sendData();
                             count++;
                             LogFragment.print("Mode 1 Timestate: " + timeState);
                             System.out.println("Mode1 Timestate" + timeState);
-                            Thread.sleep(4000);
-                            timeState = timeState + 4;
+                            Thread.sleep(5000);
+                            timeState = timeState + 5;
                             System.out.println("wake");
                             waitForConditionChange();
 
@@ -389,8 +385,8 @@ public class ConnectionManager extends Thread {
                                 sendScore();
                                 sendData();
                                 count++;
-                                Thread.sleep(4000);
-                                timeState = timeState + 4;
+                                Thread.sleep(5000);
+                                timeState = timeState + 5;
                                 if (timeState > timeRandom) break;
 
                                 LogFragment.print("Mode 2 Timestate: " + timeState);
@@ -450,8 +446,8 @@ public class ConnectionManager extends Thread {
                                 sendData();
 
                                 count++;
-                                Thread.sleep(4000);
-                                accTime = accTime + 4;
+                                Thread.sleep(5000);
+                                accTime = accTime + 5;
                                 if (timeState >= 100) break;
                                 waitForConditionChange();
                                 System.out.println("Going to sleep");
